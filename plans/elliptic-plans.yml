@@ -1,0 +1,32 @@
+name: Elliptic API Plans
+description: Elliptic does not publicly publish tiered pricing plans. Access to the AML API and AI API is available through enterprise agreements. Interested parties are directed to schedule a demo or contact the sales team for custom pricing based on volume and use case.
+url: https://www.elliptic.co/get-started
+plans:
+  - name: Enterprise
+    description: Custom enterprise pricing for financial institutions, exchanges, DeFi platforms, stablecoin issuers, and other regulated entities. Pricing is based on screening volume, blockchain coverage, and compliance workflow requirements. Includes access to the AML API, AI API, Lens product, and support services.
+    url: https://www.elliptic.co/get-started
+    pricing:
+      model: custom
+      description: Contact sales for pricing. No publicly listed tiers or per-unit rates.
+    features:
+      - Wallet screening across 60+ blockchains
+      - Transaction screening with sub-second response times
+      - Batch and synchronous API endpoints
+      - AI-powered natural language risk summaries
+      - Customer-level aggregated insights
+      - Risk graph traversal and entity identification
+      - Configurable risk rules and alerting
+      - Webhook integration for real-time alerts
+      - SDKs for Node.js, Python, and PHP
+      - 1B+ labeled crypto addresses
+      - 99% coverage of global trading volume
+      - AML compliance workflows
+      - Indirect risk reporting for fiat transactions
+      - Blocklists for exchange protection
+    contact:
+      url: https://www.elliptic.co/get-started
+      description: Schedule a demo or use the Crypto Compliance Calculator for personalized cost projections
+notes:
+  - Elliptic targets financial institutions, centralized exchanges, DeFi platforms, stablecoin issuers, network operators, law enforcement, and regulators
+  - A Crypto Compliance Calculator is available at elliptic.co for cost projections
+  - Partner program available at elliptic.co/partner-program for resellers and technology integrators

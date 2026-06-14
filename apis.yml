@@ -1,0 +1,98 @@
+name: Elliptic
+description: Elliptic is a blockchain analytics and crypto compliance platform providing REST APIs for transaction screening, wallet risk scoring, entity identification, and AML compliance. Their APIs enable financial institutions, exchanges, and DeFi platforms to automate crypto risk screening across 60+ blockchains, reduce investigation time by up to 90%, and meet AML regulatory requirements with sub-second response times.
+image: https://kinlane-productions2.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+url: https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/apis.yml
+created: '2026-06-14'
+modified: '2026-06-14'
+specificationVersion: '0.19'
+tags:
+  - Blockchain
+  - Crypto
+  - Compliance
+  - AML
+  - Transaction Screening
+  - Wallet Screening
+  - Risk Scoring
+  - Analytics
+apis:
+  - name: Elliptic AML API
+    description: REST API for automated AML compliance screening of cryptocurrency transactions and wallets. Provides batch and synchronous endpoints for wallet risk scoring, transaction analysis, customer management, and risk rule configuration across 60+ blockchain networks.
+    image: https://kinlane-productions2.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+    humanURL: https://developers.elliptic.co/docs/aml-api-introduction
+    baseURL: https://aml-api.elliptic.co
+    tags:
+      - AML
+      - Wallet Screening
+      - Transaction Screening
+      - Risk Scoring
+      - Compliance
+    properties:
+      - type: Documentation
+        url: https://developers.elliptic.co/docs/aml-api-introduction
+      - type: Authentication
+        url: https://developers.elliptic.co/docs/authentication-1
+      - type: SDKs
+        url: https://developers.elliptic.co/docs/quick-start-sdks
+      - type: RateLimits
+        url: https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/rate-limits/aml-api.yml
+      - type: Plans
+        url: https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/plans/elliptic-plans.yml
+      - type: FinOps
+        url: https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/finops/elliptic-finops.yml
+    contact:
+      - FN: Elliptic Support
+        url: https://help.elliptic.co/
+        email: ''
+  - name: Elliptic AI API
+    description: AI-powered REST API that delivers natural language summaries and structured insights from blockchain and risk data. Provides wallet summaries, transaction analysis, customer-level aggregated insights, and risk graph traversal in human-readable formats for AI-driven compliance workflows.
+    image: https://kinlane-productions2.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+    humanURL: https://developers.elliptic.co/docs/ai-api-introduction
+    baseURL: https://aml-api.elliptic.co
+    tags:
+      - AI
+      - Natural Language
+      - Wallet Analysis
+      - Transaction Analysis
+      - Risk Intelligence
+    properties:
+      - type: Documentation
+        url: https://developers.elliptic.co/docs/ai-api-introduction
+      - type: Authentication
+        url: https://developers.elliptic.co/docs/authentication-1
+      - type: SDKs
+        url: https://developers.elliptic.co/docs/quick-start-sdks
+      - type: RateLimits
+        url: https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/rate-limits/aml-api.yml
+    contact:
+      - FN: Elliptic Support
+        url: https://help.elliptic.co/
+        email: ''
+common:
+  - type: Portal
+    url: https://developers.elliptic.co/
+  - type: Documentation
+    url: https://developers.elliptic.co/docs
+  - type: Authentication
+    url: https://developers.elliptic.co/docs/authentication-1
+  - type: SDKs
+    url: https://developers.elliptic.co/docs/quick-start-sdks
+  - type: Status
+    url: https://status.elliptic.co/
+  - type: Blog
+    url: https://www.elliptic.co/blog
+  - type: Support
+    url: https://help.elliptic.co/
+  - type: Dashboard
+    url: https://app.elliptic.co
+  - type: Partners
+    url: https://www.elliptic.co/partner-program
+  - type: Contact
+    url: https://www.elliptic.co/contact
+  - type: PrivacyPolicy
+    url: https://www.elliptic.co/privacy-policy
+  - type: TermsOfService
+    url: https://www.elliptic.co/terms-of-service
+maintainers:
+  - FN: API Evangelist
+    url: https://apievangelist.com
+    email: info@apievangelist.com

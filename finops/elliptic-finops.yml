@@ -1,0 +1,40 @@
+name: Elliptic API FinOps
+description: Financial operations guidance for Elliptic API usage. Elliptic uses custom enterprise pricing with no publicly listed per-unit rates. Cost management relies on monitoring screening volume, optimizing batch vs synchronous endpoint usage, and leveraging the Elliptic Crypto Compliance Calculator for projections.
+url: https://www.elliptic.co/get-started
+pricingModel: custom-enterprise
+publicPricing: false
+costDrivers:
+  - name: Screening Volume
+    description: The primary cost driver is the number of wallet and transaction screenings performed. Higher volumes are negotiated as part of enterprise agreements.
+    unit: screenings
+  - name: Blockchain Coverage
+    description: Coverage across 60+ blockchains; broader asset and network coverage may affect contract pricing.
+    unit: networks
+  - name: API Product Tier
+    description: Access to AML API only vs. AML API plus AI API may affect pricing tier.
+    unit: product
+  - name: Data Products
+    description: Add-on data products such as Blocklists, Indirect Risk Reporting, or bespoke datasets may be priced separately.
+    unit: product
+optimization:
+  - strategy: Use Batch Endpoints for High Volume
+    description: POST /v2/wallets and POST /v2/analyses batch endpoints are designed for high-volume screening and reduce per-request overhead compared to synchronous endpoints.
+  - strategy: Reserve Synchronous Endpoints for Low Volume
+    description: POST /v2/wallets/synchronous and POST /v2/analyses/synchronous provide immediate results but have lower rate limits (15 req/sec vs 4 req/sec for batch). Use only when immediate response is required.
+  - strategy: Monitor Rate Limit Headers
+    description: Track X-RateLimit-Remaining and X-RateLimit-Reset headers to avoid 429 errors and optimize request pacing without over-provisioning.
+  - strategy: Use the Crypto Compliance Calculator
+    description: Elliptic provides a Crypto Compliance Calculator at elliptic.co to project costs based on your organization's screening volume and compliance needs before committing to a contract.
+  - strategy: Negotiate Volume Discounts
+    description: Enterprise agreements allow for volume-based pricing negotiation. Larger screening volumes typically result in lower per-screening costs.
+contacts:
+  - type: Sales
+    url: https://www.elliptic.co/get-started
+    description: Schedule a demo or request pricing information
+  - type: Partners
+    url: https://www.elliptic.co/partner-program
+    description: Partner program for resellers and technology integrators who may access preferential pricing
+notes:
+  - No free tier or trial is publicly advertised
+  - Pricing is not listed on the Elliptic website; all pricing requires direct sales engagement
+  - G2 reviews reference enterprise-level pricing typically suited to regulated financial institutions and large exchanges

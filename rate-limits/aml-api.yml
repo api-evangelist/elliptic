@@ -1,0 +1,39 @@
+name: Elliptic AML API Rate Limits
+description: Rate limits for the Elliptic AML API and AI API. A global ceiling of 500 requests per minute applies to all endpoints unless an endpoint-specific limit overrides it. Exceeding limits returns HTTP 429. Rate limit status is communicated via response headers on every request.
+url: https://developers.elliptic.co/docs/copy-of-conventions-and-limits
+global:
+  requestsPerMinute: 500
+  description: Applies to all requests unless overridden by an endpoint-specific limit
+  httpStatusOnExceed: 429
+endpoints:
+  - path: /v2/wallets
+    method: POST
+    limit: 4
+    unit: requests_per_second
+    description: Batch wallet analysis submission
+  - path: /v2/analyses
+    method: POST
+    limit: 4
+    unit: requests_per_second
+    description: Batch transaction analysis submission
+  - path: /v2/wallets/synchronous
+    method: POST
+    limit: 15
+    unit: requests_per_second
+    description: Synchronous wallet analysis — immediate response; recommended for lower volumes
+  - path: /v2/analyses/synchronous
+    method: POST
+    limit: 15
+    unit: requests_per_second
+    description: Synchronous transaction analysis — immediate response; recommended for lower volumes
+headers:
+  - name: X-RateLimit-Limit
+    description: The rate limit threshold for the current endpoint
+  - name: X-RateLimit-Remaining
+    description: Number of requests remaining within the current window
+  - name: X-RateLimit-Reset
+    description: Unix epoch timestamp indicating when the rate limit window resets
+notes:
+  - Batch endpoints (POST /v2/wallets, POST /v2/analyses) are recommended for high-volume screening
+  - Synchronous endpoints are recommended only for low-volume use cases due to lower per-second limits
+  - The global 500 req/min ceiling applies across all endpoint calls combined
