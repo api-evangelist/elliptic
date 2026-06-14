@@ -1,0 +1,164 @@
+{
+  "@context": {
+    "@vocab": "https://schema.org/",
+    "api": "https://schema.org/WebAPI",
+    "blockchain": "https://schema.org/DefinedTerm",
+    "compliance": "https://schema.org/DefinedTerm"
+  },
+  "@type": "Organization",
+  "@id": "https://www.elliptic.co",
+  "name": "Elliptic",
+  "description": "Elliptic is a blockchain analytics and crypto compliance platform providing REST APIs for transaction screening, wallet risk scoring, entity identification, and AML compliance.",
+  "url": "https://www.elliptic.co",
+  "sameAs": [
+    "https://developers.elliptic.co/",
+    "https://app.elliptic.co"
+  ],
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "contactType": "support",
+    "url": "https://help.elliptic.co/"
+  },
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "Elliptic APIs",
+    "itemListElement": [
+      {
+        "@type": "WebAPI",
+        "name": "Elliptic AML API (OAuth)",
+        "description": "REST API for automated AML compliance screening of cryptocurrency transactions and wallets with OAuth 2.0 authentication.",
+        "version": "2.0.0",
+        "documentation": "https://developers.elliptic.co/docs/aml-api-introduction",
+        "url": "https://aml-api.elliptic.co",
+        "termsOfService": "https://www.elliptic.co/terms-of-service",
+        "provider": {
+          "@type": "Organization",
+          "name": "Elliptic"
+        },
+        "about": [
+          {"@type": "DefinedTerm", "name": "AML"},
+          {"@type": "DefinedTerm", "name": "Blockchain"},
+          {"@type": "DefinedTerm", "name": "Crypto Compliance"},
+          {"@type": "DefinedTerm", "name": "Transaction Screening"}
+        ]
+      },
+      {
+        "@type": "WebAPI",
+        "name": "Elliptic AML API V2",
+        "description": "REST API for AML compliance screening with batch and synchronous transaction and wallet analysis endpoints.",
+        "version": "2.0.0",
+        "documentation": "https://developers.elliptic.co/docs/aml-api-introduction",
+        "url": "https://aml-api.elliptic.co/v2",
+        "termsOfService": "https://www.elliptic.co/terms-of-service",
+        "provider": {
+          "@type": "Organization",
+          "name": "Elliptic"
+        },
+        "about": [
+          {"@type": "DefinedTerm", "name": "AML"},
+          {"@type": "DefinedTerm", "name": "Wallet Screening"},
+          {"@type": "DefinedTerm", "name": "Risk Scoring"}
+        ]
+      },
+      {
+        "@type": "WebAPI",
+        "name": "Elliptic AML API V3",
+        "description": "REST API for risk rule management and criteria configuration in AML compliance workflows.",
+        "version": "3.0.0",
+        "documentation": "https://developers.elliptic.co/docs/aml-api-introduction",
+        "url": "https://aml-api.elliptic.co/v3",
+        "termsOfService": "https://www.elliptic.co/terms-of-service",
+        "provider": {
+          "@type": "Organization",
+          "name": "Elliptic"
+        },
+        "about": [
+          {"@type": "DefinedTerm", "name": "Risk Rules"},
+          {"@type": "DefinedTerm", "name": "AML"},
+          {"@type": "DefinedTerm", "name": "Compliance"}
+        ]
+      },
+      {
+        "@type": "WebAPI",
+        "name": "Elliptic AI API",
+        "description": "AI-powered REST API delivering natural language summaries and structured insights from blockchain and risk data for compliance workflows.",
+        "version": "0.0.1",
+        "documentation": "https://developers.elliptic.co/docs/ai-api-introduction",
+        "url": "https://ai-api.elliptic.co",
+        "termsOfService": "https://www.elliptic.co/terms-of-service",
+        "provider": {
+          "@type": "Organization",
+          "name": "Elliptic"
+        },
+        "about": [
+          {"@type": "DefinedTerm", "name": "AI"},
+          {"@type": "DefinedTerm", "name": "Natural Language Processing"},
+          {"@type": "DefinedTerm", "name": "Risk Intelligence"}
+        ]
+      },
+      {
+        "@type": "WebAPI",
+        "name": "Elliptic Sanctions API",
+        "description": "REST API providing access to sanctioned blockchain addresses maintained by Elliptic, with filtering by blockchain, sanction status, and date ranges.",
+        "version": "1.0",
+        "documentation": "https://developers.elliptic.co/",
+        "url": "https://sanctions-api.elliptic.co",
+        "termsOfService": "https://www.elliptic.co/terms-of-service",
+        "provider": {
+          "@type": "Organization",
+          "name": "Elliptic"
+        },
+        "about": [
+          {"@type": "DefinedTerm", "name": "Sanctions"},
+          {"@type": "DefinedTerm", "name": "OFAC"},
+          {"@type": "DefinedTerm", "name": "Blockchain Compliance"}
+        ]
+      },
+      {
+        "@type": "WebAPI",
+        "name": "Elliptic Data Fabric API",
+        "description": "Asynchronous API for querying Tron blockchain data correlation with IP addresses for node intelligence and transaction analysis.",
+        "version": "0.1.9",
+        "documentation": "https://developers.elliptic.co/",
+        "url": "https://aml-api.elliptic.co",
+        "termsOfService": "https://www.elliptic.co/terms-of-service",
+        "provider": {
+          "@type": "Organization",
+          "name": "Elliptic"
+        },
+        "about": [
+          {"@type": "DefinedTerm", "name": "Tron"},
+          {"@type": "DefinedTerm", "name": "Blockchain Intelligence"},
+          {"@type": "DefinedTerm", "name": "IP Correlation"}
+        ]
+      }
+    ]
+  },
+  "subjectOf": [
+    {
+      "@type": "WebPage",
+      "name": "Elliptic Developer Portal",
+      "url": "https://developers.elliptic.co/"
+    },
+    {
+      "@type": "WebPage",
+      "name": "Elliptic Blog",
+      "url": "https://www.elliptic.co/blog"
+    },
+    {
+      "@type": "WebPage",
+      "name": "Elliptic Status Page",
+      "url": "https://status.elliptic.co/"
+    },
+    {
+      "@type": "WebPage",
+      "name": "Elliptic Privacy Policy",
+      "url": "https://www.elliptic.co/privacy-policy"
+    },
+    {
+      "@type": "WebPage",
+      "name": "Elliptic Terms of Service",
+      "url": "https://www.elliptic.co/terms-of-service"
+    }
+  ]
+}

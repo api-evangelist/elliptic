@@ -35,6 +35,12 @@ apis:
         url: https://developers.elliptic.co/docs/quick-start-sdks
       - type: RateLimits
         url: https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/rate-limits/aml-api.yml
+      - type: OpenAPI
+        url: https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/openapi/aml-api-oauth.json
+      - type: OpenAPI
+        url: https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/openapi/aml-api-v2.json
+      - type: OpenAPI
+        url: https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/openapi/aml-api-v3.json
       - type: Plans
         url: https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/plans/elliptic-plans.yml
       - type: FinOps
@@ -61,8 +67,48 @@ apis:
         url: https://developers.elliptic.co/docs/authentication-1
       - type: SDKs
         url: https://developers.elliptic.co/docs/quick-start-sdks
+      - type: OpenAPI
+        url: https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/openapi/ia-api.json
       - type: RateLimits
         url: https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/rate-limits/aml-api.yml
+    contact:
+      - FN: Elliptic Support
+        url: https://help.elliptic.co/
+        email: ''
+  - name: Elliptic Sanctions API
+    description: REST API providing access to sanctioned blockchain addresses maintained by Elliptic, with filtering by blockchain type, sanction status, and date ranges. Supports pagination and covers major sanction lists including OFAC SDN.
+    image: https://kinlane-productions2.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+    humanURL: https://developers.elliptic.co/
+    baseURL: https://sanctions-api.elliptic.co
+    tags:
+      - Sanctions
+      - OFAC
+      - Blockchain Compliance
+      - Crypto Regulation
+    properties:
+      - type: Documentation
+        url: https://developers.elliptic.co/
+      - type: OpenAPI
+        url: https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/openapi/sanctions-api.json
+    contact:
+      - FN: Elliptic Support
+        url: https://help.elliptic.co/
+        email: ''
+  - name: Elliptic Data Fabric API
+    description: Asynchronous REST API for querying Tron blockchain data correlation with IP addresses. Provides node intelligence through transaction hash, crypto address, and node address lookups with asynchronous result polling.
+    image: https://kinlane-productions2.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+    humanURL: https://developers.elliptic.co/
+    baseURL: https://aml-api.elliptic.co
+    tags:
+      - Tron
+      - Blockchain Intelligence
+      - IP Correlation
+      - Node Intelligence
+    properties:
+      - type: Documentation
+        url: https://developers.elliptic.co/
+      - type: OpenAPI
+        url: https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/openapi/data-fabric.yaml
     contact:
       - FN: Elliptic Support
         url: https://help.elliptic.co/
@@ -92,6 +138,8 @@ common:
     url: https://www.elliptic.co/privacy-policy
   - type: TermsOfService
     url: https://www.elliptic.co/terms-of-service
+  - type: JSONLd
+    url: https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/json-ld/elliptic.jsonld
 maintainers:
   - FN: API Evangelist
     url: https://apievangelist.com
