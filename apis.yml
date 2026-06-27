@@ -138,7 +138,7 @@ common:
     url: https://www.elliptic.co/privacy-policy
   - type: TermsOfService
     url: https://www.elliptic.co/terms-of-service
-  - type: JSONLd
+  - type: JSONLD
     url: https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/json-ld/elliptic.jsonld
 maintainers:
   - FN: API Evangelist
