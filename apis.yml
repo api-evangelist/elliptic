@@ -114,6 +114,10 @@ apis:
         url: https://help.elliptic.co/
         email: ''
 common:
+  - type: DomainSecurity
+    url: security/elliptic-domain-security.yml
+  - type: Authentication
+    url: authentication/elliptic-authentication.yml
   - type: OAuthScopes
     url: scopes/elliptic-scopes.yml
   - type: Portal
