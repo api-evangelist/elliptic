@@ -1,0 +1,21 @@
+generated: '2026-07-11'
+method: derived
+source: openapi/aml-api-oauth.json
+schemes:
+- name: oauth2
+  source: openapi/aml-api-oauth.json
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://login.elliptic.co/authorize
+    tokenUrl: https://login.elliptic.co/oauth/token
+scopes:
+- scope: openid
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/aml-api-oauth.json
+- scope: profile
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/aml-api-oauth.json

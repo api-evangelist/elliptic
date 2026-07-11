@@ -114,6 +114,8 @@ apis:
         url: https://help.elliptic.co/
         email: ''
 common:
+  - type: OAuthScopes
+    url: scopes/elliptic-scopes.yml
   - type: Portal
     url: https://developers.elliptic.co/
   - type: Documentation
