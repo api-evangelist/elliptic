@@ -114,6 +114,8 @@ apis:
         url: https://help.elliptic.co/
         email: ''
 common:
+  - type: AgenticAccess
+    url: agentic-access/elliptic-agentic-access.yml
   - type: DomainSecurity
     url: security/elliptic-domain-security.yml
   - type: Authentication
