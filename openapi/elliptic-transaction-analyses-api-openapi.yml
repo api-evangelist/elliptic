@@ -1,0 +1,1890 @@
+openapi: 3.1.0
+info:
+  version: 2.0.0
+  title: AML API OAuth Assets Transaction Analyses API
+  x-explorer-description: '# Welcome to the Elliptic API Explorer
+
+
+    This area allows you to experiment with API requests in your browser. Browse to a request of interest and `Try it out`. If you are looking for the full documentation, head over to [the docs section](/developers/docs)
+
+
+    ## Authentication
+
+
+    Authentication in this explorer is accomplished using a JWT bearer token. This will allow your logged in user to make requests to our API if permitted. API authentication does not use JWTs, please see the [auth cookbooks](https://app.elliptic.co/#section/Cookbooks/Authentication) in the documentation for instructions on how to authenticate with our API programatically.
+
+
+    ## Environment
+
+
+    **Any requests made here will run against the environment you are logged in to. We advise using your sandbox environment so as not to pollute your production dataset**
+
+    '
+  description: "# Introduction\n**Welcome to the Elliptic API Documentation**\n\nIn its simplest form, the Elliptic API allows you to [submit batches of transactions programmatically](#operation/analysisBatch), without human intervention. By connecting directly from your internal systems, you control what is submitted for analysis and when. Your compliance team can then log into the Elliptic web interface and analyse the results of the requested transaction screenings.\n\nBeyond batch-submitting transactions, the Elliptic API can also be used to obtain immediate responses to transaction or address analysis requests through our [synchronous endpoint](#operation/analysisSync). This option returns the result of the analysis in the same request in case you want to use the information for immediate reference. This is only recommended if you have a low volume of transactions (due to API rate limiting) and you need access to the results immediately for compliance workflow reasons. If you have high volumes or do not need to make time critical responses, use the [batch endpoint](#operation/analysisBatch).\n\nThe API can also be used to interrogate your analyzed customers, transactions, addresses and risk rules, pulling information at scale, with the filters of your choice. For example, if you want to import all the analyzed transactions with the respective dollar amount, risk score, CustomerID, etc into your Transaction Monitoring System you can do so by using the GET endpoints. You can find more information about this in the [get all analysis results section](#operation/getAllAnalyses).\n\nAdditionally, for more advanced use-cases, the Elliptic API can also be used to carry out workflows programmatically (i.e. set transactions notes etc.). This is particularly helpful if you are using Elliptic through your own bespoke built Transaction Monitoring System, rather than the Elliptic AML web interface.\n\n# Experimenting with the API\nIf you'd like to make some requests with the API in your browser, head over to the [API explorer](/developers/explorer)\n\n## Getting Started\n1. First, request your API keys through your Customer Success Manager or via [customers@elliptic.co](mailto:customers@elliptic.co). For privacy reasons, you will be asked for a keybase username or PGP Public Key;\n2. [Authenticate with the API](#section/Authentication), using the credentials provided in step 1 as this will allow you to pass our API’s user verification;\n3. [Submit your first test request](#operation/analysisSync). The submitted transactions will appear immediately in the Elliptic AML web interface.\n# Configuration\n### Types\n  All timestamps are represented as ISO8601-formatted date strings with time zone.\n### Requests\n  All HTTP requests and responses are application/json content type and typical HTTP response status codes for success and failure are used.\n  All successful requests will respond with an HTTP 2xx status code and will contain a body (except in the case of a 204). The body varies by endpoint and will be described for each resource below, but will contain a JSON data object or array (for individual and multiple resources, respectively).\n  All other requests will respond with an HTTP 4xx or 5xx status code. Furthermore, the body will contain an array of error messages to help with understanding the cause of failure.\n### Rate Limiting\n  There is a global limit of 500 requests per minute. This applies to all requests (GET, POST, etc.).\n  If the limit is reached an HTTP 429 status code will be returned.\n\n  The following headers are returned by each request\n\n  Header | Description\n  ------ | -----------\n  X-RateLimit-Limit | The limit of the current endpoint\n  X-RateLimit-Remaining | The remaining rate limit\n  X-RateLimit-Reset | The timestamp after which the limit will reset (unix epoch timestamp)\n\n# Authentication\nAll HTTP requests to API endpoints require authentication and authorization. For code samples see our [Authenication Cookbooks](#section/Cookbooks/Authentication)\n\nElliptic will provide an API key and secret which must be used to set HTTP headers. These headers will be used to verify and authorize all requests.\n\nThe following headers should be added to all HTTP requests:\n\nKey | Value\n--- | ---\nx-access-key | \\<API_KEY\\>\nx-access-sign | \\<SIGNATURE_OF_REQUEST\\>\nx-access-timestamp | \\<TIME_OF_REQUEST_IN_MS\\> (in milliseconds)\n\nExamples of how to generate the signature can be found to the below. The following variables are referenced:\n\nVariable | Description\n------- | ---------\nTIME_OF_REQUEST_IN_MS | The current time formatted as the current unix timestamp (in milliseconds)\nSIGNATURE_OF_REQUEST | A Base64 string encoded HMAC-SHA256 of REQUEST_TEXT signed with the Base64 decoded SECRET\nREQUEST_TEXT | a plain string concatenation of: TIME_OF_REQUEST_IN_MS, HTTP_METHOD (uppercase), HTTP_PATH (lowercase API path including query string), REQUEST_BODY (string encoded JSON object, or “{}” if there is no body)\n\nFrom now on, all code examples will assume you are attaching the authentication headers\n\n# Cookbooks\n\n## Authentication\nWe've provided Authentication cookbooks for commonly used langauges below. If your language isn't listed here, [let us know](mailto:customers@elliptic.co) and we'll add it\n\n\n\n</details>\n<details><summary>Java</summary>\n\n```java\nimport javax.crypto.Mac;\nimport javax.crypto.spec.SecretKeySpec;\nimport org.apache.commons.codec.binary.Base64;\nimport java.security.InvalidKeyException;\nimport java.security.NoSuchAlgorithmException;\n\npublic class EllipticAuth {\n  /*\n  * Generate a signature for use when signing a request to the API\n  *\n  *   - secret:          your secret supplied by Elliptic - a base64 encoded string\n  *   - time_of_request: current time, in milliseconds, since 1 Jan 1970 00:00:00 UTC\n  *   - http_method:     must be uppercase\n  *   - http_path:       API endpoint including query string\n  *   - payload:         string encoded JSON object or \"{}\" if there is no request body\n  */\n  public static String get_signature(String secret, String time_of_request, String http_method, String http_path, String payload) {\n\n    try {\n      // create a SHA256 HMAC using the supplied secret, decoded from base64\n      Mac hmac = Mac.getInstance(\"HmacSHA256\");\n      SecretKeySpec secret_key = new SecretKeySpec(Base64.decodeBase64(secret), \"HmacSHA256\");\n      hmac.init(secret_key);\n\n      // concatenate the request text to be signed\n      String request_text = time_of_request + http_method + http_path.toLowerCase() + payload;\n\n      // update the HMAC with the text to be signed\n      hmac.update(request_text.getBytes());\n\n      // output the signature as a base64 encoded string\n      return Base64.encodeBase64String(hmac.doFinal());\n    } catch(InvalidKeyException | NoSuchAlgorithmException e) {\n      throw new RuntimeException(e);\n    }\n  }\n\n  public static String SECRET = \"894f142d667e8cdaca6822ac173937af\"; // Supplied by Elliptic - a base64 encoded string\n  // Disclaimer: this secret is just an example\n  public static String TIME_OF_REQUEST_IN_MS = \"1478692862000\";  // For real world use currentTimeMillis()\n  public static String EXAMPLE_PAYLOAD = \"[{\\\"customer_reference\\\":\\\"123456\\\",\\\"subject\\\":{\\\"asset\\\":\\\"BTC\\\",\\\"hash\\\":\\\"accf5c09cc027339a3beb2e28104ce9f406ecbbd29775b4a1a17ba213f1e035e\\\",\\\"output_address\\\":\\\"15Hm2UEPaEuiAmgyNgd5mF3wugqLsYs3Wn\\\",\\\"output_type\\\":\\\"address\\\",\\\"type\\\":\\\"transaction\\\"},\\\"type\\\":\\\"source_of_funds\\\"}]\";\n\n  public static void main(String[] args) {\n    // Example One: POST with payload\n    System.out.println(get_signature(EllipticAuth.SECRET, EllipticAuth.TIME_OF_REQUEST_IN_MS, \"POST\", \"/v2/analyses\", EXAMPLE_PAYLOAD));\n    // 65mQHB2o95lL3I+N/bZYwDC9p2YvNwsVDnXr8u72hUk=\n\n    // Example Two: GET with empty payload\n    System.out.println(get_signature(EllipticAuth.SECRET, EllipticAuth.TIME_OF_REQUEST_IN_MS, \"GET\", \"/v2/customers\", \"{}\"));\n    // cN9fRUqeT7UnwwpkBZaNmnwxKAPHkhytdXelfUVvxMI=\n    return;\n  }\n}\n```\n\n</details>\n\n<details><summary>Ruby</summary>\n\n```ruby\nrequire 'base64'\nrequire 'json'\nrequire 'openssl'\n\n=begin\n Generate a signature for use when signing a request to the API\n\n   - secret:          your secret supplied by Elliptic - a base64 encoded string\n   - time_of_request: current time, in milliseconds, since 1 Jan 1970 00:00:00 UTC\n   - http_method:     must be uppercase\n   - http_path:       API endpoint including query string\n   - payload:         string encoded JSON object or '{}' if there is no request body\n=end\ndef get_signature(secret, time_of_request, http_method, http_path, payload)\n  # concatenate the request text to be signed\n  request_text = time_of_request + http_method + http_path.downcase + payload\n\n  # create a SHA256 HMAC using the supplied secret, decoded from base64, and update it with the request_text\n  hmac = OpenSSL::HMAC.digest('SHA256', Base64.decode64(secret), request_text)\n\n  # output the signature as a base64 encoded string\n  signed = Base64.encode64(hmac).strip.encode('UTF-8')\nend\n\nSECRET = '894f142d667e8cdaca6822ac173937af' # Supplied by Elliptic\n# Disclaimer: this secret is just an example\nTIME_OF_REQUEST_IN_MS = '1478692862000' # For real world use (Time.now.to_i * 1000)\nEXAMPLE_PAYLOAD = [\n  {\n    \"customer_reference\": \"123456\",\n    \"subject\": {\n      \"asset\": \"BTC\",\n      \"hash\": \"accf5c09cc027339a3beb2e28104ce9f406ecbbd29775b4a1a17ba213f1e035e\",\n      \"output_address\": \"15Hm2UEPaEuiAmgyNgd5mF3wugqLsYs3Wn\",\n      \"output_type\": \"address\",\n      \"type\": \"transaction\"\n    },\n    \"type\": \"source_of_funds\"\n  }\n]\n\n# Example One: POST with payload - you only need to run JSON.generate when passing a request body\nputs(get_signature(SECRET, TIME_OF_REQUEST_IN_MS, 'POST', '/v2/analyses', JSON.generate(EXAMPLE_PAYLOAD)))\n# 65mQHB2o95lL3I+N/bZYwDC9p2YvNwsVDnXr8u72hUk=\n\n# Example Two: GET with empty payload - do not run JSON.generate with no request body, pass an empty object as string\nputs(get_signature(SECRET, TIME_OF_REQUEST_IN_MS, 'GET', '/v2/customers', '{}'))\n# cN9fRUqeT7UnwwpkBZaNmnwxKAPHkhytdXelfUVvxMI\n```\n\n</details>\n\n<details><summary>C#</summary>\n\n```c#\nusing System;\nusing System.Security.Cryptography;\nusing System.Text;\n\npublic class EllipticAuth\n{\n\n  /// <summary>Generate a signature for use when signing a request to the API</summary>\n  /// <param name=\"secret\">your secret supplied by Elliptic - a base64 encoded string</param>\n  /// <param name=\"time_of_request\">current time, in milliseconds, since 1 Jan 1970 00:00:00 UTC</param>\n  /// <param name=\"http_method\">must be uppercase</param>\n  /// <param name=\"http_path\">API endpoint including query string</param>\n  /// <param name=\"payload\">string encoded JSON object or '{}' if there is no request body</param>\n  public static String get_signature(string secret, string time_of_request, string http_method, string http_path, string payload) {\n    string output = \"\";\n\n    // create a SHA256 HMAC using the supplied secret, decoded from base64\n    var encoding = new ASCIIEncoding();\n    byte[] keyByte = Convert.FromBase64String(secret);\n\n    // concatenate the request text to be signed\n    string request_text = time_of_request + http_method + http_path + payload;\n\n    // update the HMAC with the text to be signed\n    byte[] msgBytes = encoding.GetBytes(request_text);\n    using (var hmac = new HMACSHA256(keyByte))\n    {\n        byte[] hashed = hmac.ComputeHash(msgBytes);\n        // output the signature as a base64 encoded string\n        output = Convert.ToBase64String(hashed);\n    }\n\n    return output;\n  }\n\n  public static string SECRET = \"894f142d667e8cdaca6822ac173937af\"; // Supplied by Elliptic - a base64 encoded string\n  // Disclaimer: this secret is just an example\n  public static string TIME_OF_REQUEST_IN_MS = \"1478692862000\";  // For real world use DateTimeOffset.Now.ToUnixTimeMilliseconds();\n  public static string EXAMPLE_PAYLOAD = \"[{\\\"customer_reference\\\":\\\"123456\\\",\\\"subject\\\":{\\\"asset\\\":\\\"BTC\\\",\\\"hash\\\":\\\"accf5c09cc027339a3beb2e28104ce9f406ecbbd29775b4a1a17ba213f1e035e\\\",\\\"output_address\\\":\\\"15Hm2UEPaEuiAmgyNgd5mF3wugqLsYs3Wn\\\",\\\"output_type\\\":\\\"address\\\",\\\"type\\\":\\\"transaction\\\"},\\\"type\\\":\\\"source_of_funds\\\"}]\";\n\n  public static void Main()\n  {\n    // Example One: POST with payload\n    Console.WriteLine(get_signature(EllipticAuth.SECRET, EllipticAuth.TIME_OF_REQUEST_IN_MS, \"POST\", \"/v2/analyses\", EXAMPLE_PAYLOAD));\n    // 65mQHB2o95lL3I+N/bZYwDC9p2YvNwsVDnXr8u72hUk=\n\n    // Example Two: GET with empty payload\n    Console.WriteLine(get_signature(EllipticAuth.SECRET, EllipticAuth.TIME_OF_REQUEST_IN_MS, \"GET\", \"/v2/customers\", \"{}\"));\n    // cN9fRUqeT7UnwwpkBZaNmnwxKAPHkhytdXelfUVvxMI=\n    return;\n  }\n}\n```\n\n</details>\n\n<details><summary>PHP</summary>\n\n```php\n/**\n* Generate a signature for use when signing a request to the API\n*\n* @param $secret your secret supplied by Elliptic - a base64 encoded string\n* @param $time_of_request current time, in milliseconds, since 1 Jan 1970 00:00:00 UTC\n* @param $http_method must be uppercase\n* @param $http_path API endpoint including query string\n* @param $payload string encoded JSON object or '{}' if there is no request body\n*/\nfunction get_signature(\n  $secret,\n  $time_of_request,\n  $http_method,\n  $http_path,\n  $payload\n) {\n  // create a SHA256 HMAC using the supplied secret, decoded from base64\n  $ctx = hash_init('sha256', HASH_HMAC, base64_decode($secret));\n  // concatenate the request text to be signed\n  $request_text = $time_of_request . $http_method . $http_path . $payload;\n  // update the HMAC with the text to be signed\n  hash_update($ctx, $request_text);\n  // output the signature as a base64 encoded string\n  return base64_encode(hex2bin(hash_final($ctx)));\n}\n\n$SECRET = '894f142d667e8cdaca6822ac173937af'; // Supplied by Elliptic\n// Disclaimer: this secret is just an example\n$TIME_OF_REQUEST_IN_MS = 1478692862000; // For real world use something like (int)(microtime(true)*1000)\n\n$EXAMPLE_PAYLOAD = [[\n    \"customer_reference\" => \"123456\",\n    \"subject\" => [\n      \"asset\" => \"BTC\",\n      \"hash\" => \"accf5c09cc027339a3beb2e28104ce9f406ecbbd29775b4a1a17ba213f1e035e\",\n      \"output_address\" => \"15Hm2UEPaEuiAmgyNgd5mF3wugqLsYs3Wn\",\n      \"output_type\" => \"address\",\n      \"type\" => \"transaction\"\n    ],\n    \"type\" => \"source_of_funds\"\n  ]];\n\n// Example One: POST with payload - you only need to run json_encode when passing a request body\necho get_signature($SECRET, $TIME_OF_REQUEST_IN_MS, 'POST', '/v2/analyses', json_encode($EXAMPLE_PAYLOAD)) . \"\\n\";\n// 65mQHB2o95lL3I+N/bZYwDC9p2YvNwsVDnXr8u72hUk=\n\n// Example Two: GET with empty payload - do not run json_encode with no request body, pass an empty object as string\necho get_signature($SECRET, $TIME_OF_REQUEST_IN_MS, 'GET', '/v2/customers', '{}') . \"\\n\";\n// cN9fRUqeT7UnwwpkBZaNmnwxKAPHkhytdXelfUVvxMI=\n```\n\n</details>\n\n<details><summary>Golang</summary>\n\n```go\npackage main\n\nimport (\n  \"crypto/hmac\"\n  \"crypto/sha256\"\n  \"encoding/base64\"\n  \"fmt\"\n  \"log\"\n  \"strconv\"\n  \"strings\"\n)\n\n// Generate a signature for use when signing a request to the API\n// - secret:          your secret supplied by Elliptic - a base64 encoded string\n// - time_of_request: current time, in milliseconds, since 1 Jan 1970 00:00:00 UTC\n// - http_method:     must be uppercase\n// - http_path:       API endpoint including query string\n// - payload:         string encoded JSON object or '{}' if there is no request body\nfunc get_signature(secret string, time_of_request int64, http_method string, http_path string, payload string) string {\n  // create a SHA256 HMAC using the supplied secret, decoded from base64\n  ds, err := base64.StdEncoding.DecodeString(secret)\n  if err != nil {\n    log.Fatal(\"error:\", err)\n  }\n  h := hmac.New(sha256.New, []byte(ds))\n\n  // concatenate the request text to be signed\n  request_text := strconv.FormatInt(time_of_request, 10) + http_method + strings.ToLower(http_path) + payload\n\n  // update the HMAC with the text to be signed\n  h.Write([]byte(request_text))\n\n  // output the signature as a base64 encoded string\n  return base64.StdEncoding.EncodeToString([]byte(h.Sum(nil)))\n}\n\nfunc main() {\n  secret := \"894f142d667e8cdaca6822ac173937af\" // Supplied by Elliptic\n  // Disclaimer: this secret is just an example\n  time_of_request_in_ms := int64(1478692862000) // For real world use time.Now().UnixMilli()\n\n  example_payload := `[{\"customer_reference\":\"123456\",\"subject\":{\"asset\":\"BTC\",\"hash\":\"accf5c09cc027339a3beb2e28104ce9f406ecbbd29775b4a1a17ba213f1e035e\",\"output_address\":\"15Hm2UEPaEuiAmgyNgd5mF3wugqLsYs3Wn\",\"output_type\":\"address\",\"type\":\"transaction\"},\"type\":\"source_of_funds\"}]`\n\n  // Example One: POST with payload - you only need to run stringify json when passing a request body\n  fmt.Println(get_signature(secret, time_of_request_in_ms, \"POST\", \"/v2/analyses\", example_payload))\n  // 65mQHB2o95lL3I+N/bZYwDC9p2YvNwsVDnXr8u72hUk=\n\n  // Example Two: GET with empty payload - do not run stringify with no request body, pass an empty object as string\n  fmt.Println(get_signature(secret, time_of_request_in_ms, \"GET\", \"/v2/customers\", `{}`))\n  // cN9fRUqeT7UnwwpkBZaNmnwxKAPHkhytdXelfUVvxMI=\n}\n```\n\n</details>\n\n<details><summary>Postman</summary>\n\n```javascript\n/**\n* This function will create signature on the base of API_SECRET\n* variable set in Postman. Use it as pre-request script in Postman\n*/\nfunction makeSignature() {\n  const timestamp = Date.now();\n  // This regex assumes that the URLs you are using in postman have the hostname templated\n  // like {{AML_API_HOST}}/your/url so won’t work if instead you are using the AML API host set directly in the URL bar\n  const pathRegex = /(?:{{[^}]*}})(.*$)/g;\n  const match = pathRegex.exec(request.url);\n  const path = /\\?$/.test(match[1]) ? match[1].substring(0, match[1].length - 1) : match[1];\n  const strBody = (typeof request.data == 'object' ? '{}' : JSON.stringify(JSON.parse(request.data)));\n  const text = timestamp + request.method.toUpperCase() + path.toLowerCase() + strBody;\n  const key = CryptoJS.enc.Base64.parse(pm.variables.get(\"API_SECRET\"));\n  const hmac = CryptoJS.algo.HMAC.create(CryptoJS.algo.SHA256, key);\n  hmac.update(text);\n  const signature = CryptoJS.enc.Base64.stringify(hmac.finalize());\n  return [signature, timestamp];\n}\n\nvar sig = makeSignature();\n\n// These variables should be consumed in the request header configuration\npostman.setGlobalVariable('REQ_SIGNATURE', sig[0]);\npostman.setGlobalVariable(\"REQ_TIMESTAMP\", sig[1]);\npostman.setGlobalVariable(\"REQ_DATA\", typeof request.data);\n```\n\n</details>\n\n### Debugging Authentication\nThe `WWW-Authenticate` response header gives useful information to help understand what's going wrong:\n  - `error_description=\"invalid signature\"`: The signature generated by your code does not match what we've generated on the API\n  - `error_description=\"invalid timestamp 1605268999252\"`: The timestamp you've provided is invalid, it should be milliseconds since epoch\n  - No error discription usually indicates that the key you're using is invalid\n"
+servers:
+- url: https://aml-api.elliptic.co/v2
+  description: Production
+security:
+- oauth2:
+  - openid
+  - profile
+- apiKey: []
+  signature: []
+  timestamp: []
+tags:
+- name: Transaction Analyses
+  description: 'Run blockchain analysis against one or more transactions. Get and update previously run analyses.
+
+    '
+paths:
+  /analyses/synchronous:
+    post:
+      tags:
+      - Transaction Analyses
+      summary: Run a single analysis
+      operationId: analysisSync
+      description: Given a subject, customer and analysis type, perform the requested analysis and return the result
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionAnalysisRequestSingle'
+      responses:
+        '200':
+          $ref: '#/components/responses/AnalysisResponse'
+        '400':
+          $ref: '#/components/responses/400Post'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/NotInBlockchain'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsError'
+        '500':
+          $ref: '#/components/responses/500'
+  /analyses:
+    post:
+      tags:
+      - Transaction Analyses
+      summary: Run a batch of analyses
+      operationId: analysisBatch
+      description: 'Performs a batch of analyses (the max batch size is 100). Responses will contain IDs of the newly created analyses.
+
+
+        Returned analyses will be **processing**, you must use the IDs returned to lookup the results later via [GET analyses/:id](#operation/getAnalysisById)
+
+        '
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionAnalysisRequestBatch'
+      responses:
+        '200':
+          description: Successful analysis batch response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionAnalysisBatchResponse'
+        '207':
+          description: Contains a partial error
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  anyOf:
+                  - $ref: '#/components/schemas/BadRequestError'
+                  - $ref: '#/components/schemas/TransactionAnalysisBatchResponse/items'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BadRequestError'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '500':
+          $ref: '#/components/responses/500'
+    get:
+      tags:
+      - Transaction Analyses
+      summary: Paginate all analyses
+      description: Paginate through all analyses, with various sort/filter parameters.
+      operationId: getAllAnalyses
+      parameters:
+      - name: expand
+        description: 'comma-separated list of child nested objects to expand in the response,
+
+          e.g. `?expand=contributions`
+
+          '
+        in: query
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - blockchain_info
+            - contributions
+            - risk_rules
+            - customer_reference
+          default: []
+      - name: tx_time_before
+        in: query
+        description: filter out all customer transactions whose tx_time is <= the provided value (ISO8601 datetime)
+        schema:
+          type: string
+          format: date-time
+          minimum: 0
+        example: '2030-02-26T14:33:34.787Z'
+      - name: tx_time_after
+        in: query
+        description: filter out all customer transactions whose tx_time is >= the provided value (ISO8601 datetime)
+        schema:
+          type: string
+          format: date-time
+          minimum: 0
+        example: '2010-02-26T14:33:34.787Z'
+      - name: has_triggered_rule
+        in: query
+        description: filter by transactions based on whether they've triggered any rules
+        schema:
+          type: boolean
+      - name: min_risk_score
+        in: query
+        description: minimum risk score
+        schema:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 10
+      - name: max_risk_score
+        in: query
+        description: maximum risk score
+        schema:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 10
+      - name: min_risk_score_change
+        in: query
+        description: minimum risk score change since last screening
+        schema:
+          type: number
+          format: float
+          minimum: -10
+          maximum: 10
+      - name: max_risk_score_change
+        in: query
+        description: maximum risk score change since last screening
+        schema:
+          type: number
+          format: float
+          minimum: -10
+          maximum: 10
+      - name: min_value
+        in: query
+        description: minimum value of the asset in it's minor unit (satoshis, wei etc)
+        schema:
+          type: integer
+          format: int64
+          minimum: 0
+      - name: max_value
+        in: query
+        description: minimum value of the asset in it's minor unit (satoshis, wei etc)
+        schema:
+          type: integer
+          format: int64
+          minimum: 0
+      - name: min_value_usd
+        in: query
+        description: minimum USD value
+        schema:
+          type: number
+          format: float
+          minimum: 0
+      - name: max_value_usd
+        in: query
+        description: maximum USD value
+        schema:
+          type: number
+          format: float
+          minimum: 0
+      - name: analysed_at_before
+        in: query
+        description: only return analysis that has been analysed before the given time (ISO8601 datetime)
+        schema:
+          type: string
+          format: date-time
+        example: '2030-02-26T14:33:34.787Z'
+      - name: analysed_at_after
+        in: query
+        description: only return analysis that has been analysed after the given time (ISO8601 datetime)
+        schema:
+          type: string
+          format: date-time
+        example: '2010-02-26T14:33:34.787Z'
+      - name: customer_reference
+        in: query
+        description: only return analysis whose customer reference matches the given string
+        schema:
+          type: string
+          minLength: 1
+      - name: customer_reference_contains
+        in: query
+        description: only return analysis whose customer reference contains the given string
+        schema:
+          type: string
+          minLength: 1
+      - name: workflow_status
+        in: query
+        description: only return analyses whose workflow status matches any of the given values. Accepts a single value or an array of values.
+        schema:
+          $ref: '#/paths/~1wallet/get/parameters/9/schema'
+      - name: hash
+        in: query
+        description: filter customer transactions whose hash is equal to the given one (case insensitive)
+        schema:
+          type: string
+      - name: hash_contains
+        in: query
+        description: filter customer transactions whose hash contains the given string (case insensitive)
+        schema:
+          type: string
+      - name: address_hash
+        in: query
+        description: filter customer transactions whose address is equal to the given one (case insensitive)
+        schema:
+          type: string
+      - name: address_hash_contains
+        in: query
+        description: filter customer transactions whose address contains the given string (case insensitive)
+        schema:
+          type: string
+      - name: id
+        in: query
+        description: get only transactions with given ids
+        schema:
+          type: array
+          items:
+            type: string
+            format: UUIDv4
+      - name: coverage
+        in: query
+        description: return the transaction analyses for a certain coverage level
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - full
+            - holistic
+      - name: analysed_by
+        in: query
+        description: the ID of the actor who ran the query
+        schema:
+          type: string
+          format: UUIDv4
+      - name: customer_id
+        in: query
+        description: the ID of the customer this transaction is linked to
+        schema:
+          type: string
+          format: UUIDv4
+      - name: assigned_team_user_id
+        in: query
+        description: return transaction analyses that are assigned to the given team user ID(s). To get transaction analyses that are unassigned, include an empty string in your query. Multiple IDs can be provided as a comma-separated list.
+        schema:
+          type: array
+          items:
+            type: string
+            format: NullableUUIDv4
+      - name: process_status
+        in: query
+        description: return rows that are in any of the states specified in the array. Each element is one of (running, complete, error).
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - running
+            - complete
+            - error
+      - name: risk_rules
+        in: query
+        description: return transactions that has triggered at least one of the specified risk_rules. To get transactions that have not triggered any rules, include empty string in your query. e.g. "?risk_rules=,f7c36274-ba55-4f6b-8d46-d8cbe97d7c32"
+        schema:
+          type: array
+          items:
+            type: string
+            format: NullableUUIDv4
+      - name: type
+        in: query
+        description: get only deposit or withdrawal analyses
+        schema:
+          type: string
+          enum:
+          - deposit
+          - withdrawal
+      - name: user_supplied_base58
+        in: query
+        description: if true, returns only transactions created by users that have provided a base58 (for BTC only). Otherwise, return those with provided output_indices.
+        schema:
+          type: boolean
+      - name: asset
+        in: query
+        description: return only transaction that has been made on a particular asset or asset/blockchain combination
+        schema:
+          type: array
+          items:
+            type: string
+      - name: screening_source
+        in: query
+        description: Indicates whether the screening was done via the Synchronous endpoint, Asynchronous endpoint, as part of the Automatic Rescreening feature or as a fallback system rescreening in case of error
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - sync
+            - async
+            - system_rescreen
+            - automatic_rescreen
+            - continuous_monitoring
+      - name: sort
+        in: query
+        description: Sort by criterion
+        schema:
+          type: string
+          enum:
+          - created_at
+          - -created_at
+          - customer_reference
+          - -customer_reference
+          - type
+          - -type
+          - tx_hash
+          - -tx_hash
+          - address_hash
+          - -address_hash
+          - analysed_at
+          - -analysed_at
+          - tx_time
+          - -tx_time
+          - risk_score
+          - -risk_score
+          - value
+          - -value
+          - value_usd
+          - -value_usd
+          - user_supplied_base58
+          - -user_supplied_base58
+          - asset
+          - -asset
+          - workflow_status
+          - -workflow_status
+          - predictive
+          - -predictive
+          default: created_at
+      - name: page
+        in: query
+        description: pagination page number
+        schema:
+          type: integer
+          format: int32
+          minimum: 1
+          default: 1
+      - name: per_page
+        in: query
+        description: pagination per page number, has a maximum value of 500.
+        schema:
+          type: number
+          format: int32
+          minimum: 1
+          maximum: 500
+          default: 20
+      - name: subject_type
+        in: query
+        description: get only transaction or address analyses
+        schema:
+          type: string
+          enum:
+          - transaction
+          - address
+          default: transaction
+      - name: predictive
+        in: query
+        description: get only Predictive transactions. Predictive transactions were analyzed too close to the tip of the blockchain, so the full picture of associated addresses might be incomplete.
+        schema:
+          type: boolean
+      - name: limit
+        in: query
+        description: The maximum number of results that are counted. If more analyses than this number are present then this number is returned. This improves the performance of queries over large datasets
+        schema:
+          type: number
+          example: 10000
+      responses:
+        '200':
+          description: Successful transaction analysis response
+          content:
+            application/json:
+              schema:
+                type: object
+                title: PaginatedAnalysis
+                description: Paginated array of analyses response
+                properties:
+                  page:
+                    type: number
+                    example: 1
+                  per_page:
+                    type: number
+                    example: 5
+                  total_pages:
+                    type: number
+                    example: 5
+                  total_items:
+                    type: number
+                    example: 100
+                  items:
+                    type: array
+                    items:
+                      title: TransactionAnalysisGetAllResponse
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: UUIDv4
+                          example: b7535048-76f8-4f60-bdd3-9d659298f9e7
+                        type:
+                          $ref: '#/components/schemas/TransactionAnalysisType'
+                        subject:
+                          $ref: '#/components/schemas/AnalysisSubject'
+                        analysed_by:
+                          type: string
+                          format: UUIDv4
+                          example: b7535048-76f8-4f60-bdd3-9d659298f9e7
+                          description: UUIDv4 identifier of the actor who requested the analysis
+                        analysed_at:
+                          type: string
+                          format: date-time
+                          description: the timestamp of when this analysis was completed
+                        team_id:
+                          description: UUIDv4 identifier of the team the user belongs to
+                          type: string
+                          format: UUIDv4
+                          example: e333694b-c7c7-4a36-bf35-ed2615865242
+                        workflow_status:
+                          $ref: '#/components/schemas/WalletAnalysisResponse/properties/workflow_status'
+                        assigned_team_user_id:
+                          type: string
+                          format: UUIDv4
+                          description: id of the team user assigned to this analysis
+                          example: b7535048-76f8-4f60-bdd3-9d659298f9e7
+                        risk_score:
+                          description: The risk score calculated as an aggregation from all the rules. If null is returned, no risk rules have been triggered. If 0 is returned, risk rules were triggered and the calculated score was 0.
+                          type: number
+                          format: float
+                          example: 9.038007
+                          nullable: true
+                        asset_list:
+                          description: a new field that will be returned for Holistic Screenings only. This field contains the asset(s) involved in the transaction using the unique combination of transaction hash and output address.
+                          type: array
+                          items:
+                            type: string
+                            example:
+                            - USDC/ethereum
+                            - ETH/ethereum
+                        predictive:
+                          description: True if the transaction was analyzed too close to the tip of the blockchain, so the full picture of associated addresses might be incomplete.
+                          type: boolean
+                          example: false
+                        customer:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              format: UUIDv4
+                              description: the UUIDv4 of the customer this analysis is associated with
+                              example: b7535048-76f8-4f60-bdd3-9d659298f9e7
+                            reference:
+                              type: string
+                              description: the string reference that has been given to this customer
+                              example: foobar
+                        blockchain_info:
+                          description: The relevant blockchain data related to the subject's hash
+                          type: object
+                          properties:
+                            address:
+                              type: object
+                              properties:
+                                has_sent:
+                                  type: boolean
+                                  example: true
+                                has_received:
+                                  type: boolean
+                                  example: true
+                            transaction:
+                              type: object
+                              properties:
+                                time:
+                                  type: string
+                                  example: '2019-05-26T04:36:05.000Z'
+                                inputs:
+                                  type: array
+                                  description: 'details of each of the transaction''s inputs. note: inputs is not returned for holistic screenings'
+                                  items:
+                                    $ref: '#/components/schemas/InputOutput'
+                                outputs:
+                                  type: array
+                                  description: 'details of each of the transaction''s outputs. note: outputs is not returned for holistic screenings'
+                                  items:
+                                    $ref: '#/components/schemas/InputOutput'
+                                value:
+                                  type: object
+                                  description: Object representing the value of this transaction expresses in different currency units
+                                  properties:
+                                    native:
+                                      oneOf:
+                                      - type: string
+                                      - type: number
+                                      description: Transaction amount expresses in the native currency of the blockchain it has occurred in the most precise unit possible, e.g. satoshis for bitcoin. This value will not be present for holistic screenings
+                                      example: 38383838
+                                    native_major:
+                                      oneOf:
+                                      - type: string
+                                      - type: number
+                                      description: Transaction amount expressed in the native currency of the blockchain it has occurred rounded to its major decimal format. This value will not be present for holistic screenings
+                                      example: 38383838
+                                    usd:
+                                      type: number
+                                      description: Transaction amount expressed in US dollars of the blockchain it has occurred in the most precise unit possible, e.g. satoshis for bitcoin
+                                      example: 38383838
+                            value:
+                              oneOf:
+                              - type: string
+                              - type: number
+                              description: This value will not be present for holistic screenings
+                              example: 38383838
+                        created_at:
+                          description: ISO date time with time zone (UTC) of when the analysis was first analysed
+                          type: string
+                          format: date-time
+                          example: '2015-05-13T10:36:21.000Z'
+                        updated_at:
+                          description: ISO date time with time zone (UTC) of when the wallet analysis was last updated
+                          type: string
+                          format: date-time
+                          example: '2015-05-13T10:36:21.000Z'
+                        process_status:
+                          description: the process status ('running','complete','error')
+                          type: string
+                          example: running
+                          enum:
+                          - running
+                          - complete
+                          - error
+                        process_status_id:
+                          type: integer
+                          description: 'The screening process status.
+
+                            - A 1 number means the process status is running.
+
+                            - A 2 number means the process status is completed.
+
+                            - A 3 indicates the process status has an error.
+
+                            '
+                          enum:
+                          - 1
+                          - 2
+                          - 3
+                          example: 2
+                        error:
+                          type: object
+                          description: Property containing information about a failed screening, null unless process_status = 'error'
+                          nullable: true
+                          properties:
+                            message:
+                              type: string
+                              description: error message
+                              example: something went wrong
+                        comments:
+                          type: array
+                          description: Notes left on the Navigator
+                          items:
+                            type: object
+                            properties:
+                              body:
+                                type: string
+                                nullable: true
+                                description: the comment left on the analysis
+                                example: here's a comment
+                        evaluation_detail:
+                          type: array
+                          description: details of each risk rule evaluation
+                          items:
+                            $ref: '#/components/schemas/EvaluationDetailForGetAll'
+                        contributions:
+                          description: array of contributions for the analysis subject Will not be returned if process_status is running or error.
+                          type: array
+                          items:
+                            $ref: '#/components/schemas/Contribution'
+                        changes:
+                          type: object
+                          description: Changes compared to previous screening of analysis
+                          nullable: true
+                          properties:
+                            risk_score_change:
+                              type: number
+                              format: float
+                              description: 'Change in risk score compared to previous screening of analysis.
+
+                                - A positive number means the risk score has increased compared to the previous screening.
+
+                                - A negative number means the risk score has decreased compared to the previous screening.
+
+                                - A 0 indicates no change in risk score compared to the previous screening.
+
+                                '
+                              example: 0.1
+                        identifier:
+                          type: string
+                          description: Internal field, no meaning outside of Elliptic
+                          example: A:BTC;ST:transaction;AT:source_of_funds;H:476y6ab2361b2bd918ef07909f51fe25a092dfb410b4346c7786d8f434bbfeee;OT:address;O:6JP6cGDpTiEm5nSdfbjwJkne4qBZX2XXtY;C:reanaLe;T:148ff854-7a28-460e-101b-b79a95ff7564
+                        record_scr:
+                          type: string
+                          description: Internal field, no meaning outside of Elliptic
+                          example: SCR_1234567891011_aba1234c
+                        screening_source:
+                          description: Indicates whether the screening was done via the Synchronous endpoint, Asynchronous endpoint, as part of the Automatic Rescreening feature or as a fallback system rescreening in case of error
+                          type: string
+                          example: sync
+                          enum:
+                          - sync
+                          - async
+                          - system_rescreen
+                          - automatic_rescreen
+                          - continuous_monitoring
+                      required:
+                      - id
+                      - type
+                      - subject
+                      - analysed_by
+                      - created_at
+                      - updated_at
+                      - process_status
+                      - analysed_at
+                      - customer
+                      - evaluation_detail
+                      - blockchain_info
+                      - workflow_status
+                      additionalProperties: false
+                required:
+                - page
+                - per_page
+                - total_pages
+                - total_items
+                - items
+                additionalProperties: false
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+  /analyses/{mc_analysis_id}:
+    get:
+      tags:
+      - Transaction Analyses
+      summary: Get an analysis by ID
+      operationId: getAnalysisById
+      description: Given an ID, return a single analysis
+      parameters:
+      - name: mc_analysis_id
+        description: id of the analysis to retrieve
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: includeScreenings
+        description: toggle whether to include the screening history
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: previousScreenings
+        description: Number of previous screenings to include in the response
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - default
+          - '20'
+          - '50'
+          - '100'
+          - all
+      responses:
+        '200':
+          $ref: '#/components/responses/AnalysisResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+  /analyses/{mc_analysis_id}/screenings/{screening_id}:
+    get:
+      tags:
+      - Transaction Analyses
+      summary: Get a screening of the analysis by ID
+      operationId: getAnalysisByScreeningId
+      description: Given a screening ID, return the screening of the analysis
+      parameters:
+      - name: mc_analysis_id
+        description: id of the analysis to retrieve
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: screening_id
+        description: id of the screening to retrieve
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/AnalysisResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+components:
+  schemas:
+    WalletAnalysisResponse:
+      properties:
+        workflow_status:
+          title: WorkflowStatus
+          description: The status of the analysis. "archived" is deprecated and you should use "closed" instead.
+          type: string
+          enum:
+          - active
+          - archived
+          - escalated
+          - closed
+          example: active
+        analysed_by:
+          description: The actor who executed the analysis
+          type: object
+          nullable: true
+          properties:
+            id:
+              type: string
+              format: UUIDv4
+              description: Team User's UUIDv4 (unique for team & user)
+              example: 17535048-76f8-4f60-bdd3-9d659298f9e5
+            email:
+              type: string
+              description: the email address of the User
+              example: foo_bar@elliptic.co
+            first_name:
+              type: string
+              description: the first name of the User
+              example: Foo
+            last_name:
+              type: string
+              description: the last name of the User
+              example: Bar
+            type:
+              type: string
+              description: Type of actor (e.g. user, system, api_key). Only present for analysed_by.
+              example: api_key
+        workflow_status_id:
+          title: WorkflowStatusId
+          description: 'A number representation of the status of an analysis. "archived" is deprecated and you should use "closed" instead. - 1 = active - 2 = archived (deprecated) - 3 = escalated - 4 = closed
+
+            '
+          type: integer
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          example: 1
+        detected_behaviors:
+          items:
+            title: DetectedBehavior
+            type: object
+            properties:
+              behavior_type:
+                type: string
+                description: Type of the Behavioral pattern detected of potential suspicious activity
+                example: Peeling Chain
+              length:
+                type: number
+                description: Length associated with the Behavior detected
+                example: 7
+              usd_value:
+                type: number
+                format: float
+                description: aggregated value (sum) associated with the behavior detected
+                example: 10500
+            required:
+            - behavior_type
+            - length
+            - usd_value
+    AnalysisSubject:
+      title: AnalysisSubject
+      type: object
+      properties:
+        asset:
+          type: string
+          description: the asset involved in the event.
+          example: holistic
+        blockchain:
+          type: string
+          description: The blockchain the asset/address belongs to (optional)
+          example: holistic
+        type:
+          type: string
+          description: the type of subject. Currently, only 'transaction' is supported
+          example: transaction
+        hash:
+          type: string
+          description: the transaction hash
+          example: '0x4672bad527107471cb5067a887f4656d585a8a31'
+        output_type:
+          type: string
+          enum:
+          - address
+          - indices
+          description: which output type you are using to specify the output(s) you wish to analyse (BTC/LTC/BCH only)
+        output_address:
+          type: string
+          description: the address hash when using output_type address
+          example: 1MdYC22Gmjp2ejVPCxyYjFyWbQCYTGhGq8
+        output_indices:
+          type: array
+          items:
+            type: number
+          description: the indices of outputs to be analysed when using output_type indices
+          example:
+          - 1
+        log_index:
+          type: number
+          description: the log index of an ERC20 transacation
+          example: 10
+      required:
+      - asset
+      - type
+      - hash
+    BadRequestError:
+      type: object
+      properties:
+        name:
+          type: string
+          example: BadRequestError
+        message:
+          type: string
+          example: Invalid id parameter
+    ForbiddenError:
+      type: object
+      properties:
+        name:
+          type: string
+          example: ForbiddenError
+        message:
+          type: string
+          example: You do not have enough privilege to access this path.
+    NotFoundError:
+      type: object
+      properties:
+        name:
+          type: string
+          example: NotFoundError
+        message:
+          type: string
+          example: Entity not found.
+    InputOutput:
+      title: InputOutput
+      type: object
+      description: An input or output (IO) of a transaction
+      properties:
+        hash:
+          type: string
+          example: '0x056fd409e1d7a124bd7017459dfea2f387b6d5cd'
+          description: blockchain identifier of the IO
+        amount:
+          type: object
+          properties:
+            native:
+              type: number
+              description: Transaction amount expresses in the native currency of the blockchain it has occurred in the most precise unit possible, e.g. satoshis for bitcoin
+              example: 38383838
+            native_major:
+              type: number
+              description: Transaction amount expressed in the native currency of the blockchain it has occurred rounded to its major decimal format
+              example: 38383838
+            usd:
+              type: number
+              description: Transaction amount expressed in US dollars of the blockchain it has occurred in the most precise unit possible, e.g. satoshis for bitcoin
+              example: 38383838
+        index:
+          type: number
+          example: 0
+          description: The index of this IO on the transaction
+        labels:
+          type: array
+          description: Label's given to the IO as per Elliptic Assertions
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                example: A Dark Market
+              category:
+                type: string
+                example: Dark Market
+              is_primary_entity:
+                type: boolean
+                description: Is this the primary label of the entity
+    HolisticAnalysisRequest:
+      type: object
+      title: Holistic Analysis Request
+      properties:
+        subject:
+          title: AnalysisSubject
+          type: object
+          properties:
+            asset:
+              type: string
+              description: For holistic screening this should be set to holistic
+              enum:
+              - holistic
+              example: holistic
+            blockchain:
+              type: string
+              description: For holistic screening this should be set to holistic
+              enum:
+              - holistic
+              example: holistic
+            type:
+              type: string
+              description: the type of subject
+              enum:
+              - transaction
+              example: transaction
+            hash:
+              type: string
+              description: the transaction hash
+              example: 24220e9cb717276300e17863c28f44787773c1ce156214594f36dc2a7a59f42d
+            output_type:
+              type: string
+              enum:
+              - address
+              example: address
+              description: which output type you are using to specify the output(s) you wish to analyse
+            output_address:
+              type: string
+              description: the address hash when using output_type address
+              example: 35dRfg3bWZXdGjW1vKLMu28AmRSWvSid9o
+          required:
+          - asset
+          - blockchain
+          - type
+          - hash
+          - output_type
+          - output_address
+        type:
+          $ref: '#/components/schemas/TransactionAnalysisType'
+        customer_reference:
+          type: string
+          description: a reference for the customer. Will create a new customer if one with a matching reference does not exist
+      required:
+      - subject
+      - type
+      - customer_reference
+    TransactionAnalysisRequestBatch:
+      description: the analyses to request
+      type: array
+      minItems: 1
+      maxItems: 100
+      items:
+        anyOf:
+        - $ref: '#/components/schemas/HolisticAnalysisRequest'
+        - $ref: '#/components/schemas/UTXOBasedAnalysisRequest'
+    TransactionAnalysisBatchResponse:
+      title: TransactionAnalysisBatchResponse
+      type: array
+      description: details of each submitted analysis
+      items:
+        type: object
+        properties:
+          id:
+            type: string
+            format: UUIDv4
+            example: b7535048-76f8-4f60-bdd3-9d659298f9e7
+          type:
+            $ref: '#/components/schemas/TransactionAnalysisType'
+          subject:
+            allOf:
+            - $ref: '#/components/schemas/AnalysisSubject'
+            - type: object
+              properties:
+                id:
+                  type: string
+                  format: UUIDv4
+                  description: the UUID of the subject
+                  example: b7535048-76f8-4f60-bdd3-9d659298f9e7
+          analysed_by:
+            type: object
+            description: the actor who requested the analysis
+            properties:
+              id:
+                type: string
+                description: the actor id
+                format: UUIDv4
+                example: b7535048-76f8-4f60-bdd3-9d659298f9e7
+          analysed_at:
+            type: string
+            format: date-time
+            description: the timestamp of when this analysis was completed
+          customer:
+            type: object
+            properties:
+              id:
+                type: string
+                format: UUIDv4
+                description: the UUIDv4 of the customer this analysis is associated with
+                example: b7535048-76f8-4f60-bdd3-9d659298f9e7
+              reference:
+                type: string
+                description: the string reference that has been given to this customer
+                example: foobar
+          created_at:
+            description: ISO date time with time zone (UTC) of when the analysis was first analysed
+            type: string
+            format: date-time
+            example: '2015-05-13T10:36:21.000Z'
+          updated_at:
+            description: ISO date time with time zone (UTC) of when the wallet analysis was last updated
+            type: string
+            format: date-time
+            example: '2015-05-13T10:36:21.000Z'
+          process_status:
+            description: the process status ('running','complete','error')
+            type: string
+            example: running
+            enum:
+            - running
+            - complete
+            - error
+          process_status_id:
+            type: integer
+            description: 'The screening process status.
+
+              - A 1 number means the process status is running.
+
+              - A 2 number means the process status is completed.
+
+              - A 3 indicates the process status has an error.
+
+              '
+            enum:
+            - 1
+            - 2
+            - 3
+            example: 2
+          error:
+            type: object
+            description: Property containing information about a failed screening, null unless process_status = 'error'
+            nullable: true
+            properties:
+              message:
+                type: string
+                description: error message
+                example: something went wrong
+          workflow_status:
+            $ref: '#/components/schemas/WalletAnalysisResponse/properties/workflow_status'
+        required:
+        - id
+        - type
+        - subject
+        - analysed_by
+        - analysed_at
+        - customer
+        additionalProperties: false
+    UnauthorizedError:
+      type: string
+      example: Unauthorized
+    UTXOBasedAnalysisRequest:
+      type: object
+      title: BCH/ZEC/ZEN Analysis Request
+      properties:
+        subject:
+          title: AnalysisSubject
+          type: object
+          properties:
+            asset:
+              type: string
+              description: the asset (either BCH, ZEN or ZEC) involved in the event
+              enum:
+              - BCH
+              - ZEN
+              - ZEC
+              example: BCH
+            blockchain:
+              type: string
+              description: the blockchain (either bitcoin_cash, horizen or zcash) of the asset submitted
+              enum:
+              - bitcoin_cash
+              - horizen
+              - zcash
+              example: bitcoin_cash
+            type:
+              type: string
+              description: the type of subject
+              enum:
+              - transaction
+              example: transaction
+            hash:
+              type: string
+              description: the transaction hash
+              example: 16e37268c8dba6eded4dce68060fe5783d6397455410fb9959fecc4644d98340
+            output_type:
+              type: string
+              enum:
+              - address
+              example: address
+              description: which output type you are using to specify the output(s) you wish to analyze
+            output_address:
+              type: string
+              description: the address hash when using output_type address. In order to analyze a UTXO transaction, you must specify the output(s) of that transaction which are relevant to your analysis. For example, if you are analysing a deposit into your service then you might want to specify the output address that belongs to your service. Or for a withdrawal, it might be the output address that your customer wants to send funds to. You can either specify the address or the zero-indexed output indices. When specifying the output(s) by indices, if the indices given reference multiple distinct addresses, the API will respond with an error.
+              example: 1cftamBhjtCmCazbqjo6st1mgux1EbTVc
+          required:
+          - asset
+          - blockchain
+          - type
+          - hash
+          - output_type
+          - output_address
+        type:
+          $ref: '#/components/schemas/TransactionAnalysisType'
+        customer_reference:
+          type: string
+          description: a reference for the customer. Will create a new customer if one with a matching reference does not exist
+      required:
+      - subject
+      - type
+      - customer_reference
+    NotInBlockchain:
+      type: object
+      properties:
+        name:
+          type: string
+          example: NotInBlockchain
+        message:
+          type: string
+          example: The submitted ${type} with hash ${hash} has not yet been processed into the Elliptic tool or does not exist on the blockchain.
+    Contribution:
+      title: Contribution
+      type: object
+      description: A single contribution entry associated with an entity (holistic — only USD values included)
+      properties:
+        entities:
+          type: array
+          description: Entities (labels) associated with this contribution
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Name of the entity
+                example: BTC-e
+              category:
+                type: string
+                description: Category of the entity
+                example: Exchange
+              category_id:
+                type: string
+                format: uuid
+                description: UUID of category
+                example: 0a52f7a2-5da8-4256-b230-df0da6f8449b
+              entity_id:
+                type: string
+                format: uuid
+                description: UUID of entity
+                example: 09d2c6ba-a32e-4207-bf72-233b38d644c4
+              actor_id:
+                type: integer
+                description: Internal actor ID or numeric identifier that related to the identified entity
+                example: 54
+              is_primary_entity:
+                type: boolean
+                description: Whether this is the primary entity in the group (one per list)
+                example: true
+              is_vasp:
+                type: boolean
+                nullable: true
+                description: True if VASP (Virtual Asset Service Provider), false if not, null if unknown
+                example: true
+        contribution_percentage:
+          type: number
+          format: float
+          description: Percentage of value contributed by this entity
+          example: 62.98592267836703
+        contribution_value:
+          type: object
+          description: Value contributed by this entry
+          properties:
+            usd:
+              type: number
+              format: float
+              example: 395.47601131293095
+        counterparty_percentage:
+          type: number
+          format: float
+          description: The percentage of the total contribution that is attributed to labelled entities that are one hop away from the screened_address.
+          example: 0
+        counterparty_value:
+          type: object
+          description: Value from counterparties (1-hop entities)
+          properties:
+            usd:
+              type: number
+              description: The contribution between the screened_address and labelled entities that are one hop away, expressed in US dollars.
+              format: float
+              example: 0
+        indirect_percentage:
+          type: number
+          format: float
+          description: The percentage of the total contribution that is attributed to labelled entities that are more than one hop away from the screened_address.
+          example: 62.98592267836703
+        indirect_value:
+          type: object
+          description: USD value from indirect flow
+          properties:
+            usd:
+              type: number
+              description: The contribution between the screened_address and labelled entities that are more than one hop away, expressed in US dollars.
+              format: float
+              example: 395.47601131293095
+        is_screened_address:
+          type: boolean
+          description: A boolean displaying whether the input address of a deposit or the output address of a withdrawal that is screened belongs to a labelled entity for transaction monitoring or the address that is screened belongs to a labelled entity for wallet screening
+          example: false
+        min_number_of_hops:
+          type: integer
+          format: int64
+          description: Minimum number of hops between the subject and the labelled entity
+          example: 2
+      required:
+      - entities
+      - contribution_percentage
+      - contribution_value
+    EvaluationDetailForGetAll:
+      title: EvaluationDetailForGetAll
+      type: object
+      description: details of a single risk rule evaluation for paginated transactions analysis
+      properties:
+        rule_id:
+          description: the UUIDv4 of this risk rule
+          type: string
+          format: UUIDv4
+          example: b7535048-76f8-4f60-bdd3-9d659298f9e7
+        rule_name:
+          description: the name of the rule
+          type: string
+          example: Illict
+        risk_score:
+          description: The risk score calculated for this rule evaluation as part of the analysis
+          type: number
+          format: float
+          example: 9.038007
+        mc_analysis_id:
+          description: id of the analysis
+          type: string
+          format: UUIDv4
+          example: b7535048-76f8-4f60-bdd3-9d659298f9e7
+      required:
+      - rule_id
+      - risk_score
+      additionalProperties: false
+    TransactionAnalysisSingleResponse:
+      title: TransactionAnalysisSingleResponse
+      type: object
+      description: 'Response for Transaction Analysis. Represents the full result of a transaction screening, including metadata, risk scores, contributing entities, and evaluation details.
+
+        '
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier of the transaction analysis
+          example: 80696082-4efe-4e99-8730-623cbf29b6d1
+        type:
+          $ref: '#/components/schemas/TransactionAnalysisType'
+        subject:
+          allOf:
+          - $ref: '#/components/schemas/AnalysisSubject'
+          - type: object
+        customer:
+          type: object
+          description: The customer that submitted the request
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: The UUIDv4 of the customer this analysis is associated with
+              example: b6fcf5d7-e1d1-46d9-9755-0d477cb575ed
+            reference:
+              type: string
+              description: The string reference that has been given to this customer. Can be empty
+              example: sa-rerouting-BTC
+        analysed_by:
+          $ref: '#/components/schemas/WalletAnalysisResponse/properties/analysed_by'
+          description: The actor who requested the analysis
+        created_at:
+          description: ISO date time with time zone (UTC) of when the analysis was first analysed
+          type: string
+          format: date-time
+          example: '2025-07-23T13:43:51.682Z'
+        updated_at:
+          description: ISO date time with time zone (UTC) of when the wallet analysis was last updated
+          type: string
+          format: date-time
+          example: '2025-07-23T13:43:51.682Z'
+        analysed_at:
+          description: ISO date time with time zone (UTC) of when this analysis was completed
+          type: string
+          format: date-time
+          example: '2025-07-23T13:43:52.096Z'
+        blockchain_info:
+          type: object
+          description: The relevant blockchain data related to the subject's hash
+          properties:
+            address:
+              type: object
+              properties:
+                has_sent:
+                  type: boolean
+                  example: true
+                has_received:
+                  type: boolean
+                  example: true
+            transaction:
+              type: object
+              properties:
+                time:
+                  type: string
+                  example: '2024-08-28T14:39:09Z'
+                value:
+                  type: object
+                  description: 'Object representing the value of this transaction expressed in different currency units
+
+                    '
+                  properties:
+                    usd:
+                      type: number
+                      example: 300179.086101
+        risk_score:
+          type: number
+          format: float
+          x-nullable: true
+          description: The risk score calculated as an aggregation from all the rules. If null is returned, no risk rules have been triggered. If 0 is returned, risk rules were triggered and the calculated score was 0.
+          example: 10
+        evaluation_detail:
+          type: array
+          description: Details of each risk rule evaluation
+          items:
+            $ref: '#/components/schemas/EvaluationDetail'
+        contributions:
+          description: Array of contributing entities that led to the match
+          type: array
+          items:
+            $ref: '#/components/schemas/Contribution'
+        detected_behaviors:
+          description: Array of detected behaviors for the analysis subject
+          items:
+            $ref: '#/components/schemas/WalletAnalysisResponse/properties/detected_behaviors/items'
+        changes:
+          type: object
+          description: Changes compared to previous screening of analysis
+          x-nullable: true
+          properties:
+            risk_score_change:
+              type: number
+              format: float
+              x-nullable: true
+              description: 'Change in risk score compared to previous screening of analysis. - A positive number means the risk score has increased compared to the previous screening. - A negative number means the risk score has decreased compared to the previous screening. - A 0 indicates no change in risk score compared to the previous screening.
+
+                '
+              example: 0.1
+        workflow_status:
+          $ref: '#/components/schemas/WalletAnalysisResponse/properties/workflow_status'
+        workflow_status_id:
+          allOf:
+          - $ref: '#/components/schemas/WalletAnalysisResponse/properties/workflow_status_id'
+          - nullable: true
+        assigned_team_user:
+          $ref: '#/components/schemas/WalletAnalysisResponse/properties/analysed_by'
+          description: The team user assigned to this analysis
+        team_id:
+          description: UUIDv4 identifier of the team the user belongs to
+          type: string
+          format: UUIDv4
+          example: 148ff854-7a28-460e-808a-b79a95ff7564
+        process_status:
+          type: string
+          enum:
+          - running
+          - complete
+          - error
+          description: The process status ('running','complete','error')
+          example: complete
+        process_status_id:
+          type: integer
+          description: 'The screening process status. - A 1 number means the process status is running. - A 2 number means the process status is completed. - A 3 indicates the process status has an error.
+
+            '
+          enum:
+          - 1
+          - 2
+          - 3
+          example: 2
+          x-nullable: true
+        screening_source:
+          type: string
+          description: 'Indicates whether the screening was done via the Synchronous endpoint, Asynchronous endpoint, as part of the Automatic Rescreening feature or as a fallback system rescreening in case of error
+
+            '
+          enum:
+          - sync
+          - async
+          - system_rescreen
+          - automatic_rescreen
+          - continuous_monitoring
+          example: sync
+        error:
+          type: object
+          description: Property containing information about a failed screening, null unless process_status = 'error'
+          x-nullable: true
+          properties:
+            message:
+              type: string
+              description: error message
+              example: something went wrong
+              x-nullable: true
+        asset_list:
+          description: 'A new field that will be returned for Holistic Screenings only. This field contains the asset(s) involved in the transaction using the unique combination of transaction hash and output address.
+
+            '
+          type: array
+          items:
+            type: string
+            example: USDT/tron
+        predictive:
+          description: 'True if the transaction was analyzed too close to the tip of the blockchain, so the full picture of associated addresses might be incomplete.
+
+            '
+          type: boolean
+          example: false
+        comments:
+          type: array
+          description: Notes left on the Navigator
+          items:
+            type: object
+            properties:
+              body:
+                type: string
+                x-nullable: true
+                description: The comment left on the analysis
+                example: here's a comment
+      required:
+      - id
+      - type
+      - subject
+      - analysed_by
+      - created_at
+      - updated_at
+      - analysed_at
+      - customer
+      - evaluation_detail
+      - blockchain_info
+      - workflow_status
+      - process_status
+      - contributions
+      - detected_behaviors
+      - screening_source
+      - team_id
+      additionalProperties: false
+    MatchedElement:
+      title: MatchedElement
+      type: object
+      description: 'Entity or group of entities identified as contributing to the risk rule. Note: In holistic responses, values are expressed in USD only.
+
+        '
+      properties:
+        category:
+          type: string
+          description: category of the risk rule's subject that has been triggered by one or more elements.  The name can change so advisable to use identifier for matching purposes
+          example: Dark Market
+        category_id:
+          type: string
+          format: uuid
+          description: UUID identifying the entity's category
+          example: 0a52f7a2-5da8-4256-b230-df0da6f8449b
+        contribution_percentage:
+          type: number
+          format: float
+          description: Aggregated percentage of value attributed to this matched category
+        contribution_value:
+          type: object
+          description: Aggregated USD value attributed to this matched entity category
+          properties:
+            usd:
+              type: number
+              format: float
+              example: 383.83838
+        counterparty_percentage:
+          type: number
+          format: float
+          description: Percentage of contribution from one-hop counterparties
+        counterparty_value:
+          type: object
+          description: Value from one-hop counterparties (USD only)
+          properties:
+            usd:
+              type: number
+              format: float
+              example: 383.83838
+        indirect_percentage:
+          type: number
+          format: float
+          description: Percentage of contribution from indirect (multi-hop) relationships
+        indirect_value:
+          type: object
+          description: Value from indirect (multi-hop) sources (USD only)
+          properties:
+            usd:
+              type: number
+              format: float
+              example: 383.83838
+        contributions:
+          type: array
+          description: Array of contributing entities that led to the match
+          items:
+            type: object
+            required:
+            - entity
+            - entity_id
+            properties:
+              contribution_percentage:
+                type: number
+                format: float
+                description: Percentage of this contribution
+              counterparty_percentage:
+                type: number
+                format: float
+                description: One-hop contribution percentage
+              indirect_percentage:
+                type: number
+                format: float
+                description: Multi-hop contribution percentage
+              entity:
+                type: string
+                description: Name of the contributing entity
+                example: AlphaBay
+              entity_id:
+                type: string
+                format: uuid
+                description: ID of the entity; use with entity_details to look up extended entity data
+                example: 0a52f7a2-5da8-4256-b230-df0da6f8449b
+              risk_triggers:
+                type: object
+                description: Metadata indicating why the entity was considered risky
+                properties:
+                  name:
+                    type: string
+                    description: Trigger entity name
+                    example: Binance
+                  category:
+                    type: string
+                    description: Trigger category
+                    example: Dark Markets
+                  is_sanctioned:
+                    type: boolean
+                    description: Indicates if a sanction-based risk was involved
+                    example: true
+                  country:
+                    type: array
+                    description: List of country codes associated with the risk trigger
+                    items:
+                      type: string
+                      example: MM
+              contribution_value:
+                type: object
+                description: Contribution amount from this entity (USD only)
+                properties:
+                  usd:
+                    type: number
+                    format: float
+                    example: 383.83838
+              counterparty_value:
+                type: object
+                description: Counterparty contribution value (USD only)
+                properties:
+                  usd:
+                    type: number
+                    format: float
+                    example: 383.83838
+              indirect_value:
+                type: object
+                description: Indirect (multi-hop) value (USD only)
+                properties:
+                  usd:
+                    type: number
+                    format: float
+                    example: 383.83838
+              is_screened_address:
+                type: boolean
+                description: Flag indicating whether address was directly screened
+                example: false
+              min_number_of_hops:
+                type: integer
+                format: int64
+                description: Shortest path in hops to the entity
+                example: 1
+      required:
+      - category
+      - contribution_percentage
+      - contribution_value
+      - contributions
+    EvaluationDetail:
+      title: EvaluationDetail
+      type: object
+      description: 'Details of a single risk rule evaluation. Note: if matched_behaviors is present, matched_elements will be empty, and vice versa— rules cannot match both entities and behaviors simultaneously.
+
+        '
+      properties:
+        rule_id:
+          type: string
+          format: uuid
+          description: The Id of the rule that triggered
+          example: b7535048-76f8-4f60-bdd3-9d659298f9e7
+        rule_name:
+          type: string
+          description: The name of the triggered rule
+          example: Illict
+        risk_score:
+          type: number
+          format: float
+          description: The risk score calculated for this rule evaluation
+          example: 9.038007
+        matched_elements:
+          type: array
+          description: Array of entities matched by this rule
+          items:
+            $ref: '#/components/schemas/MatchedElement'
+        matched_behaviors:
+          type: array
+          description: Array of behaviors matched by this rule (mutually exclusive with matched_elements)
+          items:
+            title: MatchedBehavior
+            type: object
+            properties:
+              behavior_type:
+                type: string
+                description: Type of the Behavioral pattern detected of potential suspicious activity
+                example: Peeling Chain
+              length:
+                type: number
+                description: Length associated with the Behavior detected
+                example: 7
+              usd_value:
+                type: number
+                format: float
+                description: aggregated value (sum) associated with the behavior detected
+                example: 10500
+            required:
+            - behavior_type
+            - length
+            - usd_value
+        rule_history_id:
+          type: string
+          format: uuid
+          description: The unique identifier that links all versions of a risk rule
+          example: b7535048-76f8-4f60-bdd3-9d659298f9e7
+        mc_analysis_id:
+          type: string
+          format: uuid
+          description: Id of the analysis performed
+          example: b7535048-76f8-4f60-bdd3-9d659298f9e7
+        rule_type:
+          type: string
+          description: Type of the rule evaluated
+          enum:
+          - exposure
+          - behavior
+          example: exposure
+      required:
+      - rule_id
+      - risk_score
+      additionalProperties: false
+    Error:
+      type: object
+      properties:
+        name:
+          type: string
+          example: GenericErrorName
+        message:
+          type: string
+          example: Something bad happened.
+    TransactionAnalysisType:
+      title: TransactionAnalysisType
+      description: The type of analysis. The source_of_funds type is used to get details of the entities that have contributed funds to the transaction's source address, and calculate a risk score based on this exposure. This is referred to as "Deposit" in Navigator. The destination_of_funds type is used to get details of the entities that have received funds from the transaction's destination address, and calculate a risk score based on this exposure. This is referred to as "Withdrawal" in Navigator.
+      type: string
+      enum:
+      - source_of_funds
+      - destination_of_funds
+      example: source_of_funds
+    TransactionAnalysisRequestSingle:
+      oneOf:
+      - $ref: '#/components/schemas/HolisticAnalysisRequest'
+      - $ref: '#/components/schemas/UTXOBasedAnalysisRequest'
+  responses:
+    TooManyRequestsError:
+      description: Too Many Requests — Rate limit exceeded
+      content:
+        application/json:
+          schema:
+            type: object
+            description: Returned when a client exceeds the allowed rate limit (HTTP 429)
+            properties:
+              name:
+                type: string
+                example: TooManyRequestsError
+              message:
+                type: string
+                example: Too many requests – please try again later
+    '401':
+      description: Not authenticated
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UnauthorizedError'
+    400Post:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                example: BadRequestError
+              message:
+                type: string
+                example: subject.asset and subject.blockchain combination not recognised
+    '403':
+      description: Not authorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ForbiddenError'
+    '500':
+      description: Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotInBlockchain:
+      description: Requested subject not found on the blockchain
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/NotInBlockchain'
+    AnalysisResponse:
+      description: Successful analysis response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TransactionAnalysisSingleResponse'
+    '404':
+      description: Resource item not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/NotFoundError'
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BadRequestError'
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.elliptic.co/authorize
+          tokenUrl: https://login.elliptic.co/oauth/token
+          scopes:
+            openid: ''
+            profile: ''
+    apiKey:
+      description: API Key
+      type: apiKey
+      in: header
+      name: x-access-key
+    signature:
+      description: (Request Time, HTTP Method, Lowercase Path, Request Payload) signed with API Secret
+      type: apiKey
+      in: header
+      name: x-access-sign
+    timestamp:
+      type: apiKey
+      in: header
+      name: x-access-timestamp
+x-readme:
+  oauth-options:
+    usePkce: true
+x-tagGroups:
+- name: Navigator
+  tags:
+  - Transaction Analyses
+- name: Lens
+  tags:
+  - Wallet Analyses
+- name: Workflow Management
+  tags:
+  - Customers
+  - Transaction Workflow
+- name: Account Management
+  tags:
+  - Users
+- name: Asset Information
+  tags:
+  - Assets table

@@ -1,0 +1,229 @@
+openapi: 3.1.0
+info:
+  version: 2.0.0
+  title: AML API OAuth Assets Users API
+  x-explorer-description: '# Welcome to the Elliptic API Explorer
+
+
+    This area allows you to experiment with API requests in your browser. Browse to a request of interest and `Try it out`. If you are looking for the full documentation, head over to [the docs section](/developers/docs)
+
+
+    ## Authentication
+
+
+    Authentication in this explorer is accomplished using a JWT bearer token. This will allow your logged in user to make requests to our API if permitted. API authentication does not use JWTs, please see the [auth cookbooks](https://app.elliptic.co/#section/Cookbooks/Authentication) in the documentation for instructions on how to authenticate with our API programatically.
+
+
+    ## Environment
+
+
+    **Any requests made here will run against the environment you are logged in to. We advise using your sandbox environment so as not to pollute your production dataset**
+
+    '
+  description: "# Introduction\n**Welcome to the Elliptic API Documentation**\n\nIn its simplest form, the Elliptic API allows you to [submit batches of transactions programmatically](#operation/analysisBatch), without human intervention. By connecting directly from your internal systems, you control what is submitted for analysis and when. Your compliance team can then log into the Elliptic web interface and analyse the results of the requested transaction screenings.\n\nBeyond batch-submitting transactions, the Elliptic API can also be used to obtain immediate responses to transaction or address analysis requests through our [synchronous endpoint](#operation/analysisSync). This option returns the result of the analysis in the same request in case you want to use the information for immediate reference. This is only recommended if you have a low volume of transactions (due to API rate limiting) and you need access to the results immediately for compliance workflow reasons. If you have high volumes or do not need to make time critical responses, use the [batch endpoint](#operation/analysisBatch).\n\nThe API can also be used to interrogate your analyzed customers, transactions, addresses and risk rules, pulling information at scale, with the filters of your choice. For example, if you want to import all the analyzed transactions with the respective dollar amount, risk score, CustomerID, etc into your Transaction Monitoring System you can do so by using the GET endpoints. You can find more information about this in the [get all analysis results section](#operation/getAllAnalyses).\n\nAdditionally, for more advanced use-cases, the Elliptic API can also be used to carry out workflows programmatically (i.e. set transactions notes etc.). This is particularly helpful if you are using Elliptic through your own bespoke built Transaction Monitoring System, rather than the Elliptic AML web interface.\n\n# Experimenting with the API\nIf you'd like to make some requests with the API in your browser, head over to the [API explorer](/developers/explorer)\n\n## Getting Started\n1. First, request your API keys through your Customer Success Manager or via [customers@elliptic.co](mailto:customers@elliptic.co). For privacy reasons, you will be asked for a keybase username or PGP Public Key;\n2. [Authenticate with the API](#section/Authentication), using the credentials provided in step 1 as this will allow you to pass our API’s user verification;\n3. [Submit your first test request](#operation/analysisSync). The submitted transactions will appear immediately in the Elliptic AML web interface.\n# Configuration\n### Types\n  All timestamps are represented as ISO8601-formatted date strings with time zone.\n### Requests\n  All HTTP requests and responses are application/json content type and typical HTTP response status codes for success and failure are used.\n  All successful requests will respond with an HTTP 2xx status code and will contain a body (except in the case of a 204). The body varies by endpoint and will be described for each resource below, but will contain a JSON data object or array (for individual and multiple resources, respectively).\n  All other requests will respond with an HTTP 4xx or 5xx status code. Furthermore, the body will contain an array of error messages to help with understanding the cause of failure.\n### Rate Limiting\n  There is a global limit of 500 requests per minute. This applies to all requests (GET, POST, etc.).\n  If the limit is reached an HTTP 429 status code will be returned.\n\n  The following headers are returned by each request\n\n  Header | Description\n  ------ | -----------\n  X-RateLimit-Limit | The limit of the current endpoint\n  X-RateLimit-Remaining | The remaining rate limit\n  X-RateLimit-Reset | The timestamp after which the limit will reset (unix epoch timestamp)\n\n# Authentication\nAll HTTP requests to API endpoints require authentication and authorization. For code samples see our [Authenication Cookbooks](#section/Cookbooks/Authentication)\n\nElliptic will provide an API key and secret which must be used to set HTTP headers. These headers will be used to verify and authorize all requests.\n\nThe following headers should be added to all HTTP requests:\n\nKey | Value\n--- | ---\nx-access-key | \\<API_KEY\\>\nx-access-sign | \\<SIGNATURE_OF_REQUEST\\>\nx-access-timestamp | \\<TIME_OF_REQUEST_IN_MS\\> (in milliseconds)\n\nExamples of how to generate the signature can be found to the below. The following variables are referenced:\n\nVariable | Description\n------- | ---------\nTIME_OF_REQUEST_IN_MS | The current time formatted as the current unix timestamp (in milliseconds)\nSIGNATURE_OF_REQUEST | A Base64 string encoded HMAC-SHA256 of REQUEST_TEXT signed with the Base64 decoded SECRET\nREQUEST_TEXT | a plain string concatenation of: TIME_OF_REQUEST_IN_MS, HTTP_METHOD (uppercase), HTTP_PATH (lowercase API path including query string), REQUEST_BODY (string encoded JSON object, or “{}” if there is no body)\n\nFrom now on, all code examples will assume you are attaching the authentication headers\n\n# Cookbooks\n\n## Authentication\nWe've provided Authentication cookbooks for commonly used langauges below. If your language isn't listed here, [let us know](mailto:customers@elliptic.co) and we'll add it\n\n\n\n</details>\n<details><summary>Java</summary>\n\n```java\nimport javax.crypto.Mac;\nimport javax.crypto.spec.SecretKeySpec;\nimport org.apache.commons.codec.binary.Base64;\nimport java.security.InvalidKeyException;\nimport java.security.NoSuchAlgorithmException;\n\npublic class EllipticAuth {\n  /*\n  * Generate a signature for use when signing a request to the API\n  *\n  *   - secret:          your secret supplied by Elliptic - a base64 encoded string\n  *   - time_of_request: current time, in milliseconds, since 1 Jan 1970 00:00:00 UTC\n  *   - http_method:     must be uppercase\n  *   - http_path:       API endpoint including query string\n  *   - payload:         string encoded JSON object or \"{}\" if there is no request body\n  */\n  public static String get_signature(String secret, String time_of_request, String http_method, String http_path, String payload) {\n\n    try {\n      // create a SHA256 HMAC using the supplied secret, decoded from base64\n      Mac hmac = Mac.getInstance(\"HmacSHA256\");\n      SecretKeySpec secret_key = new SecretKeySpec(Base64.decodeBase64(secret), \"HmacSHA256\");\n      hmac.init(secret_key);\n\n      // concatenate the request text to be signed\n      String request_text = time_of_request + http_method + http_path.toLowerCase() + payload;\n\n      // update the HMAC with the text to be signed\n      hmac.update(request_text.getBytes());\n\n      // output the signature as a base64 encoded string\n      return Base64.encodeBase64String(hmac.doFinal());\n    } catch(InvalidKeyException | NoSuchAlgorithmException e) {\n      throw new RuntimeException(e);\n    }\n  }\n\n  public static String SECRET = \"894f142d667e8cdaca6822ac173937af\"; // Supplied by Elliptic - a base64 encoded string\n  // Disclaimer: this secret is just an example\n  public static String TIME_OF_REQUEST_IN_MS = \"1478692862000\";  // For real world use currentTimeMillis()\n  public static String EXAMPLE_PAYLOAD = \"[{\\\"customer_reference\\\":\\\"123456\\\",\\\"subject\\\":{\\\"asset\\\":\\\"BTC\\\",\\\"hash\\\":\\\"accf5c09cc027339a3beb2e28104ce9f406ecbbd29775b4a1a17ba213f1e035e\\\",\\\"output_address\\\":\\\"15Hm2UEPaEuiAmgyNgd5mF3wugqLsYs3Wn\\\",\\\"output_type\\\":\\\"address\\\",\\\"type\\\":\\\"transaction\\\"},\\\"type\\\":\\\"source_of_funds\\\"}]\";\n\n  public static void main(String[] args) {\n    // Example One: POST with payload\n    System.out.println(get_signature(EllipticAuth.SECRET, EllipticAuth.TIME_OF_REQUEST_IN_MS, \"POST\", \"/v2/analyses\", EXAMPLE_PAYLOAD));\n    // 65mQHB2o95lL3I+N/bZYwDC9p2YvNwsVDnXr8u72hUk=\n\n    // Example Two: GET with empty payload\n    System.out.println(get_signature(EllipticAuth.SECRET, EllipticAuth.TIME_OF_REQUEST_IN_MS, \"GET\", \"/v2/customers\", \"{}\"));\n    // cN9fRUqeT7UnwwpkBZaNmnwxKAPHkhytdXelfUVvxMI=\n    return;\n  }\n}\n```\n\n</details>\n\n<details><summary>Ruby</summary>\n\n```ruby\nrequire 'base64'\nrequire 'json'\nrequire 'openssl'\n\n=begin\n Generate a signature for use when signing a request to the API\n\n   - secret:          your secret supplied by Elliptic - a base64 encoded string\n   - time_of_request: current time, in milliseconds, since 1 Jan 1970 00:00:00 UTC\n   - http_method:     must be uppercase\n   - http_path:       API endpoint including query string\n   - payload:         string encoded JSON object or '{}' if there is no request body\n=end\ndef get_signature(secret, time_of_request, http_method, http_path, payload)\n  # concatenate the request text to be signed\n  request_text = time_of_request + http_method + http_path.downcase + payload\n\n  # create a SHA256 HMAC using the supplied secret, decoded from base64, and update it with the request_text\n  hmac = OpenSSL::HMAC.digest('SHA256', Base64.decode64(secret), request_text)\n\n  # output the signature as a base64 encoded string\n  signed = Base64.encode64(hmac).strip.encode('UTF-8')\nend\n\nSECRET = '894f142d667e8cdaca6822ac173937af' # Supplied by Elliptic\n# Disclaimer: this secret is just an example\nTIME_OF_REQUEST_IN_MS = '1478692862000' # For real world use (Time.now.to_i * 1000)\nEXAMPLE_PAYLOAD = [\n  {\n    \"customer_reference\": \"123456\",\n    \"subject\": {\n      \"asset\": \"BTC\",\n      \"hash\": \"accf5c09cc027339a3beb2e28104ce9f406ecbbd29775b4a1a17ba213f1e035e\",\n      \"output_address\": \"15Hm2UEPaEuiAmgyNgd5mF3wugqLsYs3Wn\",\n      \"output_type\": \"address\",\n      \"type\": \"transaction\"\n    },\n    \"type\": \"source_of_funds\"\n  }\n]\n\n# Example One: POST with payload - you only need to run JSON.generate when passing a request body\nputs(get_signature(SECRET, TIME_OF_REQUEST_IN_MS, 'POST', '/v2/analyses', JSON.generate(EXAMPLE_PAYLOAD)))\n# 65mQHB2o95lL3I+N/bZYwDC9p2YvNwsVDnXr8u72hUk=\n\n# Example Two: GET with empty payload - do not run JSON.generate with no request body, pass an empty object as string\nputs(get_signature(SECRET, TIME_OF_REQUEST_IN_MS, 'GET', '/v2/customers', '{}'))\n# cN9fRUqeT7UnwwpkBZaNmnwxKAPHkhytdXelfUVvxMI\n```\n\n</details>\n\n<details><summary>C#</summary>\n\n```c#\nusing System;\nusing System.Security.Cryptography;\nusing System.Text;\n\npublic class EllipticAuth\n{\n\n  /// <summary>Generate a signature for use when signing a request to the API</summary>\n  /// <param name=\"secret\">your secret supplied by Elliptic - a base64 encoded string</param>\n  /// <param name=\"time_of_request\">current time, in milliseconds, since 1 Jan 1970 00:00:00 UTC</param>\n  /// <param name=\"http_method\">must be uppercase</param>\n  /// <param name=\"http_path\">API endpoint including query string</param>\n  /// <param name=\"payload\">string encoded JSON object or '{}' if there is no request body</param>\n  public static String get_signature(string secret, string time_of_request, string http_method, string http_path, string payload) {\n    string output = \"\";\n\n    // create a SHA256 HMAC using the supplied secret, decoded from base64\n    var encoding = new ASCIIEncoding();\n    byte[] keyByte = Convert.FromBase64String(secret);\n\n    // concatenate the request text to be signed\n    string request_text = time_of_request + http_method + http_path + payload;\n\n    // update the HMAC with the text to be signed\n    byte[] msgBytes = encoding.GetBytes(request_text);\n    using (var hmac = new HMACSHA256(keyByte))\n    {\n        byte[] hashed = hmac.ComputeHash(msgBytes);\n        // output the signature as a base64 encoded string\n        output = Convert.ToBase64String(hashed);\n    }\n\n    return output;\n  }\n\n  public static string SECRET = \"894f142d667e8cdaca6822ac173937af\"; // Supplied by Elliptic - a base64 encoded string\n  // Disclaimer: this secret is just an example\n  public static string TIME_OF_REQUEST_IN_MS = \"1478692862000\";  // For real world use DateTimeOffset.Now.ToUnixTimeMilliseconds();\n  public static string EXAMPLE_PAYLOAD = \"[{\\\"customer_reference\\\":\\\"123456\\\",\\\"subject\\\":{\\\"asset\\\":\\\"BTC\\\",\\\"hash\\\":\\\"accf5c09cc027339a3beb2e28104ce9f406ecbbd29775b4a1a17ba213f1e035e\\\",\\\"output_address\\\":\\\"15Hm2UEPaEuiAmgyNgd5mF3wugqLsYs3Wn\\\",\\\"output_type\\\":\\\"address\\\",\\\"type\\\":\\\"transaction\\\"},\\\"type\\\":\\\"source_of_funds\\\"}]\";\n\n  public static void Main()\n  {\n    // Example One: POST with payload\n    Console.WriteLine(get_signature(EllipticAuth.SECRET, EllipticAuth.TIME_OF_REQUEST_IN_MS, \"POST\", \"/v2/analyses\", EXAMPLE_PAYLOAD));\n    // 65mQHB2o95lL3I+N/bZYwDC9p2YvNwsVDnXr8u72hUk=\n\n    // Example Two: GET with empty payload\n    Console.WriteLine(get_signature(EllipticAuth.SECRET, EllipticAuth.TIME_OF_REQUEST_IN_MS, \"GET\", \"/v2/customers\", \"{}\"));\n    // cN9fRUqeT7UnwwpkBZaNmnwxKAPHkhytdXelfUVvxMI=\n    return;\n  }\n}\n```\n\n</details>\n\n<details><summary>PHP</summary>\n\n```php\n/**\n* Generate a signature for use when signing a request to the API\n*\n* @param $secret your secret supplied by Elliptic - a base64 encoded string\n* @param $time_of_request current time, in milliseconds, since 1 Jan 1970 00:00:00 UTC\n* @param $http_method must be uppercase\n* @param $http_path API endpoint including query string\n* @param $payload string encoded JSON object or '{}' if there is no request body\n*/\nfunction get_signature(\n  $secret,\n  $time_of_request,\n  $http_method,\n  $http_path,\n  $payload\n) {\n  // create a SHA256 HMAC using the supplied secret, decoded from base64\n  $ctx = hash_init('sha256', HASH_HMAC, base64_decode($secret));\n  // concatenate the request text to be signed\n  $request_text = $time_of_request . $http_method . $http_path . $payload;\n  // update the HMAC with the text to be signed\n  hash_update($ctx, $request_text);\n  // output the signature as a base64 encoded string\n  return base64_encode(hex2bin(hash_final($ctx)));\n}\n\n$SECRET = '894f142d667e8cdaca6822ac173937af'; // Supplied by Elliptic\n// Disclaimer: this secret is just an example\n$TIME_OF_REQUEST_IN_MS = 1478692862000; // For real world use something like (int)(microtime(true)*1000)\n\n$EXAMPLE_PAYLOAD = [[\n    \"customer_reference\" => \"123456\",\n    \"subject\" => [\n      \"asset\" => \"BTC\",\n      \"hash\" => \"accf5c09cc027339a3beb2e28104ce9f406ecbbd29775b4a1a17ba213f1e035e\",\n      \"output_address\" => \"15Hm2UEPaEuiAmgyNgd5mF3wugqLsYs3Wn\",\n      \"output_type\" => \"address\",\n      \"type\" => \"transaction\"\n    ],\n    \"type\" => \"source_of_funds\"\n  ]];\n\n// Example One: POST with payload - you only need to run json_encode when passing a request body\necho get_signature($SECRET, $TIME_OF_REQUEST_IN_MS, 'POST', '/v2/analyses', json_encode($EXAMPLE_PAYLOAD)) . \"\\n\";\n// 65mQHB2o95lL3I+N/bZYwDC9p2YvNwsVDnXr8u72hUk=\n\n// Example Two: GET with empty payload - do not run json_encode with no request body, pass an empty object as string\necho get_signature($SECRET, $TIME_OF_REQUEST_IN_MS, 'GET', '/v2/customers', '{}') . \"\\n\";\n// cN9fRUqeT7UnwwpkBZaNmnwxKAPHkhytdXelfUVvxMI=\n```\n\n</details>\n\n<details><summary>Golang</summary>\n\n```go\npackage main\n\nimport (\n  \"crypto/hmac\"\n  \"crypto/sha256\"\n  \"encoding/base64\"\n  \"fmt\"\n  \"log\"\n  \"strconv\"\n  \"strings\"\n)\n\n// Generate a signature for use when signing a request to the API\n// - secret:          your secret supplied by Elliptic - a base64 encoded string\n// - time_of_request: current time, in milliseconds, since 1 Jan 1970 00:00:00 UTC\n// - http_method:     must be uppercase\n// - http_path:       API endpoint including query string\n// - payload:         string encoded JSON object or '{}' if there is no request body\nfunc get_signature(secret string, time_of_request int64, http_method string, http_path string, payload string) string {\n  // create a SHA256 HMAC using the supplied secret, decoded from base64\n  ds, err := base64.StdEncoding.DecodeString(secret)\n  if err != nil {\n    log.Fatal(\"error:\", err)\n  }\n  h := hmac.New(sha256.New, []byte(ds))\n\n  // concatenate the request text to be signed\n  request_text := strconv.FormatInt(time_of_request, 10) + http_method + strings.ToLower(http_path) + payload\n\n  // update the HMAC with the text to be signed\n  h.Write([]byte(request_text))\n\n  // output the signature as a base64 encoded string\n  return base64.StdEncoding.EncodeToString([]byte(h.Sum(nil)))\n}\n\nfunc main() {\n  secret := \"894f142d667e8cdaca6822ac173937af\" // Supplied by Elliptic\n  // Disclaimer: this secret is just an example\n  time_of_request_in_ms := int64(1478692862000) // For real world use time.Now().UnixMilli()\n\n  example_payload := `[{\"customer_reference\":\"123456\",\"subject\":{\"asset\":\"BTC\",\"hash\":\"accf5c09cc027339a3beb2e28104ce9f406ecbbd29775b4a1a17ba213f1e035e\",\"output_address\":\"15Hm2UEPaEuiAmgyNgd5mF3wugqLsYs3Wn\",\"output_type\":\"address\",\"type\":\"transaction\"},\"type\":\"source_of_funds\"}]`\n\n  // Example One: POST with payload - you only need to run stringify json when passing a request body\n  fmt.Println(get_signature(secret, time_of_request_in_ms, \"POST\", \"/v2/analyses\", example_payload))\n  // 65mQHB2o95lL3I+N/bZYwDC9p2YvNwsVDnXr8u72hUk=\n\n  // Example Two: GET with empty payload - do not run stringify with no request body, pass an empty object as string\n  fmt.Println(get_signature(secret, time_of_request_in_ms, \"GET\", \"/v2/customers\", `{}`))\n  // cN9fRUqeT7UnwwpkBZaNmnwxKAPHkhytdXelfUVvxMI=\n}\n```\n\n</details>\n\n<details><summary>Postman</summary>\n\n```javascript\n/**\n* This function will create signature on the base of API_SECRET\n* variable set in Postman. Use it as pre-request script in Postman\n*/\nfunction makeSignature() {\n  const timestamp = Date.now();\n  // This regex assumes that the URLs you are using in postman have the hostname templated\n  // like {{AML_API_HOST}}/your/url so won’t work if instead you are using the AML API host set directly in the URL bar\n  const pathRegex = /(?:{{[^}]*}})(.*$)/g;\n  const match = pathRegex.exec(request.url);\n  const path = /\\?$/.test(match[1]) ? match[1].substring(0, match[1].length - 1) : match[1];\n  const strBody = (typeof request.data == 'object' ? '{}' : JSON.stringify(JSON.parse(request.data)));\n  const text = timestamp + request.method.toUpperCase() + path.toLowerCase() + strBody;\n  const key = CryptoJS.enc.Base64.parse(pm.variables.get(\"API_SECRET\"));\n  const hmac = CryptoJS.algo.HMAC.create(CryptoJS.algo.SHA256, key);\n  hmac.update(text);\n  const signature = CryptoJS.enc.Base64.stringify(hmac.finalize());\n  return [signature, timestamp];\n}\n\nvar sig = makeSignature();\n\n// These variables should be consumed in the request header configuration\npostman.setGlobalVariable('REQ_SIGNATURE', sig[0]);\npostman.setGlobalVariable(\"REQ_TIMESTAMP\", sig[1]);\npostman.setGlobalVariable(\"REQ_DATA\", typeof request.data);\n```\n\n</details>\n\n### Debugging Authentication\nThe `WWW-Authenticate` response header gives useful information to help understand what's going wrong:\n  - `error_description=\"invalid signature\"`: The signature generated by your code does not match what we've generated on the API\n  - `error_description=\"invalid timestamp 1605268999252\"`: The timestamp you've provided is invalid, it should be milliseconds since epoch\n  - No error discription usually indicates that the key you're using is invalid\n"
+servers:
+- url: https://aml-api.elliptic.co/v2
+  description: Production
+security:
+- oauth2:
+  - openid
+  - profile
+- apiKey: []
+  signature: []
+  timestamp: []
+tags:
+- name: Users
+  description: Manage users
+paths:
+  /users:
+    get:
+      tags:
+      - Users
+      summary: Returns a list of users
+      description: Returns a list of users in your team.
+      responses:
+        '200':
+          description: Successful users response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsersResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+components:
+  schemas:
+    UnauthorizedError:
+      type: string
+      example: Unauthorized
+    BadRequestError:
+      type: object
+      properties:
+        name:
+          type: string
+          example: BadRequestError
+        message:
+          type: string
+          example: Invalid id parameter
+    ForbiddenError:
+      type: object
+      properties:
+        name:
+          type: string
+          example: ForbiddenError
+        message:
+          type: string
+          example: You do not have enough privilege to access this path.
+    Error:
+      type: object
+      properties:
+        name:
+          type: string
+          example: GenericErrorName
+        message:
+          type: string
+          example: Something bad happened.
+    NotFoundError:
+      type: object
+      properties:
+        name:
+          type: string
+          example: NotFoundError
+        message:
+          type: string
+          example: Entity not found.
+    UsersResponse:
+      title: UsersResponse
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            description: Team User's UUIDv4 (unique for team & user)
+            type: string
+            format: UUIDv4
+            example: 17535048-76f8-4f60-bdd3-9d659298f9e5
+          updated_at:
+            description: ISO date time with time zone (UTC) of when the User was last updated
+            type: string
+            format: date-time
+            example: '2015-05-13T10:36:21.000Z'
+          created_at:
+            description: User's creation's ISO date time with time zone (UTC)
+            type: string
+            format: date-time
+            example: '2015-05-13T10:36:21.000Z'
+          team_id:
+            description: Team's UUIDv4
+            type: string
+            format: UUIDv4
+            example: b7535048-76f8-4f60-bdd3-9d659298f9e7
+          user_id:
+            description: User's UUIDv4
+            type: string
+            format: UUIDv4
+            example: 67535048-76f9-4f61-bdd3-9d659298f9e4
+          email:
+            description: the email address of the User
+            type: string
+            example: foo_bar@elliptic.co
+          first_name:
+            description: the first name of the User
+            type: string
+            example: Foo
+          last_name:
+            description: the last name of the User
+            type: string
+            example: Bar
+        required:
+        - id
+        - created_at
+        - updated_at
+        - team_id
+        - user_id
+        - email
+        - first_name
+        - last_name
+        additionalProperties: false
+  responses:
+    '404':
+      description: Resource item not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/NotFoundError'
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BadRequestError'
+    '403':
+      description: Not authorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ForbiddenError'
+    '401':
+      description: Not authenticated
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UnauthorizedError'
+    '500':
+      description: Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.elliptic.co/authorize
+          tokenUrl: https://login.elliptic.co/oauth/token
+          scopes:
+            openid: ''
+            profile: ''
+    apiKey:
+      description: API Key
+      type: apiKey
+      in: header
+      name: x-access-key
+    signature:
+      description: (Request Time, HTTP Method, Lowercase Path, Request Payload) signed with API Secret
+      type: apiKey
+      in: header
+      name: x-access-sign
+    timestamp:
+      type: apiKey
+      in: header
+      name: x-access-timestamp
+x-readme:
+  oauth-options:
+    usePkce: true
+x-tagGroups:
+- name: Navigator
+  tags:
+  - Transaction Analyses
+- name: Lens
+  tags:
+  - Wallet Analyses
+- name: Workflow Management
+  tags:
+  - Customers
+  - Transaction Workflow
+- name: Account Management
+  tags:
+  - Users
+- name: Asset Information
+  tags:
+  - Assets table
