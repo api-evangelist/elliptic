@@ -1,6 +1,19 @@
 name: Elliptic
 description: Elliptic is a blockchain analytics and crypto compliance platform providing REST APIs for transaction screening, wallet risk scoring, entity identification, and AML compliance. Their APIs enable financial institutions, exchanges, and DeFi platforms to automate crypto risk screening across 60+ blockchains, reduce investigation time by up to 90%, and meet AML regulatory requirements with sub-second response times.
-image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+accessModel:
+  pricing: enterprise
+  onboarding: self-serve
+  trial: false
+  try_now: false
+  public: false
+  label: Enterprise · Self-serve signup
+  confidence: high
+  source:
+  - plans
+  - authentication
+  generated: '2026-07-22'
+  method: derived
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/elliptic.png
 url: https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/apis.yml
 created: '2026-06-14'
 modified: '2026-06-14'
@@ -15,104 +28,480 @@ tags:
   - Risk Scoring
   - Analytics
 apis:
-  - name: Elliptic AML API
-    description: REST API for automated AML compliance screening of cryptocurrency transactions and wallets. Provides batch and synchronous endpoints for wallet risk scoring, transaction analysis, customer management, and risk rule configuration across 60+ blockchain networks.
-    image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-    humanURL: https://developers.elliptic.co/docs/aml-api-introduction
-    baseURL: https://aml-api.elliptic.co
-    tags:
-      - AML
-      - Wallet Screening
-      - Transaction Screening
-      - Risk Scoring
-      - Compliance
-    properties:
-      - type: Documentation
-        url: https://developers.elliptic.co/docs/aml-api-introduction
-      - type: Authentication
-        url: https://developers.elliptic.co/docs/authentication-1
-      - type: SDKs
-        url: https://developers.elliptic.co/docs/quick-start-sdks
-      - type: RateLimits
-        url: https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/rate-limits/aml-api.yml
-      - type: OpenAPI
-        url: https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/openapi/aml-api-oauth.json
-      - type: OpenAPI
-        url: https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/openapi/aml-api-v2.json
-      - type: OpenAPI
-        url: https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/openapi/aml-api-v3.json
-      - type: Plans
-        url: https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/plans/elliptic-plans.yml
-      - type: FinOps
-        url: https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/finops/elliptic-finops.yml
-    contact:
-      - FN: Elliptic Support
-        url: https://help.elliptic.co/
-        email: ''
-  - name: Elliptic AI API
-    description: AI-powered REST API that delivers natural language summaries and structured insights from blockchain and risk data. Provides wallet summaries, transaction analysis, customer-level aggregated insights, and risk graph traversal in human-readable formats for AI-driven compliance workflows.
-    image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-    humanURL: https://developers.elliptic.co/docs/ai-api-introduction
-    baseURL: https://aml-api.elliptic.co
-    tags:
-      - AI
-      - Natural Language
-      - Wallet Analysis
-      - Transaction Analysis
-      - Risk Intelligence
-    properties:
-      - type: Documentation
-        url: https://developers.elliptic.co/docs/ai-api-introduction
-      - type: Authentication
-        url: https://developers.elliptic.co/docs/authentication-1
-      - type: SDKs
-        url: https://developers.elliptic.co/docs/quick-start-sdks
-      - type: OpenAPI
-        url: https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/openapi/ia-api.json
-      - type: RateLimits
-        url: https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/rate-limits/aml-api.yml
-    contact:
-      - FN: Elliptic Support
-        url: https://help.elliptic.co/
-        email: ''
-  - name: Elliptic Sanctions API
-    description: REST API providing access to sanctioned blockchain addresses maintained by Elliptic, with filtering by blockchain type, sanction status, and date ranges. Supports pagination and covers major sanction lists including OFAC SDN.
-    image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-    humanURL: https://developers.elliptic.co/
-    baseURL: https://sanctions-api.elliptic.co
-    tags:
-      - Sanctions
-      - OFAC
-      - Blockchain Compliance
-      - Crypto Regulation
-    properties:
-      - type: Documentation
-        url: https://developers.elliptic.co/
-      - type: OpenAPI
-        url: https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/openapi/sanctions-api.json
-    contact:
-      - FN: Elliptic Support
-        url: https://help.elliptic.co/
-        email: ''
-  - name: Elliptic Data Fabric API
-    description: Asynchronous REST API for querying Tron blockchain data correlation with IP addresses. Provides node intelligence through transaction hash, crypto address, and node address lookups with asynchronous result polling.
-    image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-    humanURL: https://developers.elliptic.co/
-    baseURL: https://aml-api.elliptic.co
-    tags:
-      - Tron
-      - Blockchain Intelligence
-      - IP Correlation
-      - Node Intelligence
-    properties:
-      - type: Documentation
-        url: https://developers.elliptic.co/
-      - type: OpenAPI
-        url: https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/openapi/data-fabric.yaml
-    contact:
-      - FN: Elliptic Support
-        url: https://help.elliptic.co/
-        email: ''
+- aid: elliptic:elliptic-assets-api
+  name: Elliptic Assets API
+  description: The Assets API from Elliptic — 1 operation(s) for assets.
+  humanURL: https://developers.elliptic.co/docs/aml-api-introduction
+  baseURL: https://aml-api.elliptic.co
+  tags:
+  - Assets
+  properties:
+  - type: OpenAPI
+    url: openapi/elliptic-assets-api-openapi.yml
+  - type: Documentation
+    url: https://developers.elliptic.co/docs/aml-api-introduction
+  - type: Authentication
+    url: https://developers.elliptic.co/docs/authentication-1
+  - type: SDKs
+    url: https://developers.elliptic.co/docs/quick-start-sdks
+  - type: RateLimits
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/rate-limits/aml-api.yml
+  - type: Plans
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/plans/elliptic-plans.yml
+  - type: FinOps
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/finops/elliptic-finops.yml
+  - type: Documentation
+    url: https://developers.elliptic.co/docs/ai-api-introduction
+  - type: Documentation
+    url: https://developers.elliptic.co/
+- aid: elliptic:elliptic-count-analyses-api
+  name: Elliptic Count Analyses API
+  description: The Count Analyses API from Elliptic — 1 operation(s) for count analyses.
+  humanURL: https://developers.elliptic.co/docs/aml-api-introduction
+  baseURL: https://aml-api.elliptic.co
+  tags:
+  - Count Analyses
+  properties:
+  - type: OpenAPI
+    url: openapi/elliptic-count-analyses-api-openapi.yml
+  - type: Documentation
+    url: https://developers.elliptic.co/docs/aml-api-introduction
+  - type: Authentication
+    url: https://developers.elliptic.co/docs/authentication-1
+  - type: SDKs
+    url: https://developers.elliptic.co/docs/quick-start-sdks
+  - type: RateLimits
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/rate-limits/aml-api.yml
+  - type: Plans
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/plans/elliptic-plans.yml
+  - type: FinOps
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/finops/elliptic-finops.yml
+  - type: Documentation
+    url: https://developers.elliptic.co/docs/ai-api-introduction
+  - type: Documentation
+    url: https://developers.elliptic.co/
+- aid: elliptic:elliptic-criteria-api
+  name: Elliptic Criteria API
+  description: Retrieve all criteria related to triggering risk rules
+  humanURL: https://developers.elliptic.co/docs/aml-api-introduction
+  baseURL: https://aml-api.elliptic.co
+  tags:
+  - Criteria
+  properties:
+  - type: OpenAPI
+    url: openapi/elliptic-criteria-api-openapi.yml
+  - type: Documentation
+    url: https://developers.elliptic.co/docs/aml-api-introduction
+  - type: Authentication
+    url: https://developers.elliptic.co/docs/authentication-1
+  - type: SDKs
+    url: https://developers.elliptic.co/docs/quick-start-sdks
+  - type: RateLimits
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/rate-limits/aml-api.yml
+  - type: Plans
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/plans/elliptic-plans.yml
+  - type: FinOps
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/finops/elliptic-finops.yml
+  - type: Documentation
+    url: https://developers.elliptic.co/docs/ai-api-introduction
+  - type: Documentation
+    url: https://developers.elliptic.co/
+- aid: elliptic:elliptic-customers-api
+  name: Elliptic Customers API
+  description: >-
+    The customers endpoints are used to manage customers which you have associated analysis with, via
+    the `customer_reference` analysis subject attribute.
+
+
+    Currently, the customers endpoints only refer to customers with [Transaction Analysis](#tag/Transaction-Analyses).
+
+
+    Customers with only [Wallet Analysis](#tag/Wallet-Analyses) will not yield responses from these endpoints
+  humanURL: https://developers.elliptic.co/docs/aml-api-introduction
+  baseURL: https://aml-api.elliptic.co
+  tags:
+  - Customers
+  properties:
+  - type: OpenAPI
+    url: openapi/elliptic-customers-api-openapi.yml
+  - type: Documentation
+    url: https://developers.elliptic.co/docs/aml-api-introduction
+  - type: Authentication
+    url: https://developers.elliptic.co/docs/authentication-1
+  - type: SDKs
+    url: https://developers.elliptic.co/docs/quick-start-sdks
+  - type: RateLimits
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/rate-limits/aml-api.yml
+  - type: Plans
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/plans/elliptic-plans.yml
+  - type: FinOps
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/finops/elliptic-finops.yml
+  - type: Documentation
+    url: https://developers.elliptic.co/docs/ai-api-introduction
+  - type: Documentation
+    url: https://developers.elliptic.co/
+- aid: elliptic:elliptic-health-api
+  name: Elliptic Health API
+  description: Health check endpoints
+  humanURL: https://developers.elliptic.co/docs/aml-api-introduction
+  baseURL: https://aml-api.elliptic.co
+  tags:
+  - Health
+  properties:
+  - type: OpenAPI
+    url: openapi/elliptic-health-api-openapi.yml
+  - type: Documentation
+    url: https://developers.elliptic.co/docs/aml-api-introduction
+  - type: Authentication
+    url: https://developers.elliptic.co/docs/authentication-1
+  - type: SDKs
+    url: https://developers.elliptic.co/docs/quick-start-sdks
+  - type: RateLimits
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/rate-limits/aml-api.yml
+  - type: Plans
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/plans/elliptic-plans.yml
+  - type: FinOps
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/finops/elliptic-finops.yml
+  - type: Documentation
+    url: https://developers.elliptic.co/docs/ai-api-introduction
+  - type: Documentation
+    url: https://developers.elliptic.co/
+- aid: elliptic:elliptic-risk-rules-api
+  name: Elliptic Risk Rules API
+  description: Manage risk rules. Currently the same risk rules are used for Navigator and Lens
+  humanURL: https://developers.elliptic.co/docs/aml-api-introduction
+  baseURL: https://aml-api.elliptic.co
+  tags:
+  - Risk Rules
+  properties:
+  - type: OpenAPI
+    url: openapi/elliptic-risk-rules-api-openapi.yml
+  - type: Documentation
+    url: https://developers.elliptic.co/docs/aml-api-introduction
+  - type: Authentication
+    url: https://developers.elliptic.co/docs/authentication-1
+  - type: SDKs
+    url: https://developers.elliptic.co/docs/quick-start-sdks
+  - type: RateLimits
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/rate-limits/aml-api.yml
+  - type: Plans
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/plans/elliptic-plans.yml
+  - type: FinOps
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/finops/elliptic-finops.yml
+  - type: Documentation
+    url: https://developers.elliptic.co/docs/ai-api-introduction
+  - type: Documentation
+    url: https://developers.elliptic.co/
+- aid: elliptic:elliptic-sanctions-api
+  name: Elliptic Sanctions API
+  description: The Sanctions API from Elliptic — 1 operation(s) for sanctions.
+  humanURL: https://developers.elliptic.co/docs/aml-api-introduction
+  baseURL: https://aml-api.elliptic.co
+  tags:
+  - Sanctions
+  properties:
+  - type: OpenAPI
+    url: openapi/elliptic-sanctions-api-openapi.yml
+  - type: Documentation
+    url: https://developers.elliptic.co/docs/aml-api-introduction
+  - type: Authentication
+    url: https://developers.elliptic.co/docs/authentication-1
+  - type: SDKs
+    url: https://developers.elliptic.co/docs/quick-start-sdks
+  - type: RateLimits
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/rate-limits/aml-api.yml
+  - type: Plans
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/plans/elliptic-plans.yml
+  - type: FinOps
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/finops/elliptic-finops.yml
+  - type: Documentation
+    url: https://developers.elliptic.co/docs/ai-api-introduction
+  - type: Documentation
+    url: https://developers.elliptic.co/
+- aid: elliptic:elliptic-screenings-api
+  name: Elliptic Screenings API
+  description: Wallet and transaction screening endpoints
+  humanURL: https://developers.elliptic.co/docs/aml-api-introduction
+  baseURL: https://aml-api.elliptic.co
+  tags:
+  - Screenings
+  properties:
+  - type: OpenAPI
+    url: openapi/elliptic-screenings-api-openapi.yml
+  - type: Documentation
+    url: https://developers.elliptic.co/docs/aml-api-introduction
+  - type: Authentication
+    url: https://developers.elliptic.co/docs/authentication-1
+  - type: SDKs
+    url: https://developers.elliptic.co/docs/quick-start-sdks
+  - type: RateLimits
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/rate-limits/aml-api.yml
+  - type: Plans
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/plans/elliptic-plans.yml
+  - type: FinOps
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/finops/elliptic-finops.yml
+  - type: Documentation
+    url: https://developers.elliptic.co/docs/ai-api-introduction
+  - type: Documentation
+    url: https://developers.elliptic.co/
+- aid: elliptic:elliptic-transaction-analyses-api
+  name: Elliptic Transaction Analyses API
+  description: >-
+    Run blockchain analysis against one or more transactions. Get and update previously run analyses.
+  humanURL: https://developers.elliptic.co/docs/aml-api-introduction
+  baseURL: https://aml-api.elliptic.co
+  tags:
+  - Transaction Analyses
+  properties:
+  - type: OpenAPI
+    url: openapi/elliptic-transaction-analyses-api-openapi.yml
+  - type: Documentation
+    url: https://developers.elliptic.co/docs/aml-api-introduction
+  - type: Authentication
+    url: https://developers.elliptic.co/docs/authentication-1
+  - type: SDKs
+    url: https://developers.elliptic.co/docs/quick-start-sdks
+  - type: RateLimits
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/rate-limits/aml-api.yml
+  - type: Plans
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/plans/elliptic-plans.yml
+  - type: FinOps
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/finops/elliptic-finops.yml
+  - type: Documentation
+    url: https://developers.elliptic.co/docs/ai-api-introduction
+  - type: Documentation
+    url: https://developers.elliptic.co/
+- aid: elliptic:elliptic-transaction-workflow-api
+  name: Elliptic Transaction Workflow API
+  description: The Transaction Workflow API from Elliptic — 3 operation(s) for transaction workflow.
+  humanURL: https://developers.elliptic.co/docs/aml-api-introduction
+  baseURL: https://aml-api.elliptic.co
+  tags:
+  - Transaction Workflow
+  properties:
+  - type: OpenAPI
+    url: openapi/elliptic-transaction-workflow-api-openapi.yml
+  - type: Documentation
+    url: https://developers.elliptic.co/docs/aml-api-introduction
+  - type: Authentication
+    url: https://developers.elliptic.co/docs/authentication-1
+  - type: SDKs
+    url: https://developers.elliptic.co/docs/quick-start-sdks
+  - type: RateLimits
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/rate-limits/aml-api.yml
+  - type: Plans
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/plans/elliptic-plans.yml
+  - type: FinOps
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/finops/elliptic-finops.yml
+  - type: Documentation
+    url: https://developers.elliptic.co/docs/ai-api-introduction
+  - type: Documentation
+    url: https://developers.elliptic.co/
+- aid: elliptic:elliptic-tron-nodeintelligence-api
+  name: Elliptic Tron NodeIntelligence API
+  description: Tron blockchain data lookup operations
+  humanURL: https://developers.elliptic.co/docs/aml-api-introduction
+  baseURL: https://aml-api.elliptic.co
+  tags:
+  - Tron NodeIntelligence
+  properties:
+  - type: OpenAPI
+    url: openapi/elliptic-tron-nodeintelligence-api-openapi.yml
+  - type: Documentation
+    url: https://developers.elliptic.co/docs/aml-api-introduction
+  - type: Authentication
+    url: https://developers.elliptic.co/docs/authentication-1
+  - type: SDKs
+    url: https://developers.elliptic.co/docs/quick-start-sdks
+  - type: RateLimits
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/rate-limits/aml-api.yml
+  - type: Plans
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/plans/elliptic-plans.yml
+  - type: FinOps
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/finops/elliptic-finops.yml
+  - type: Documentation
+    url: https://developers.elliptic.co/docs/ai-api-introduction
+  - type: Documentation
+    url: https://developers.elliptic.co/
+- aid: elliptic:elliptic-users-api
+  name: Elliptic Users API
+  description: Manage users
+  humanURL: https://developers.elliptic.co/docs/aml-api-introduction
+  baseURL: https://aml-api.elliptic.co
+  tags:
+  - Users
+  properties:
+  - type: OpenAPI
+    url: openapi/elliptic-users-api-openapi.yml
+  - type: Documentation
+    url: https://developers.elliptic.co/docs/aml-api-introduction
+  - type: Authentication
+    url: https://developers.elliptic.co/docs/authentication-1
+  - type: SDKs
+    url: https://developers.elliptic.co/docs/quick-start-sdks
+  - type: RateLimits
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/rate-limits/aml-api.yml
+  - type: Plans
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/plans/elliptic-plans.yml
+  - type: FinOps
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/finops/elliptic-finops.yml
+  - type: Documentation
+    url: https://developers.elliptic.co/docs/ai-api-introduction
+  - type: Documentation
+    url: https://developers.elliptic.co/
+- aid: elliptic:elliptic-wallet-analyses-api
+  name: Elliptic Wallet Analyses API
+  description: >-
+    Run blockchain analysis against one or more wallets. Get and update previously run analyses.
+  humanURL: https://developers.elliptic.co/docs/aml-api-introduction
+  baseURL: https://aml-api.elliptic.co
+  tags:
+  - Wallet Analyses
+  properties:
+  - type: OpenAPI
+    url: openapi/elliptic-wallet-analyses-api-openapi.yml
+  - type: Documentation
+    url: https://developers.elliptic.co/docs/aml-api-introduction
+  - type: Authentication
+    url: https://developers.elliptic.co/docs/authentication-1
+  - type: SDKs
+    url: https://developers.elliptic.co/docs/quick-start-sdks
+  - type: RateLimits
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/rate-limits/aml-api.yml
+  - type: Plans
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/plans/elliptic-plans.yml
+  - type: FinOps
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/finops/elliptic-finops.yml
+  - type: Documentation
+    url: https://developers.elliptic.co/docs/ai-api-introduction
+  - type: Documentation
+    url: https://developers.elliptic.co/
+- aid: elliptic:elliptic-wallet-analyses-count-api
+  name: Elliptic Wallet Analyses Count API
+  description: The Wallet Analyses Count API from Elliptic — 1 operation(s) for wallet analyses count.
+  humanURL: https://developers.elliptic.co/docs/aml-api-introduction
+  baseURL: https://aml-api.elliptic.co
+  tags:
+  - Wallet Analyses Count
+  properties:
+  - type: OpenAPI
+    url: openapi/elliptic-wallet-analyses-count-api-openapi.yml
+  - type: Documentation
+    url: https://developers.elliptic.co/docs/aml-api-introduction
+  - type: Authentication
+    url: https://developers.elliptic.co/docs/authentication-1
+  - type: SDKs
+    url: https://developers.elliptic.co/docs/quick-start-sdks
+  - type: RateLimits
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/rate-limits/aml-api.yml
+  - type: Plans
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/plans/elliptic-plans.yml
+  - type: FinOps
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/finops/elliptic-finops.yml
+  - type: Documentation
+    url: https://developers.elliptic.co/docs/ai-api-introduction
+  - type: Documentation
+    url: https://developers.elliptic.co/
+- aid: elliptic:elliptic-wallet-api
+  name: Elliptic Wallet API
+  description: The Wallet API from Elliptic — 1 operation(s) for wallet.
+  humanURL: https://developers.elliptic.co/docs/aml-api-introduction
+  baseURL: https://aml-api.elliptic.co
+  tags:
+  - Wallet
+  properties:
+  - type: OpenAPI
+    url: openapi/elliptic-wallet-api-openapi.yml
+  - type: Documentation
+    url: https://developers.elliptic.co/docs/aml-api-introduction
+  - type: Authentication
+    url: https://developers.elliptic.co/docs/authentication-1
+  - type: SDKs
+    url: https://developers.elliptic.co/docs/quick-start-sdks
+  - type: RateLimits
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/rate-limits/aml-api.yml
+  - type: Plans
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/plans/elliptic-plans.yml
+  - type: FinOps
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/finops/elliptic-finops.yml
+  - type: Documentation
+    url: https://developers.elliptic.co/docs/ai-api-introduction
+  - type: Documentation
+    url: https://developers.elliptic.co/
+- aid: elliptic:elliptic-wallet-workflow-api
+  name: Elliptic Wallet Workflow API
+  description: The Wallet Workflow API from Elliptic — 2 operation(s) for wallet workflow.
+  humanURL: https://developers.elliptic.co/docs/aml-api-introduction
+  baseURL: https://aml-api.elliptic.co
+  tags:
+  - Wallet Workflow
+  properties:
+  - type: OpenAPI
+    url: openapi/elliptic-wallet-workflow-api-openapi.yml
+  - type: Documentation
+    url: https://developers.elliptic.co/docs/aml-api-introduction
+  - type: Authentication
+    url: https://developers.elliptic.co/docs/authentication-1
+  - type: SDKs
+    url: https://developers.elliptic.co/docs/quick-start-sdks
+  - type: RateLimits
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/rate-limits/aml-api.yml
+  - type: Plans
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/plans/elliptic-plans.yml
+  - type: FinOps
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/finops/elliptic-finops.yml
+  - type: Documentation
+    url: https://developers.elliptic.co/docs/ai-api-introduction
+  - type: Documentation
+    url: https://developers.elliptic.co/
 common:
   - type: AgenticAccess
     url: agentic-access/elliptic-agentic-access.yml
