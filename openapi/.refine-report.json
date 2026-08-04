@@ -1,0 +1,47 @@
+{
+  "provider": "elliptic",
+  "sources": [
+    "elliptic-assets-api-openapi.yml",
+    "elliptic-count-analyses-api-openapi.yml",
+    "elliptic-criteria-api-openapi.yml",
+    "elliptic-customers-api-openapi.yml",
+    "elliptic-health-api-openapi.yml",
+    "elliptic-risk-rules-api-openapi.yml",
+    "elliptic-sanctions-api-openapi.yml",
+    "elliptic-screenings-api-openapi.yml",
+    "elliptic-transaction-analyses-api-openapi.yml",
+    "elliptic-transaction-workflow-api-openapi.yml",
+    "elliptic-tron-nodeintelligence-api-openapi.yml",
+    "elliptic-users-api-openapi.yml",
+    "elliptic-wallet-analyses-api-openapi.yml",
+    "elliptic-wallet-analyses-count-api-openapi.yml",
+    "elliptic-wallet-api-openapi.yml",
+    "elliptic-wallet-workflow-api-openapi.yml"
+  ],
+  "outputs": [
+    "elliptic-assets-api-openapi.yml",
+    "elliptic-count-analyses-api-openapi.yml",
+    "elliptic-criteria-api-openapi.yml",
+    "elliptic-customers-api-openapi.yml",
+    "elliptic-health-api-openapi.yml",
+    "elliptic-risk-rules-api-openapi.yml",
+    "elliptic-sanctions-api-openapi.yml",
+    "elliptic-screenings-api-openapi.yml",
+    "elliptic-transaction-analyses-api-openapi.yml",
+    "elliptic-transaction-workflow-api-openapi.yml",
+    "elliptic-tron-nodeintelligence-api-openapi.yml",
+    "elliptic-users-api-openapi.yml",
+    "elliptic-wallet-analyses-api-openapi.yml",
+    "elliptic-wallet-analyses-count-api-openapi.yml",
+    "elliptic-wallet-api-openapi.yml",
+    "elliptic-wallet-workflow-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [
+    "elliptic-transaction-analyses-api-openapi.yml: dangling $ref: #/paths/~1wallet/get/parameters/9/schema",
+    "elliptic-wallet-analyses-count-api-openapi.yml: dangling $ref: #/paths/~1wallet/get/parameters/9/schema"
+  ],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}
