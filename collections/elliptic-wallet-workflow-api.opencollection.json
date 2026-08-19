@@ -1,0 +1,60 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "AML API OAuth Assets Wallet Workflow API",
+    "version": "2.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "authorization_code",
+      "authorizationUrl": "https://login.elliptic.co/authorize",
+      "accessTokenUrl": "https://login.elliptic.co/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Wallet Workflow",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Bulk update workflow status",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://aml-api.elliptic.co/v2/wallet/workflow_status",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Set the workflow status of the analyses having the ids passed as body to the desired value."
+        },
+        {
+          "info": {
+            "name": "Update assigned team user for wallet analysis",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://aml-api.elliptic.co/v2/wallet/assigned_team_user",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Set the assigned team user for a wallet analysis"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

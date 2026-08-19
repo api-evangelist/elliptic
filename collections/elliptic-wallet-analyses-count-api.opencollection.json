@@ -1,0 +1,193 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "AML API OAuth Assets Wallet Analyses Count API",
+    "version": "2.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "authorization_code",
+      "authorizationUrl": "https://login.elliptic.co/authorize",
+      "accessTokenUrl": "https://login.elliptic.co/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Wallet Analyses Count",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Count all Wallet analyses",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://aml-api.elliptic.co/v2/wallet/count",
+            "params": [
+              {
+                "name": "min_outflow_usd",
+                "value": "",
+                "type": "query",
+                "description": "minimum outflow USD value"
+              },
+              {
+                "name": "max_outflow_usd",
+                "value": "",
+                "type": "query",
+                "description": "maximum outflow USD value"
+              },
+              {
+                "name": "min_inflow_usd",
+                "value": "",
+                "type": "query",
+                "description": "minimum inflow USD value"
+              },
+              {
+                "name": "max_inflow_usd",
+                "value": "",
+                "type": "query",
+                "description": "maximum inflow USD value"
+              },
+              {
+                "name": "analysed_at_before",
+                "value": "2030-02-26T14:33:34.787Z",
+                "type": "query",
+                "description": "only return wallet analyses that has been analysed before the given time (ISO8601 datetime)"
+              },
+              {
+                "name": "analysed_at_after",
+                "value": "2010-02-26T14:33:34.787Z",
+                "type": "query",
+                "description": "only return wallet analyses that has been analysed after the given time (ISO8601 datetime)"
+              },
+              {
+                "name": "customer_reference_contains",
+                "value": "",
+                "type": "query",
+                "description": "only return wallet analyses whose customer reference contains the given string"
+              },
+              {
+                "name": "address_hash_contains",
+                "value": "",
+                "type": "query",
+                "description": "filter wallet analyses whose address contains the given string"
+              },
+              {
+                "name": "customer_reference",
+                "value": "",
+                "type": "query",
+                "description": "only return wallet analyses whose customer reference equals the given string"
+              },
+              {
+                "name": "workflow_status",
+                "value": "",
+                "type": "query",
+                "description": "only return analyses whose workflow status matches any of the given values. Accepts a single value or an array of values."
+              },
+              {
+                "name": "address_hash",
+                "value": "",
+                "type": "query",
+                "description": "filter wallet analyses whose address equals the given string"
+              },
+              {
+                "name": "entity_name_contains",
+                "value": "",
+                "type": "query",
+                "description": "filter wallet analyses whose name contains the given string"
+              },
+              {
+                "name": "entity_category_contains",
+                "value": "",
+                "type": "query",
+                "description": "filter wallet analyses whose category contains the given string"
+              },
+              {
+                "name": "min_risk_score",
+                "value": "",
+                "type": "query",
+                "description": "minimum risk score"
+              },
+              {
+                "name": "max_risk_score",
+                "value": "",
+                "type": "query",
+                "description": "maximum risk score"
+              },
+              {
+                "name": "min_risk_score_change",
+                "value": "",
+                "type": "query",
+                "description": "minimum risk score change since last screening"
+              },
+              {
+                "name": "max_risk_score_change",
+                "value": "",
+                "type": "query",
+                "description": "maximum risk score change since last screening"
+              },
+              {
+                "name": "coverage",
+                "value": "",
+                "type": "query",
+                "description": "return the wallet analyses for a certain coverage level"
+              },
+              {
+                "name": "process_status",
+                "value": "",
+                "type": "query",
+                "description": "return rows that are in any of the states specified in the array. Each element is one of (running, complete, error)."
+              },
+              {
+                "name": "asset",
+                "value": "",
+                "type": "query",
+                "description": "return only wallet analyses that has been made on a particular asset or asset/blockchain combination"
+              },
+              {
+                "name": "risk_rules",
+                "value": "",
+                "type": "query",
+                "description": "return wallets that has triggered at least one of the specified risk_rules. To get wallet analyses that have not triggered any rules, include empty string in your query. e.g. \"?risk_rules=,f7c36274-ba55-4f6b-8d46-d8cbe97d7c32\""
+              },
+              {
+                "name": "analysed_by",
+                "value": "",
+                "type": "query",
+                "description": "the ID of the actor who ran the query"
+              },
+              {
+                "name": "customer_id",
+                "value": "",
+                "type": "query",
+                "description": "the ID of the customer this wallet analysis is linked to"
+              },
+              {
+                "name": "assigned_team_user_id",
+                "value": "",
+                "type": "query",
+                "description": "return wallets that are assigned to the given team user ID(s). To get wallet analyses that are unassigned, include an empty string in your query. Multiple IDs can be provided as a comma-separated list."
+              },
+              {
+                "name": "screening_source",
+                "value": "",
+                "type": "query",
+                "description": "Indicates whether the screening was done via the Synchronous endpoint, Asynchronous endpoint, as part of the Automatic Rescreening feature or as a fallback system rescreening in case of error"
+              }
+            ]
+          },
+          "docs": "Count of all Wallet analyses."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

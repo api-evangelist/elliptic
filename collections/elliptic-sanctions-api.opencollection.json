@@ -1,0 +1,79 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "AML API OAuth Assets Sanctions API",
+    "version": "2.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "authorization_code",
+      "authorizationUrl": "https://login.elliptic.co/authorize",
+      "accessTokenUrl": "https://login.elliptic.co/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Sanctions",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get sanctioned addresses",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://aml-api.elliptic.co/v2/v1/sanctions",
+            "params": [
+              {
+                "name": "page",
+                "value": "1",
+                "type": "query",
+                "description": "Specify the page number of the sanctions to be returned"
+              },
+              {
+                "name": "size",
+                "value": "50",
+                "type": "query",
+                "description": "Specify the number of sanctions to be returned per page"
+              },
+              {
+                "name": "blockchain_compatibility",
+                "value": "ethereum",
+                "type": "query",
+                "description": "Filters out sanctions based on the blockchains"
+              },
+              {
+                "name": "sanction_status",
+                "value": "sanctioned",
+                "type": "query",
+                "description": "Filters the data to return the sanctions, or the sanctions that has since been removed"
+              },
+              {
+                "name": "created_at_from",
+                "value": "2024-04-30T10:00:00Z",
+                "type": "query",
+                "description": "Returns the sanctions from the specified date to the current date"
+              },
+              {
+                "name": "created_at_to",
+                "value": "2023-10-22T10:00:00Z",
+                "type": "query",
+                "description": "Returns the sanctions from beginning until specified date"
+              }
+            ]
+          },
+          "docs": "Get sanctioned addresses"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

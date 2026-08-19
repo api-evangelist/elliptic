@@ -1,0 +1,357 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "AML API OAuth Assets Transaction Analyses API",
+    "version": "2.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "authorization_code",
+      "authorizationUrl": "https://login.elliptic.co/authorize",
+      "accessTokenUrl": "https://login.elliptic.co/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Transaction Analyses",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Run a single analysis",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://aml-api.elliptic.co/v2/analyses/synchronous",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Given a subject, customer and analysis type, perform the requested analysis and return the result"
+        },
+        {
+          "info": {
+            "name": "Paginate all analyses",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://aml-api.elliptic.co/v2/analyses",
+            "params": [
+              {
+                "name": "expand",
+                "value": "",
+                "type": "query",
+                "description": "comma-separated list of child nested objects to expand in the response,\ne.g. `?expand=contributions`\n"
+              },
+              {
+                "name": "tx_time_before",
+                "value": "2030-02-26T14:33:34.787Z",
+                "type": "query",
+                "description": "filter out all customer transactions whose tx_time is <= the provided value (ISO8601 datetime)"
+              },
+              {
+                "name": "tx_time_after",
+                "value": "2010-02-26T14:33:34.787Z",
+                "type": "query",
+                "description": "filter out all customer transactions whose tx_time is >= the provided value (ISO8601 datetime)"
+              },
+              {
+                "name": "has_triggered_rule",
+                "value": "",
+                "type": "query",
+                "description": "filter by transactions based on whether they've triggered any rules"
+              },
+              {
+                "name": "min_risk_score",
+                "value": "",
+                "type": "query",
+                "description": "minimum risk score"
+              },
+              {
+                "name": "max_risk_score",
+                "value": "",
+                "type": "query",
+                "description": "maximum risk score"
+              },
+              {
+                "name": "min_risk_score_change",
+                "value": "",
+                "type": "query",
+                "description": "minimum risk score change since last screening"
+              },
+              {
+                "name": "max_risk_score_change",
+                "value": "",
+                "type": "query",
+                "description": "maximum risk score change since last screening"
+              },
+              {
+                "name": "min_value",
+                "value": "",
+                "type": "query",
+                "description": "minimum value of the asset in it's minor unit (satoshis, wei etc)"
+              },
+              {
+                "name": "max_value",
+                "value": "",
+                "type": "query",
+                "description": "minimum value of the asset in it's minor unit (satoshis, wei etc)"
+              },
+              {
+                "name": "min_value_usd",
+                "value": "",
+                "type": "query",
+                "description": "minimum USD value"
+              },
+              {
+                "name": "max_value_usd",
+                "value": "",
+                "type": "query",
+                "description": "maximum USD value"
+              },
+              {
+                "name": "analysed_at_before",
+                "value": "2030-02-26T14:33:34.787Z",
+                "type": "query",
+                "description": "only return analysis that has been analysed before the given time (ISO8601 datetime)"
+              },
+              {
+                "name": "analysed_at_after",
+                "value": "2010-02-26T14:33:34.787Z",
+                "type": "query",
+                "description": "only return analysis that has been analysed after the given time (ISO8601 datetime)"
+              },
+              {
+                "name": "customer_reference",
+                "value": "",
+                "type": "query",
+                "description": "only return analysis whose customer reference matches the given string"
+              },
+              {
+                "name": "customer_reference_contains",
+                "value": "",
+                "type": "query",
+                "description": "only return analysis whose customer reference contains the given string"
+              },
+              {
+                "name": "workflow_status",
+                "value": "",
+                "type": "query",
+                "description": "only return analyses whose workflow status matches any of the given values. Accepts a single value or an array of values."
+              },
+              {
+                "name": "hash",
+                "value": "",
+                "type": "query",
+                "description": "filter customer transactions whose hash is equal to the given one (case insensitive)"
+              },
+              {
+                "name": "hash_contains",
+                "value": "",
+                "type": "query",
+                "description": "filter customer transactions whose hash contains the given string (case insensitive)"
+              },
+              {
+                "name": "address_hash",
+                "value": "",
+                "type": "query",
+                "description": "filter customer transactions whose address is equal to the given one (case insensitive)"
+              },
+              {
+                "name": "address_hash_contains",
+                "value": "",
+                "type": "query",
+                "description": "filter customer transactions whose address contains the given string (case insensitive)"
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "query",
+                "description": "get only transactions with given ids"
+              },
+              {
+                "name": "coverage",
+                "value": "",
+                "type": "query",
+                "description": "return the transaction analyses for a certain coverage level"
+              },
+              {
+                "name": "analysed_by",
+                "value": "",
+                "type": "query",
+                "description": "the ID of the actor who ran the query"
+              },
+              {
+                "name": "customer_id",
+                "value": "",
+                "type": "query",
+                "description": "the ID of the customer this transaction is linked to"
+              },
+              {
+                "name": "assigned_team_user_id",
+                "value": "",
+                "type": "query",
+                "description": "return transaction analyses that are assigned to the given team user ID(s). To get transaction analyses that are unassigned, include an empty string in your query. Multiple IDs can be provided as a comma-separated list."
+              },
+              {
+                "name": "process_status",
+                "value": "",
+                "type": "query",
+                "description": "return rows that are in any of the states specified in the array. Each element is one of (running, complete, error)."
+              },
+              {
+                "name": "risk_rules",
+                "value": "",
+                "type": "query",
+                "description": "return transactions that has triggered at least one of the specified risk_rules. To get transactions that have not triggered any rules, include empty string in your query. e.g. \"?risk_rules=,f7c36274-ba55-4f6b-8d46-d8cbe97d7c32\""
+              },
+              {
+                "name": "type",
+                "value": "",
+                "type": "query",
+                "description": "get only deposit or withdrawal analyses"
+              },
+              {
+                "name": "user_supplied_base58",
+                "value": "",
+                "type": "query",
+                "description": "if true, returns only transactions created by users that have provided a base58 (for BTC only). Otherwise, return those with provided output_indices."
+              },
+              {
+                "name": "asset",
+                "value": "",
+                "type": "query",
+                "description": "return only transaction that has been made on a particular asset or asset/blockchain combination"
+              },
+              {
+                "name": "screening_source",
+                "value": "",
+                "type": "query",
+                "description": "Indicates whether the screening was done via the Synchronous endpoint, Asynchronous endpoint, as part of the Automatic Rescreening feature or as a fallback system rescreening in case of error"
+              },
+              {
+                "name": "sort",
+                "value": "",
+                "type": "query",
+                "description": "Sort by criterion"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "pagination page number"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "pagination per page number, has a maximum value of 500."
+              },
+              {
+                "name": "subject_type",
+                "value": "",
+                "type": "query",
+                "description": "get only transaction or address analyses"
+              },
+              {
+                "name": "predictive",
+                "value": "",
+                "type": "query",
+                "description": "get only Predictive transactions. Predictive transactions were analyzed too close to the tip of the blockchain, so the full picture of associated addresses might be incomplete."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "The maximum number of results that are counted. If more analyses than this number are present then this number is returned. This improves the performance of queries over large datasets"
+              }
+            ]
+          },
+          "docs": "Paginate through all analyses, with various sort/filter parameters."
+        },
+        {
+          "info": {
+            "name": "Run a batch of analyses",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://aml-api.elliptic.co/v2/analyses",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Performs a batch of analyses (the max batch size is 100). Responses will contain IDs of the newly created analyses.\n\nReturned analyses will be **processing**, you must use the IDs returned to lookup the results later via [GET analyses/:id](#operation/getAnalysisById)\n"
+        },
+        {
+          "info": {
+            "name": "Get an analysis by ID",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://aml-api.elliptic.co/v2/analyses/:mc_analysis_id",
+            "params": [
+              {
+                "name": "mc_analysis_id",
+                "value": "",
+                "type": "path",
+                "description": "id of the analysis to retrieve"
+              },
+              {
+                "name": "includeScreenings",
+                "value": "",
+                "type": "query",
+                "description": "toggle whether to include the screening history"
+              },
+              {
+                "name": "previousScreenings",
+                "value": "",
+                "type": "query",
+                "description": "Number of previous screenings to include in the response"
+              }
+            ]
+          },
+          "docs": "Given an ID, return a single analysis"
+        },
+        {
+          "info": {
+            "name": "Get a screening of the analysis by ID",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://aml-api.elliptic.co/v2/analyses/:mc_analysis_id/screenings/:screening_id",
+            "params": [
+              {
+                "name": "mc_analysis_id",
+                "value": "",
+                "type": "path",
+                "description": "id of the analysis to retrieve"
+              },
+              {
+                "name": "screening_id",
+                "value": "",
+                "type": "path",
+                "description": "id of the screening to retrieve"
+              }
+            ]
+          },
+          "docs": "Given a screening ID, return the screening of the analysis"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

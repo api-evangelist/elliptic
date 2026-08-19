@@ -1,0 +1,41 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "AML API OAuth Assets Users API",
+    "version": "2.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "authorization_code",
+      "authorizationUrl": "https://login.elliptic.co/authorize",
+      "accessTokenUrl": "https://login.elliptic.co/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Users",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Returns a list of users",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://aml-api.elliptic.co/v2/users"
+          },
+          "docs": "Returns a list of users in your team."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

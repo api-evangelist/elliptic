@@ -1,0 +1,83 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "AML API OAuth Assets Transaction Workflow API",
+    "version": "2.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "authorization_code",
+      "authorizationUrl": "https://login.elliptic.co/authorize",
+      "accessTokenUrl": "https://login.elliptic.co/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Transaction Workflow",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Update the notes of an analysis by ID",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://aml-api.elliptic.co/v2/analyses/:mc_analysis_id",
+            "params": [
+              {
+                "name": "mc_analysis_id",
+                "value": "",
+                "type": "path",
+                "description": "id of the analysis to update"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Given an ID, update the notes of the analysis"
+        },
+        {
+          "info": {
+            "name": "Bulk update workflow status",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://aml-api.elliptic.co/v2/analyses/workflow_status",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Set the workflow status of the analyses having the ids passed as body to the desired value."
+        },
+        {
+          "info": {
+            "name": "Update assigned team user for transaction analysis",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://aml-api.elliptic.co/v2/analyses/assigned_team_user",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Set the assigned team user for a transaction analysis"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

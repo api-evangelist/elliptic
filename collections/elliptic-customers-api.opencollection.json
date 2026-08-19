@@ -1,0 +1,316 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "AML API OAuth Assets Customers API",
+    "version": "2.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "authorization_code",
+      "authorizationUrl": "https://login.elliptic.co/authorize",
+      "accessTokenUrl": "https://login.elliptic.co/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Customers",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Paginate all customers",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://aml-api.elliptic.co/v2/customers",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "requested page number"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "number of items per page"
+              },
+              {
+                "name": "workflow_status",
+                "value": "",
+                "type": "query",
+                "description": "workflow status filter"
+              },
+              {
+                "name": "keyword",
+                "value": "",
+                "type": "query",
+                "description": "filter both label and reference (case insensitive). Whitespace implies AND."
+              },
+              {
+                "name": "label",
+                "value": "",
+                "type": "query",
+                "description": "filter by label name"
+              },
+              {
+                "name": "label_matches",
+                "value": "",
+                "type": "query",
+                "description": "filter by exact label name (case sensitive)"
+              },
+              {
+                "name": "investigator_id",
+                "value": "",
+                "type": "query",
+                "description": "filter by these ids of users assigned to investigate the customer (can be empty string to get unassigned)"
+              },
+              {
+                "name": "customer_label_id",
+                "value": "",
+                "type": "query",
+                "description": "label filter (if empty string then customers with no labels are returned)"
+              },
+              {
+                "name": "reference_contains",
+                "value": "",
+                "type": "query",
+                "description": "a string on which to match customer references"
+              },
+              {
+                "name": "reference_matches",
+                "value": "",
+                "type": "query",
+                "description": "Deprecated\nUse reference instead\n"
+              },
+              {
+                "name": "reference",
+                "value": "",
+                "type": "query",
+                "description": "a customer reference to match (exactly)"
+              },
+              {
+                "name": "expand",
+                "value": "",
+                "type": "query",
+                "description": "to get more detailed labels object"
+              },
+              {
+                "name": "sort",
+                "value": "",
+                "type": "query",
+                "description": "sorting criterion"
+              },
+              {
+                "name": "minimum_avg_score",
+                "value": "",
+                "type": "query",
+                "description": "filter by avg_score >= the given value"
+              },
+              {
+                "name": "maximum_avg_score",
+                "value": "",
+                "type": "query",
+                "description": "filter by avg_score <= the given value"
+              },
+              {
+                "name": "minimum_max_score",
+                "value": "",
+                "type": "query",
+                "description": "filter by max_score >= the given value"
+              },
+              {
+                "name": "maximum_max_score",
+                "value": "",
+                "type": "query",
+                "description": "filter by max_score <= the given value"
+              },
+              {
+                "name": "minimum_vol",
+                "value": "",
+                "type": "query",
+                "description": "filter by volume >= the given value in USD"
+              },
+              {
+                "name": "maximum_vol",
+                "value": "",
+                "type": "query",
+                "description": "filter by volume <= the given value in USD"
+              },
+              {
+                "name": "first_tx_before",
+                "value": "2030-02-26T14:33:34.787Z",
+                "type": "query",
+                "description": "filter the earliest transaction time of this customer (ISO8601 datetime) <= the given date"
+              },
+              {
+                "name": "first_tx_after",
+                "value": "2010-02-26T14:33:34.787Z",
+                "type": "query",
+                "description": "filter the earliest transaction time of this customer (ISO8601 datetime) >= the given date"
+              },
+              {
+                "name": "last_tx_before",
+                "value": "2030-02-26T14:33:34.787Z",
+                "type": "query",
+                "description": "filter the latest transaction time of this customer (ISO8601 datetime) <= the given date"
+              },
+              {
+                "name": "last_tx_after",
+                "value": "2010-02-26T14:33:34.787Z",
+                "type": "query",
+                "description": "filter the latest transaction time of this customer (ISO8601 datetime) >= the given date"
+              },
+              {
+                "name": "last_queried_before",
+                "value": "2030-02-26T14:33:34.787Z",
+                "type": "query",
+                "description": "filter last_queried time of customer (ISO8601 datetime) <= the given date"
+              },
+              {
+                "name": "last_queried_after",
+                "value": "2010-02-26T14:33:34.787Z",
+                "type": "query",
+                "description": "filter last_queried time of customer (ISO8601 datetime) >= the given date"
+              },
+              {
+                "name": "status",
+                "value": "",
+                "type": "query",
+                "description": "allowed statuses"
+              },
+              {
+                "name": "include_no_risk",
+                "value": "",
+                "type": "query",
+                "description": "Deprecated\nNo longer supported\n"
+              },
+              {
+                "name": "isMc",
+                "value": "true",
+                "type": "query",
+                "description": "Deprecated\nThis will always evaluate to true. Legacy mode no longer supported\n"
+              }
+            ]
+          },
+          "docs": "Paginate through all customers, with various sort/filter parameters.\n"
+        },
+        {
+          "info": {
+            "name": "Get customer by ID",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://aml-api.elliptic.co/v2/customers/:customer_id",
+            "params": [
+              {
+                "name": "customer_id",
+                "value": "",
+                "type": "path",
+                "description": "uuid identifier of a customer"
+              },
+              {
+                "name": "expand",
+                "value": "",
+                "type": "query",
+                "description": "to expand customer labels and/or statistics"
+              },
+              {
+                "name": "isMc",
+                "value": "true",
+                "type": "query",
+                "description": "Deprecated\nThis will always evaluate to true. Legacy mode no longer supported\n"
+              }
+            ]
+          },
+          "docs": "Get a single customer by ID\n"
+        },
+        {
+          "info": {
+            "name": "Bulk update investigator ID",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://aml-api.elliptic.co/v2/customers/investigator",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "The customers & investigator_id must all exist & belong to the team of the authenticated user.\n"
+        },
+        {
+          "info": {
+            "name": "Bulk update workflow status",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://aml-api.elliptic.co/v2/customers/workflow_status",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "The customers must all exist & belong to the team of the authenticated user.\n\nCurrently the only states are 'Active' and 'Archived'. Transitions both ways are allowed.\n"
+        },
+        {
+          "info": {
+            "name": "Get customer summary",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://aml-api.elliptic.co/v2/copilot/customers/summary/:customerId",
+            "params": [
+              {
+                "name": "customerId",
+                "value": "",
+                "type": "path",
+                "description": "Customer ID (UUID)"
+              },
+              {
+                "name": "request",
+                "value": "",
+                "type": "query",
+                "description": "Type of summary to return. Omit for a full structured summary with analysis IDs. `overview`, `wallet`, or `transaction` return an LLM narrative. `wallet_ids` or `transaction_ids` return the highest-risk items with their hash and analysis ID."
+              }
+            ]
+          },
+          "docs": "Returns a summary for a customer by ID. The shape of the response depends on the `request` query parameter."
+        },
+        {
+          "info": {
+            "name": "Get customer transaction assets",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://aml-api.elliptic.co/v2/copilot/customers/summary/:customerId/transaction-assets",
+            "params": [
+              {
+                "name": "customerId",
+                "value": "",
+                "type": "path",
+                "description": "Customer ID (UUID)"
+              }
+            ]
+          },
+          "docs": "Returns an AI-generated analysis of transaction assets for a customer"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

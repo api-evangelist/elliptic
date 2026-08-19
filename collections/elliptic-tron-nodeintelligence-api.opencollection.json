@@ -1,0 +1,93 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "AML API OAuth Assets Tron NodeIntelligence API",
+    "version": "2.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "authorization_code",
+      "authorizationUrl": "https://login.elliptic.co/authorize",
+      "accessTokenUrl": "https://login.elliptic.co/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Tron NodeIntelligence",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Submit transaction hashses for lookup",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://aml-api.elliptic.co/v2/v1/node-intelligence/tron/transactions",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Submit an asynchronous query to lookup IP data for a Tron transaction hashes."
+        },
+        {
+          "info": {
+            "name": "Submit crypto wallet address lookup",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://aml-api.elliptic.co/v2/v1/node-intelligence/tron/wallet",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Submit an asynchronous query to lookup IP data for a Tron crypto wallet address"
+        },
+        {
+          "info": {
+            "name": "Submit node address for lookup",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://aml-api.elliptic.co/v2/v1/node-intelligence/tron/node",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Submit an asynchronous query to lookup Tron transactions for known node address"
+        },
+        {
+          "info": {
+            "name": "Poll query",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://aml-api.elliptic.co/v2/v1/node-intelligence/queries/:query_id",
+            "params": [
+              {
+                "name": "query_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Check if query is complete and ready for results"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
