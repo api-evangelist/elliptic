@@ -362,6 +362,8 @@ apis:
   humanURL: https://developers.elliptic.co/docs/aml-api-introduction
   baseURL: https://aml-api.elliptic.co
   tags:
+  - User
+  tags_raw:
   - Users
   properties:
   - type: OpenAPI
@@ -450,6 +452,8 @@ apis:
   humanURL: https://developers.elliptic.co/docs/aml-api-introduction
   baseURL: https://aml-api.elliptic.co
   tags:
+  - Wallets
+  tags_raw:
   - Wallet
   properties:
   - type: OpenAPI
