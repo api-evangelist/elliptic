@@ -519,6 +519,8 @@ apis:
   - type: Documentation
     url: https://developers.elliptic.co/
 common:
+  - type: Website
+    url: https://www.elliptic.co/
   - type: AgenticAccess
     url: agentic-access/elliptic-agentic-access.yml
   - type: DomainSecurity
