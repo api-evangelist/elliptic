@@ -458,37 +458,6 @@ apis:
     url: https://developers.elliptic.co/docs/ai-api-introduction
   - type: Documentation
     url: https://developers.elliptic.co/
-- aid: elliptic:elliptic-wallet-api
-  name: Elliptic Wallet API
-  description: The Wallet API from Elliptic — 1 operation(s) for wallet.
-  humanURL: https://developers.elliptic.co/docs/aml-api-introduction
-  baseURL: https://aml-api.elliptic.co
-  tags:
-  - Wallets
-  tags_raw:
-  - Wallet
-  properties:
-  - type: OpenAPI
-    url: openapi/elliptic-wallet-api-openapi.yml
-  - type: Documentation
-    url: https://developers.elliptic.co/docs/aml-api-introduction
-  - type: Authentication
-    url: https://developers.elliptic.co/docs/authentication-1
-  - type: SDKs
-    url: https://developers.elliptic.co/docs/quick-start-sdks
-  - type: RateLimits
-    url: >-
-      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/rate-limits/aml-api.yml
-  - type: Plans
-    url: >-
-      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/plans/elliptic-plans.yml
-  - type: FinOps
-    url: >-
-      https://raw.githubusercontent.com/api-evangelist/elliptic/refs/heads/main/finops/elliptic-finops.yml
-  - type: Documentation
-    url: https://developers.elliptic.co/docs/ai-api-introduction
-  - type: Documentation
-    url: https://developers.elliptic.co/
 - aid: elliptic:elliptic-wallet-workflow-api
   name: Elliptic Wallet Workflow API
   description: The Wallet Workflow API from Elliptic — 2 operation(s) for wallet workflow.
