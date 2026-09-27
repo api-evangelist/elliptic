@@ -768,167 +768,52 @@ paths:
           $ref: '#/components/responses/500'
 components:
   schemas:
-    HolisticAnalysisRequest:
+    EvaluationDetailForGetAll:
+      title: EvaluationDetailForGetAll
       type: object
-      title: Holistic Analysis Request
+      description: details of a single risk rule evaluation for paginated transactions analysis
       properties:
-        subject:
-          title: AnalysisSubject
-          type: object
-          properties:
-            asset:
-              type: string
-              description: For holistic screening this should be set to holistic
-              enum:
-              - holistic
-              example: holistic
-            blockchain:
-              type: string
-              description: For holistic screening this should be set to holistic
-              enum:
-              - holistic
-              example: holistic
-            type:
-              type: string
-              description: the type of subject
-              enum:
-              - transaction
-              example: transaction
-            hash:
-              type: string
-              description: the transaction hash
-              example: 24220e9cb717276300e17863c28f44787773c1ce156214594f36dc2a7a59f42d
-            output_type:
-              type: string
-              enum:
-              - address
-              example: address
-              description: which output type you are using to specify the output(s) you wish to analyse
-            output_address:
-              type: string
-              description: the address hash when using output_type address
-              example: 35dRfg3bWZXdGjW1vKLMu28AmRSWvSid9o
-          required:
-          - asset
-          - blockchain
-          - type
-          - hash
-          - output_type
-          - output_address
-        type:
-          $ref: '#/components/schemas/TransactionAnalysisType'
-        customer_reference:
+        rule_id:
+          description: the UUIDv4 of this risk rule
           type: string
-          description: a reference for the customer. Will create a new customer if one with a matching reference does not exist
-      required:
-      - subject
-      - type
-      - customer_reference
-    UTXOBasedAnalysisRequest:
-      type: object
-      title: BCH/ZEC/ZEN Analysis Request
-      properties:
-        subject:
-          title: AnalysisSubject
-          type: object
-          properties:
-            asset:
-              type: string
-              description: the asset (either BCH, ZEN or ZEC) involved in the event
-              enum:
-              - BCH
-              - ZEN
-              - ZEC
-              example: BCH
-            blockchain:
-              type: string
-              description: the blockchain (either bitcoin_cash, horizen or zcash) of the asset submitted
-              enum:
-              - bitcoin_cash
-              - horizen
-              - zcash
-              example: bitcoin_cash
-            type:
-              type: string
-              description: the type of subject
-              enum:
-              - transaction
-              example: transaction
-            hash:
-              type: string
-              description: the transaction hash
-              example: 16e37268c8dba6eded4dce68060fe5783d6397455410fb9959fecc4644d98340
-            output_type:
-              type: string
-              enum:
-              - address
-              example: address
-              description: which output type you are using to specify the output(s) you wish to analyze
-            output_address:
-              type: string
-              description: the address hash when using output_type address. In order to analyze a UTXO transaction, you must specify the output(s) of that transaction which are relevant to your analysis. For example, if you are analysing a deposit into your service then you might want to specify the output address that belongs to your service. Or for a withdrawal, it might be the output address that your customer wants to send funds to. You can either specify the address or the zero-indexed output indices. When specifying the output(s) by indices, if the indices given reference multiple distinct addresses, the API will respond with an error.
-              example: 1cftamBhjtCmCazbqjo6st1mgux1EbTVc
-          required:
-          - asset
-          - blockchain
-          - type
-          - hash
-          - output_type
-          - output_address
-        type:
-          $ref: '#/components/schemas/TransactionAnalysisType'
-        customer_reference:
+          format: UUIDv4
+          example: b7535048-76f8-4f60-bdd3-9d659298f9e7
+        rule_name:
+          description: the name of the rule
           type: string
-          description: a reference for the customer. Will create a new customer if one with a matching reference does not exist
-      required:
-      - subject
-      - type
-      - customer_reference
-    AnalysisSubject:
-      title: AnalysisSubject
-      type: object
-      properties:
-        asset:
-          type: string
-          description: the asset involved in the event.
-          example: holistic
-        blockchain:
-          type: string
-          description: The blockchain the asset/address belongs to (optional)
-          example: holistic
-        type:
-          type: string
-          description: the type of subject. Currently, only 'transaction' is supported
-          example: transaction
-        hash:
-          type: string
-          description: the transaction hash
-          example: '0x4672bad527107471cb5067a887f4656d585a8a31'
-        output_type:
-          type: string
-          enum:
-          - address
-          - indices
-          description: which output type you are using to specify the output(s) you wish to analyse (BTC/LTC/BCH only)
-        output_address:
-          type: string
-          description: the address hash when using output_type address
-          example: 1MdYC22Gmjp2ejVPCxyYjFyWbQCYTGhGq8
-        output_indices:
-          type: array
-          items:
-            type: number
-          description: the indices of outputs to be analysed when using output_type indices
-          example:
-          - 1
-        log_index:
+          example: Illict
+        risk_score:
+          description: The risk score calculated for this rule evaluation as part of the analysis
           type: number
-          description: the log index of an ERC20 transacation
-          example: 10
+          format: float
+          example: 9.038007
+        mc_analysis_id:
+          description: id of the analysis
+          type: string
+          format: UUIDv4
+          example: b7535048-76f8-4f60-bdd3-9d659298f9e7
       required:
-      - asset
-      - type
-      - hash
+      - rule_id
+      - risk_score
+      additionalProperties: false
+    ForbiddenError:
+      type: object
+      properties:
+        name:
+          type: string
+          example: ForbiddenError
+        message:
+          type: string
+          example: You do not have enough privilege to access this path.
+    TransactionAnalysisRequestBatch:
+      description: the analyses to request
+      type: array
+      minItems: 1
+      maxItems: 100
+      items:
+        anyOf:
+        - $ref: '#/components/schemas/HolisticAnalysisRequest'
+        - $ref: '#/components/schemas/UTXOBasedAnalysisRequest'
     NotFoundError:
       type: object
       properties:
@@ -938,266 +823,6 @@ components:
         message:
           type: string
           example: Entity not found.
-    InputOutput:
-      title: InputOutput
-      type: object
-      description: An input or output (IO) of a transaction
-      properties:
-        hash:
-          type: string
-          example: '0x056fd409e1d7a124bd7017459dfea2f387b6d5cd'
-          description: blockchain identifier of the IO
-        amount:
-          type: object
-          properties:
-            native:
-              type: number
-              description: Transaction amount expresses in the native currency of the blockchain it has occurred in the most precise unit possible, e.g. satoshis for bitcoin
-              example: 38383838
-            native_major:
-              type: number
-              description: Transaction amount expressed in the native currency of the blockchain it has occurred rounded to its major decimal format
-              example: 38383838
-            usd:
-              type: number
-              description: Transaction amount expressed in US dollars of the blockchain it has occurred in the most precise unit possible, e.g. satoshis for bitcoin
-              example: 38383838
-        index:
-          type: number
-          example: 0
-          description: The index of this IO on the transaction
-        labels:
-          type: array
-          description: Label's given to the IO as per Elliptic Assertions
-          items:
-            type: object
-            properties:
-              name:
-                type: string
-                example: A Dark Market
-              category:
-                type: string
-                example: Dark Market
-              is_primary_entity:
-                type: boolean
-                description: Is this the primary label of the entity
-    TransactionAnalysisSingleResponse:
-      title: TransactionAnalysisSingleResponse
-      type: object
-      description: 'Response for Transaction Analysis. Represents the full result of a transaction screening, including metadata, risk scores, contributing entities, and evaluation details.
-
-        '
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: Unique identifier of the transaction analysis
-          example: 80696082-4efe-4e99-8730-623cbf29b6d1
-        type:
-          $ref: '#/components/schemas/TransactionAnalysisType'
-        subject:
-          allOf:
-          - $ref: '#/components/schemas/AnalysisSubject'
-          - type: object
-        customer:
-          type: object
-          description: The customer that submitted the request
-          properties:
-            id:
-              type: string
-              format: uuid
-              description: The UUIDv4 of the customer this analysis is associated with
-              example: b6fcf5d7-e1d1-46d9-9755-0d477cb575ed
-            reference:
-              type: string
-              description: The string reference that has been given to this customer. Can be empty
-              example: sa-rerouting-BTC
-        analysed_by:
-          $ref: '#/components/schemas/WalletAnalysisResponse/properties/analysed_by'
-          description: The actor who requested the analysis
-        created_at:
-          description: ISO date time with time zone (UTC) of when the analysis was first analysed
-          type: string
-          format: date-time
-          example: '2025-07-23T13:43:51.682Z'
-        updated_at:
-          description: ISO date time with time zone (UTC) of when the wallet analysis was last updated
-          type: string
-          format: date-time
-          example: '2025-07-23T13:43:51.682Z'
-        analysed_at:
-          description: ISO date time with time zone (UTC) of when this analysis was completed
-          type: string
-          format: date-time
-          example: '2025-07-23T13:43:52.096Z'
-        blockchain_info:
-          type: object
-          description: The relevant blockchain data related to the subject's hash
-          properties:
-            address:
-              type: object
-              properties:
-                has_sent:
-                  type: boolean
-                  example: true
-                has_received:
-                  type: boolean
-                  example: true
-            transaction:
-              type: object
-              properties:
-                time:
-                  type: string
-                  example: '2024-08-28T14:39:09Z'
-                value:
-                  type: object
-                  description: 'Object representing the value of this transaction expressed in different currency units
-
-                    '
-                  properties:
-                    usd:
-                      type: number
-                      example: 300179.086101
-        risk_score:
-          type: number
-          format: float
-          x-nullable: true
-          description: The risk score calculated as an aggregation from all the rules. If null is returned, no risk rules have been triggered. If 0 is returned, risk rules were triggered and the calculated score was 0.
-          example: 10
-        evaluation_detail:
-          type: array
-          description: Details of each risk rule evaluation
-          items:
-            $ref: '#/components/schemas/EvaluationDetail'
-        contributions:
-          description: Array of contributing entities that led to the match
-          type: array
-          items:
-            $ref: '#/components/schemas/Contribution'
-        detected_behaviors:
-          description: Array of detected behaviors for the analysis subject
-          items:
-            $ref: '#/components/schemas/WalletAnalysisResponse/properties/detected_behaviors/items'
-        changes:
-          type: object
-          description: Changes compared to previous screening of analysis
-          x-nullable: true
-          properties:
-            risk_score_change:
-              type: number
-              format: float
-              x-nullable: true
-              description: 'Change in risk score compared to previous screening of analysis. - A positive number means the risk score has increased compared to the previous screening. - A negative number means the risk score has decreased compared to the previous screening. - A 0 indicates no change in risk score compared to the previous screening.
-
-                '
-              example: 0.1
-        workflow_status:
-          $ref: '#/components/schemas/WalletAnalysisResponse/properties/workflow_status'
-        workflow_status_id:
-          allOf:
-          - $ref: '#/components/schemas/WalletAnalysisResponse/properties/workflow_status_id'
-          - {}
-        assigned_team_user:
-          $ref: '#/components/schemas/WalletAnalysisResponse/properties/analysed_by'
-          description: The team user assigned to this analysis
-        team_id:
-          description: UUIDv4 identifier of the team the user belongs to
-          type: string
-          format: UUIDv4
-          example: 148ff854-7a28-460e-808a-b79a95ff7564
-        process_status:
-          type: string
-          enum:
-          - running
-          - complete
-          - error
-          description: The process status ('running','complete','error')
-          example: complete
-        process_status_id:
-          type: integer
-          description: 'The screening process status. - A 1 number means the process status is running. - A 2 number means the process status is completed. - A 3 indicates the process status has an error.
-
-            '
-          enum:
-          - 1
-          - 2
-          - 3
-          example: 2
-          x-nullable: true
-        screening_source:
-          type: string
-          description: 'Indicates whether the screening was done via the Synchronous endpoint, Asynchronous endpoint, as part of the Automatic Rescreening feature or as a fallback system rescreening in case of error
-
-            '
-          enum:
-          - sync
-          - async
-          - system_rescreen
-          - automatic_rescreen
-          - continuous_monitoring
-          example: sync
-        error:
-          type: object
-          description: Property containing information about a failed screening, null unless process_status = 'error'
-          x-nullable: true
-          properties:
-            message:
-              type: string
-              description: error message
-              example: something went wrong
-              x-nullable: true
-        asset_list:
-          description: 'A new field that will be returned for Holistic Screenings only. This field contains the asset(s) involved in the transaction using the unique combination of transaction hash and output address.
-
-            '
-          type: array
-          items:
-            type: string
-            example: USDT/tron
-        predictive:
-          description: 'True if the transaction was analyzed too close to the tip of the blockchain, so the full picture of associated addresses might be incomplete.
-
-            '
-          type: boolean
-          example: false
-        comments:
-          type: array
-          description: Notes left on the Navigator
-          items:
-            type: object
-            properties:
-              body:
-                type: string
-                x-nullable: true
-                description: The comment left on the analysis
-                example: here's a comment
-      required:
-      - id
-      - type
-      - subject
-      - analysed_by
-      - created_at
-      - updated_at
-      - analysed_at
-      - customer
-      - evaluation_detail
-      - blockchain_info
-      - workflow_status
-      - process_status
-      - contributions
-      - detected_behaviors
-      - screening_source
-      - team_id
-      additionalProperties: false
-    NotInBlockchain:
-      type: object
-      properties:
-        name:
-          type: string
-          example: NotInBlockchain
-        message:
-          type: string
-          example: The submitted ${type} with hash ${hash} has not yet been processed into the Elliptic tool or does not exist on the blockchain.
     WalletAnalysisResponse:
       title: WalletAnalysisResponse
       type: object
@@ -1493,55 +1118,6 @@ components:
       - team_id
       - workflow_status
       additionalProperties: false
-    EvaluationDetailForGetAll:
-      title: EvaluationDetailForGetAll
-      type: object
-      description: details of a single risk rule evaluation for paginated transactions analysis
-      properties:
-        rule_id:
-          description: the UUIDv4 of this risk rule
-          type: string
-          format: UUIDv4
-          example: b7535048-76f8-4f60-bdd3-9d659298f9e7
-        rule_name:
-          description: the name of the rule
-          type: string
-          example: Illict
-        risk_score:
-          description: The risk score calculated for this rule evaluation as part of the analysis
-          type: number
-          format: float
-          example: 9.038007
-        mc_analysis_id:
-          description: id of the analysis
-          type: string
-          format: UUIDv4
-          example: b7535048-76f8-4f60-bdd3-9d659298f9e7
-      required:
-      - rule_id
-      - risk_score
-      additionalProperties: false
-    Error:
-      type: object
-      properties:
-        name:
-          type: string
-          example: GenericErrorName
-        message:
-          type: string
-          example: Something bad happened.
-    UnauthorizedError:
-      type: string
-      example: Unauthorized
-    TransactionAnalysisRequestBatch:
-      description: the analyses to request
-      type: array
-      minItems: 1
-      maxItems: 100
-      items:
-        anyOf:
-        - $ref: '#/components/schemas/HolisticAnalysisRequest'
-        - $ref: '#/components/schemas/UTXOBasedAnalysisRequest'
     Contribution:
       title: Contribution
       type: object
@@ -1639,6 +1215,55 @@ components:
       - entities
       - contribution_percentage
       - contribution_value
+    TransactionAnalysisRequestSingle:
+      oneOf:
+      - $ref: '#/components/schemas/HolisticAnalysisRequest'
+      - $ref: '#/components/schemas/UTXOBasedAnalysisRequest'
+    AnalysisSubject:
+      title: AnalysisSubject
+      type: object
+      properties:
+        asset:
+          type: string
+          description: the asset involved in the event.
+          example: holistic
+        blockchain:
+          type: string
+          description: The blockchain the asset/address belongs to (optional)
+          example: holistic
+        type:
+          type: string
+          description: the type of subject. Currently, only 'transaction' is supported
+          example: transaction
+        hash:
+          type: string
+          description: the transaction hash
+          example: '0x4672bad527107471cb5067a887f4656d585a8a31'
+        output_type:
+          type: string
+          enum:
+          - address
+          - indices
+          description: which output type you are using to specify the output(s) you wish to analyse (BTC/LTC/BCH only)
+        output_address:
+          type: string
+          description: the address hash when using output_type address
+          example: 1MdYC22Gmjp2ejVPCxyYjFyWbQCYTGhGq8
+        output_indices:
+          type: array
+          items:
+            type: number
+          description: the indices of outputs to be analysed when using output_type indices
+          example:
+          - 1
+        log_index:
+          type: number
+          description: the log index of an ERC20 transacation
+          example: 10
+      required:
+      - asset
+      - type
+      - hash
     MatchedElement:
       title: MatchedElement
       type: object
@@ -1781,15 +1406,14 @@ components:
       - contribution_percentage
       - contribution_value
       - contributions
-    BadRequestError:
-      type: object
-      properties:
-        name:
-          type: string
-          example: BadRequestError
-        message:
-          type: string
-          example: Invalid id parameter
+    TransactionAnalysisType:
+      title: TransactionAnalysisType
+      description: The type of analysis. The source_of_funds type is used to get details of the entities that have contributed funds to the transaction's source address, and calculate a risk score based on this exposure. This is referred to as "Deposit" in Navigator. The destination_of_funds type is used to get details of the entities that have received funds from the transaction's destination address, and calculate a risk score based on this exposure. This is referred to as "Withdrawal" in Navigator.
+      type: string
+      enum:
+      - source_of_funds
+      - destination_of_funds
+      example: source_of_funds
     TransactionAnalysisBatchResponse:
       title: TransactionAnalysisBatchResponse
       type: array
@@ -1892,27 +1516,6 @@ components:
         - analysed_at
         - customer
         additionalProperties: false
-    TransactionAnalysisRequestSingle:
-      oneOf:
-      - $ref: '#/components/schemas/HolisticAnalysisRequest'
-      - $ref: '#/components/schemas/UTXOBasedAnalysisRequest'
-    ForbiddenError:
-      type: object
-      properties:
-        name:
-          type: string
-          example: ForbiddenError
-        message:
-          type: string
-          example: You do not have enough privilege to access this path.
-    TransactionAnalysisType:
-      title: TransactionAnalysisType
-      description: The type of analysis. The source_of_funds type is used to get details of the entities that have contributed funds to the transaction's source address, and calculate a risk score based on this exposure. This is referred to as "Deposit" in Navigator. The destination_of_funds type is used to get details of the entities that have received funds from the transaction's destination address, and calculate a risk score based on this exposure. This is referred to as "Withdrawal" in Navigator.
-      type: string
-      enum:
-      - source_of_funds
-      - destination_of_funds
-      example: source_of_funds
     EvaluationDetail:
       title: EvaluationDetail
       type: object
@@ -1984,7 +1587,416 @@ components:
       - rule_id
       - risk_score
       additionalProperties: false
+    Error:
+      type: object
+      properties:
+        name:
+          type: string
+          example: GenericErrorName
+        message:
+          type: string
+          example: Something bad happened.
+    UTXOBasedAnalysisRequest:
+      type: object
+      title: BCH/ZEC/ZEN Analysis Request
+      properties:
+        subject:
+          title: AnalysisSubject
+          type: object
+          properties:
+            asset:
+              type: string
+              description: the asset (either BCH, ZEN or ZEC) involved in the event
+              enum:
+              - BCH
+              - ZEN
+              - ZEC
+              example: BCH
+            blockchain:
+              type: string
+              description: the blockchain (either bitcoin_cash, horizen or zcash) of the asset submitted
+              enum:
+              - bitcoin_cash
+              - horizen
+              - zcash
+              example: bitcoin_cash
+            type:
+              type: string
+              description: the type of subject
+              enum:
+              - transaction
+              example: transaction
+            hash:
+              type: string
+              description: the transaction hash
+              example: 16e37268c8dba6eded4dce68060fe5783d6397455410fb9959fecc4644d98340
+            output_type:
+              type: string
+              enum:
+              - address
+              example: address
+              description: which output type you are using to specify the output(s) you wish to analyze
+            output_address:
+              type: string
+              description: the address hash when using output_type address. In order to analyze a UTXO transaction, you must specify the output(s) of that transaction which are relevant to your analysis. For example, if you are analysing a deposit into your service then you might want to specify the output address that belongs to your service. Or for a withdrawal, it might be the output address that your customer wants to send funds to. You can either specify the address or the zero-indexed output indices. When specifying the output(s) by indices, if the indices given reference multiple distinct addresses, the API will respond with an error.
+              example: 1cftamBhjtCmCazbqjo6st1mgux1EbTVc
+          required:
+          - asset
+          - blockchain
+          - type
+          - hash
+          - output_type
+          - output_address
+        type:
+          $ref: '#/components/schemas/TransactionAnalysisType'
+        customer_reference:
+          type: string
+          description: a reference for the customer. Will create a new customer if one with a matching reference does not exist
+      required:
+      - subject
+      - type
+      - customer_reference
+    UnauthorizedError:
+      type: string
+      example: Unauthorized
+    NotInBlockchain:
+      type: object
+      properties:
+        name:
+          type: string
+          example: NotInBlockchain
+        message:
+          type: string
+          example: The submitted ${type} with hash ${hash} has not yet been processed into the Elliptic tool or does not exist on the blockchain.
+    HolisticAnalysisRequest:
+      type: object
+      title: Holistic Analysis Request
+      properties:
+        subject:
+          title: AnalysisSubject
+          type: object
+          properties:
+            asset:
+              type: string
+              description: For holistic screening this should be set to holistic
+              enum:
+              - holistic
+              example: holistic
+            blockchain:
+              type: string
+              description: For holistic screening this should be set to holistic
+              enum:
+              - holistic
+              example: holistic
+            type:
+              type: string
+              description: the type of subject
+              enum:
+              - transaction
+              example: transaction
+            hash:
+              type: string
+              description: the transaction hash
+              example: 24220e9cb717276300e17863c28f44787773c1ce156214594f36dc2a7a59f42d
+            output_type:
+              type: string
+              enum:
+              - address
+              example: address
+              description: which output type you are using to specify the output(s) you wish to analyse
+            output_address:
+              type: string
+              description: the address hash when using output_type address
+              example: 35dRfg3bWZXdGjW1vKLMu28AmRSWvSid9o
+          required:
+          - asset
+          - blockchain
+          - type
+          - hash
+          - output_type
+          - output_address
+        type:
+          $ref: '#/components/schemas/TransactionAnalysisType'
+        customer_reference:
+          type: string
+          description: a reference for the customer. Will create a new customer if one with a matching reference does not exist
+      required:
+      - subject
+      - type
+      - customer_reference
+    BadRequestError:
+      type: object
+      properties:
+        name:
+          type: string
+          example: BadRequestError
+        message:
+          type: string
+          example: Invalid id parameter
+    InputOutput:
+      title: InputOutput
+      type: object
+      description: An input or output (IO) of a transaction
+      properties:
+        hash:
+          type: string
+          example: '0x056fd409e1d7a124bd7017459dfea2f387b6d5cd'
+          description: blockchain identifier of the IO
+        amount:
+          type: object
+          properties:
+            native:
+              type: number
+              description: Transaction amount expresses in the native currency of the blockchain it has occurred in the most precise unit possible, e.g. satoshis for bitcoin
+              example: 38383838
+            native_major:
+              type: number
+              description: Transaction amount expressed in the native currency of the blockchain it has occurred rounded to its major decimal format
+              example: 38383838
+            usd:
+              type: number
+              description: Transaction amount expressed in US dollars of the blockchain it has occurred in the most precise unit possible, e.g. satoshis for bitcoin
+              example: 38383838
+        index:
+          type: number
+          example: 0
+          description: The index of this IO on the transaction
+        labels:
+          type: array
+          description: Label's given to the IO as per Elliptic Assertions
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                example: A Dark Market
+              category:
+                type: string
+                example: Dark Market
+              is_primary_entity:
+                type: boolean
+                description: Is this the primary label of the entity
+    TransactionAnalysisSingleResponse:
+      title: TransactionAnalysisSingleResponse
+      type: object
+      description: 'Response for Transaction Analysis. Represents the full result of a transaction screening, including metadata, risk scores, contributing entities, and evaluation details.
+
+        '
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier of the transaction analysis
+          example: 80696082-4efe-4e99-8730-623cbf29b6d1
+        type:
+          $ref: '#/components/schemas/TransactionAnalysisType'
+        subject:
+          allOf:
+          - $ref: '#/components/schemas/AnalysisSubject'
+          - type: object
+        customer:
+          type: object
+          description: The customer that submitted the request
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: The UUIDv4 of the customer this analysis is associated with
+              example: b6fcf5d7-e1d1-46d9-9755-0d477cb575ed
+            reference:
+              type: string
+              description: The string reference that has been given to this customer. Can be empty
+              example: sa-rerouting-BTC
+        analysed_by:
+          $ref: '#/components/schemas/WalletAnalysisResponse/properties/analysed_by'
+          description: The actor who requested the analysis
+        created_at:
+          description: ISO date time with time zone (UTC) of when the analysis was first analysed
+          type: string
+          format: date-time
+          example: '2025-07-23T13:43:51.682Z'
+        updated_at:
+          description: ISO date time with time zone (UTC) of when the wallet analysis was last updated
+          type: string
+          format: date-time
+          example: '2025-07-23T13:43:51.682Z'
+        analysed_at:
+          description: ISO date time with time zone (UTC) of when this analysis was completed
+          type: string
+          format: date-time
+          example: '2025-07-23T13:43:52.096Z'
+        blockchain_info:
+          type: object
+          description: The relevant blockchain data related to the subject's hash
+          properties:
+            address:
+              type: object
+              properties:
+                has_sent:
+                  type: boolean
+                  example: true
+                has_received:
+                  type: boolean
+                  example: true
+            transaction:
+              type: object
+              properties:
+                time:
+                  type: string
+                  example: '2024-08-28T14:39:09Z'
+                value:
+                  type: object
+                  description: 'Object representing the value of this transaction expressed in different currency units
+
+                    '
+                  properties:
+                    usd:
+                      type: number
+                      example: 300179.086101
+        risk_score:
+          type: number
+          format: float
+          x-nullable: true
+          description: The risk score calculated as an aggregation from all the rules. If null is returned, no risk rules have been triggered. If 0 is returned, risk rules were triggered and the calculated score was 0.
+          example: 10
+        evaluation_detail:
+          type: array
+          description: Details of each risk rule evaluation
+          items:
+            $ref: '#/components/schemas/EvaluationDetail'
+        contributions:
+          description: Array of contributing entities that led to the match
+          type: array
+          items:
+            $ref: '#/components/schemas/Contribution'
+        detected_behaviors:
+          description: Array of detected behaviors for the analysis subject
+          items:
+            $ref: '#/components/schemas/WalletAnalysisResponse/properties/detected_behaviors/items'
+        changes:
+          type: object
+          description: Changes compared to previous screening of analysis
+          x-nullable: true
+          properties:
+            risk_score_change:
+              type: number
+              format: float
+              x-nullable: true
+              description: 'Change in risk score compared to previous screening of analysis. - A positive number means the risk score has increased compared to the previous screening. - A negative number means the risk score has decreased compared to the previous screening. - A 0 indicates no change in risk score compared to the previous screening.
+
+                '
+              example: 0.1
+        workflow_status:
+          $ref: '#/components/schemas/WalletAnalysisResponse/properties/workflow_status'
+        workflow_status_id:
+          allOf:
+          - $ref: '#/components/schemas/WalletAnalysisResponse/properties/workflow_status_id'
+          - {}
+        assigned_team_user:
+          $ref: '#/components/schemas/WalletAnalysisResponse/properties/analysed_by'
+          description: The team user assigned to this analysis
+        team_id:
+          description: UUIDv4 identifier of the team the user belongs to
+          type: string
+          format: UUIDv4
+          example: 148ff854-7a28-460e-808a-b79a95ff7564
+        process_status:
+          type: string
+          enum:
+          - running
+          - complete
+          - error
+          description: The process status ('running','complete','error')
+          example: complete
+        process_status_id:
+          type: integer
+          description: 'The screening process status. - A 1 number means the process status is running. - A 2 number means the process status is completed. - A 3 indicates the process status has an error.
+
+            '
+          enum:
+          - 1
+          - 2
+          - 3
+          example: 2
+          x-nullable: true
+        screening_source:
+          type: string
+          description: 'Indicates whether the screening was done via the Synchronous endpoint, Asynchronous endpoint, as part of the Automatic Rescreening feature or as a fallback system rescreening in case of error
+
+            '
+          enum:
+          - sync
+          - async
+          - system_rescreen
+          - automatic_rescreen
+          - continuous_monitoring
+          example: sync
+        error:
+          type: object
+          description: Property containing information about a failed screening, null unless process_status = 'error'
+          x-nullable: true
+          properties:
+            message:
+              type: string
+              description: error message
+              example: something went wrong
+              x-nullable: true
+        asset_list:
+          description: 'A new field that will be returned for Holistic Screenings only. This field contains the asset(s) involved in the transaction using the unique combination of transaction hash and output address.
+
+            '
+          type: array
+          items:
+            type: string
+            example: USDT/tron
+        predictive:
+          description: 'True if the transaction was analyzed too close to the tip of the blockchain, so the full picture of associated addresses might be incomplete.
+
+            '
+          type: boolean
+          example: false
+        comments:
+          type: array
+          description: Notes left on the Navigator
+          items:
+            type: object
+            properties:
+              body:
+                type: string
+                x-nullable: true
+                description: The comment left on the analysis
+                example: here's a comment
+      required:
+      - id
+      - type
+      - subject
+      - analysed_by
+      - created_at
+      - updated_at
+      - analysed_at
+      - customer
+      - evaluation_detail
+      - blockchain_info
+      - workflow_status
+      - process_status
+      - contributions
+      - detected_behaviors
+      - screening_source
+      - team_id
+      additionalProperties: false
   responses:
+    '404':
+      description: Resource item not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/NotFoundError'
+    '500':
+      description: Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
     TooManyRequestsError:
       description: Too Many Requests — Rate limit exceeded
       content:
@@ -1999,48 +2011,24 @@ components:
               message:
                 type: string
                 example: Too many requests – please try again later
-    '401':
-      description: Not authenticated
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/UnauthorizedError'
-    '404':
-      description: Resource item not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/NotFoundError'
-    '403':
-      description: Not authorized
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ForbiddenError'
     AnalysisResponse:
       description: Successful analysis response
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/TransactionAnalysisSingleResponse'
-    '500':
-      description: Server Error
+    '403':
+      description: Not authorized
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
-    '400':
-      description: Bad Request
+            $ref: '#/components/schemas/ForbiddenError'
+    '401':
+      description: Not authenticated
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/BadRequestError'
-    NotInBlockchain:
-      description: Requested subject not found on the blockchain
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/NotInBlockchain'
+            $ref: '#/components/schemas/UnauthorizedError'
     400Post:
       description: Bad Request
       content:
@@ -2054,6 +2042,18 @@ components:
               message:
                 type: string
                 example: subject.asset and subject.blockchain combination not recognised
+    NotInBlockchain:
+      description: Requested subject not found on the blockchain
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/NotInBlockchain'
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BadRequestError'
   securitySchemes:
     bearer:
       description: Bearer Authentication

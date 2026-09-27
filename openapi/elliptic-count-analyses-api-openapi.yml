@@ -282,15 +282,6 @@ paths:
           $ref: '#/components/responses/500'
 components:
   schemas:
-    BadRequestError:
-      type: object
-      properties:
-        name:
-          type: string
-          example: BadRequestError
-        message:
-          type: string
-          example: Invalid id parameter
     Error:
       type: object
       properties:
@@ -300,15 +291,6 @@ components:
         message:
           type: string
           example: Something bad happened.
-    NotFoundError:
-      type: object
-      properties:
-        name:
-          type: string
-          example: NotFoundError
-        message:
-          type: string
-          example: Entity not found.
     ForbiddenError:
       type: object
       properties:
@@ -318,6 +300,24 @@ components:
         message:
           type: string
           example: You do not have enough privilege to access this path.
+    BadRequestError:
+      type: object
+      properties:
+        name:
+          type: string
+          example: BadRequestError
+        message:
+          type: string
+          example: Invalid id parameter
+    NotFoundError:
+      type: object
+      properties:
+        name:
+          type: string
+          example: NotFoundError
+        message:
+          type: string
+          example: Entity not found.
     UnauthorizedError:
       type: string
       example: Unauthorized
@@ -340,12 +340,6 @@ components:
             required:
             - count
             additionalProperties: false
-    '500':
-      description: Server Error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
     '401':
       description: Not authenticated
       content:
@@ -364,6 +358,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/NotFoundError'
+    '500':
+      description: Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
     '403':
       description: Not authorized
       content:

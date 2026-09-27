@@ -47,24 +47,6 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    BadRequestError:
-      type: object
-      properties:
-        name:
-          type: string
-          example: BadRequestError
-        message:
-          type: string
-          example: Invalid id parameter
-    Error:
-      type: object
-      properties:
-        name:
-          type: string
-          example: GenericErrorName
-        message:
-          type: string
-          example: Something bad happened.
     UsersResponse:
       title: UsersResponse
       type: array
@@ -118,15 +100,15 @@ components:
         - first_name
         - last_name
         additionalProperties: false
-    NotFoundError:
+    Error:
       type: object
       properties:
         name:
           type: string
-          example: NotFoundError
+          example: GenericErrorName
         message:
           type: string
-          example: Entity not found.
+          example: Something bad happened.
     ForbiddenError:
       type: object
       properties:
@@ -136,16 +118,28 @@ components:
         message:
           type: string
           example: You do not have enough privilege to access this path.
+    BadRequestError:
+      type: object
+      properties:
+        name:
+          type: string
+          example: BadRequestError
+        message:
+          type: string
+          example: Invalid id parameter
+    NotFoundError:
+      type: object
+      properties:
+        name:
+          type: string
+          example: NotFoundError
+        message:
+          type: string
+          example: Entity not found.
     UnauthorizedError:
       type: string
       example: Unauthorized
   responses:
-    '500':
-      description: Server Error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
     '401':
       description: Not authenticated
       content:
@@ -164,6 +158,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/NotFoundError'
+    '500':
+      description: Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
     '403':
       description: Not authorized
       content:

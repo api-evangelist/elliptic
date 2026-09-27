@@ -149,18 +149,18 @@ components:
       type: string
       example: Unauthorized
   responses:
-    '500':
-      description: Server Error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
     '401':
       description: Not authenticated
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/UnauthorizedError'
+    '500':
+      description: Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
     '403':
       description: Not authorized
       content:

@@ -598,15 +598,6 @@ paths:
       description: Production server
 components:
   schemas:
-    BadRequestError:
-      type: object
-      properties:
-        name:
-          type: string
-          example: BadRequestError
-        message:
-          type: string
-          example: Invalid id parameter
     Error:
       type: object
       properties:
@@ -616,15 +607,6 @@ components:
         message:
           type: string
           example: Something bad happened.
-    NotFoundError:
-      type: object
-      properties:
-        name:
-          type: string
-          example: NotFoundError
-        message:
-          type: string
-          example: Entity not found.
     ForbiddenError:
       type: object
       properties:
@@ -634,6 +616,24 @@ components:
         message:
           type: string
           example: You do not have enough privilege to access this path.
+    BadRequestError:
+      type: object
+      properties:
+        name:
+          type: string
+          example: BadRequestError
+        message:
+          type: string
+          example: Invalid id parameter
+    NotFoundError:
+      type: object
+      properties:
+        name:
+          type: string
+          example: NotFoundError
+        message:
+          type: string
+          example: Entity not found.
     CustomerTxInfo:
       type: object
       title: customerTxInfo
@@ -663,6 +663,9 @@ components:
       - total_volume
       - customer_tx_count
       additionalProperties: false
+    UnauthorizedError:
+      type: string
+      example: Unauthorized
     Customer:
       type: object
       title: Customer
@@ -838,30 +841,20 @@ components:
       - last_queried
       - workflow_status
       additionalProperties: false
-    UnauthorizedError:
-      type: string
-      example: Unauthorized
-    ErrorResponse:
+    MaxRiskTrigger:
       type: object
+      description: A wallet or transaction at the maximum risk score, with its hash and analysis ID
       properties:
-        message:
+        hash:
           type: string
-          description: Error message
-        statusCode:
-          type: integer
-          description: HTTP status code
-        timestamp:
+          description: Wallet address or transaction hash
+        analysisId:
           type: string
-          format: date-time
-          description: Timestamp of the error
-        context:
-          type: object
-          additionalProperties: true
-          description: Additional error context
+          format: uuid
+          description: Analysis ID (UUID)
       required:
-      - message
-      - statusCode
-      - timestamp
+      - hash
+      - analysisId
     SummaryResult:
       type: object
       description: Full customer summary including an LLM narrative and the analysis IDs used to generate it
@@ -890,48 +883,55 @@ components:
       required:
       - summary
       - analysisIds
-    MaxRiskTrigger:
+    ErrorResponse:
       type: object
-      description: A wallet or transaction at the maximum risk score, with its hash and analysis ID
       properties:
-        hash:
+        message:
           type: string
-          description: Wallet address or transaction hash
-        analysisId:
+          description: Error message
+        statusCode:
+          type: integer
+          description: HTTP status code
+        timestamp:
           type: string
-          format: uuid
-          description: Analysis ID (UUID)
+          format: date-time
+          description: Timestamp of the error
+        context:
+          type: object
+          additionalProperties: true
+          description: Additional error context
       required:
-      - hash
-      - analysisId
+      - message
+      - statusCode
+      - timestamp
   responses:
-    '500':
-      description: Server Error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
     '401':
       description: Not authenticated
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/UnauthorizedError'
+    '500':
+      description: Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
     '403':
       description: Not authorized
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ForbiddenError'
-    NotFound:
-      description: Resource not found
+    InternalServerError:
+      description: Internal server error
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
           example:
-            message: Resource not found
-            statusCode: 404
+            message: Internal server error
+            statusCode: 500
             timestamp: '2024-01-01T00:00:00.000Z'
     Unauthorized:
       description: Unauthorized - Missing or invalid authentication token
@@ -943,15 +943,25 @@ components:
             message: Unauthorized
             statusCode: 401
             timestamp: '2024-01-01T00:00:00.000Z'
-    InternalServerError:
-      description: Internal server error
+    Forbidden:
+      description: Forbidden - Insufficient permissions
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
           example:
-            message: Internal server error
-            statusCode: 500
+            message: Forbidden - Insufficient permissions
+            statusCode: 403
+            timestamp: '2024-01-01T00:00:00.000Z'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            message: Resource not found
+            statusCode: 404
             timestamp: '2024-01-01T00:00:00.000Z'
     BadRequest:
       description: Bad request - Invalid input parameters
@@ -966,16 +976,6 @@ components:
             context:
               errors:
               - Customer ID must be a valid UUID
-    Forbidden:
-      description: Forbidden - Insufficient permissions
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            message: Forbidden - Insufficient permissions
-            statusCode: 403
-            timestamp: '2024-01-01T00:00:00.000Z'
   securitySchemes:
     bearer:
       description: Bearer Authentication

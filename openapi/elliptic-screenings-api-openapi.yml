@@ -255,27 +255,6 @@ paths:
           $ref: '#/components/responses/InternalServerError'
 components:
   schemas:
-    ErrorResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          description: Error message
-        statusCode:
-          type: integer
-          description: HTTP status code
-        timestamp:
-          type: string
-          format: date-time
-          description: Timestamp of the error
-        context:
-          type: object
-          additionalProperties: true
-          description: Additional error context
-      required:
-      - message
-      - statusCode
-      - timestamp
     RiskGraphEntity:
       type: object
       description: A single entity in a risk graph, used when requesting graph analysis scoped to a specific entity
@@ -304,6 +283,27 @@ components:
       required:
       - perc
       - usd
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Error message
+        statusCode:
+          type: integer
+          description: HTTP status code
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp of the error
+        context:
+          type: object
+          additionalProperties: true
+          description: Additional error context
+      required:
+      - message
+      - statusCode
+      - timestamp
     RiskGraphEntities:
       type: object
       properties:
@@ -318,15 +318,15 @@ components:
       - score
       - entities
   responses:
-    NotFound:
-      description: Resource not found
+    InternalServerError:
+      description: Internal server error
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
           example:
-            message: Resource not found
-            statusCode: 404
+            message: Internal server error
+            statusCode: 500
             timestamp: '2024-01-01T00:00:00.000Z'
     Unauthorized:
       description: Unauthorized - Missing or invalid authentication token
@@ -338,15 +338,25 @@ components:
             message: Unauthorized
             statusCode: 401
             timestamp: '2024-01-01T00:00:00.000Z'
-    InternalServerError:
-      description: Internal server error
+    Forbidden:
+      description: Forbidden - Insufficient permissions
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
           example:
-            message: Internal server error
-            statusCode: 500
+            message: Forbidden - Insufficient permissions
+            statusCode: 403
+            timestamp: '2024-01-01T00:00:00.000Z'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            message: Resource not found
+            statusCode: 404
             timestamp: '2024-01-01T00:00:00.000Z'
     BadRequest:
       description: Bad request - Invalid input parameters
@@ -361,16 +371,6 @@ components:
             context:
               errors:
               - Customer ID must be a valid UUID
-    Forbidden:
-      description: Forbidden - Insufficient permissions
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            message: Forbidden - Insufficient permissions
-            statusCode: 403
-            timestamp: '2024-01-01T00:00:00.000Z'
   securitySchemes:
     Bearer:
       description: Bearer Authentication
