@@ -282,6 +282,18 @@ paths:
           $ref: '#/components/responses/500'
 components:
   schemas:
+    BadRequestError:
+      type: object
+      properties:
+        name:
+          type: string
+          example: BadRequestError
+        message:
+          type: string
+          example: Invalid id parameter
+    UnauthorizedError:
+      type: string
+      example: Unauthorized
     Error:
       type: object
       properties:
@@ -300,15 +312,6 @@ components:
         message:
           type: string
           example: You do not have enough privilege to access this path.
-    BadRequestError:
-      type: object
-      properties:
-        name:
-          type: string
-          example: BadRequestError
-        message:
-          type: string
-          example: Invalid id parameter
     NotFoundError:
       type: object
       properties:
@@ -318,10 +321,37 @@ components:
         message:
           type: string
           example: Entity not found.
-    UnauthorizedError:
-      type: string
-      example: Unauthorized
   responses:
+    '401':
+      description: Not authenticated
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UnauthorizedError'
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BadRequestError'
+    '403':
+      description: Not authorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ForbiddenError'
+    '500':
+      description: Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    '404':
+      description: Resource item not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/NotFoundError'
     Count:
       description: Count of analyses response
       content:
@@ -340,36 +370,6 @@ components:
             required:
             - count
             additionalProperties: false
-    '401':
-      description: Not authenticated
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/UnauthorizedError'
-    '400':
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/BadRequestError'
-    '404':
-      description: Resource item not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/NotFoundError'
-    '500':
-      description: Server Error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    '403':
-      description: Not authorized
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ForbiddenError'
   securitySchemes:
     bearer:
       description: Bearer Authentication

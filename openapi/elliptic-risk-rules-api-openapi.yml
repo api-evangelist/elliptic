@@ -63,7 +63,29 @@ paths:
       operationId: getRiskRules
       x-operation-id-source: derived
 components:
+  responses:
+    '401':
+      description: Not authenticated
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UnauthorizedError'
+    '403':
+      description: Not authorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ForbiddenError'
+    '500':
+      description: Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   schemas:
+    UnauthorizedError:
+      type: string
+      example: Unauthorized
     Error:
       type: object
       properties:
@@ -73,15 +95,6 @@ components:
         message:
           type: string
           example: Something bad happened.
-    ForbiddenError:
-      type: object
-      properties:
-        name:
-          type: string
-          example: ForbiddenError
-        message:
-          type: string
-          example: You do not have enough privilege to access this path.
     RiskRule:
       title: RiskRule
       type: object
@@ -145,28 +158,15 @@ components:
           description: UUIDv4 identifier of the draft rule
           format: UUIDv4
           example: b7535048-76f8-4f60-bdd3-9d659298f9e7
-    UnauthorizedError:
-      type: string
-      example: Unauthorized
-  responses:
-    '401':
-      description: Not authenticated
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/UnauthorizedError'
-    '500':
-      description: Server Error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    '403':
-      description: Not authorized
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ForbiddenError'
+    ForbiddenError:
+      type: object
+      properties:
+        name:
+          type: string
+          example: ForbiddenError
+        message:
+          type: string
+          example: You do not have enough privilege to access this path.
   securitySchemes:
     bearer:
       description: Bearer Authentication

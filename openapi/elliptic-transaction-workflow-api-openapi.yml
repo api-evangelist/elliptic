@@ -162,24 +162,6 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    Error:
-      type: object
-      properties:
-        name:
-          type: string
-          example: GenericErrorName
-        message:
-          type: string
-          example: Something bad happened.
-    ForbiddenError:
-      type: object
-      properties:
-        name:
-          type: string
-          example: ForbiddenError
-        message:
-          type: string
-          example: You do not have enough privilege to access this path.
     BadRequestError:
       type: object
       properties:
@@ -189,18 +171,18 @@ components:
         message:
           type: string
           example: Invalid id parameter
-    NotFoundError:
+    UnauthorizedError:
+      type: string
+      example: Unauthorized
+    Error:
       type: object
       properties:
         name:
           type: string
-          example: NotFoundError
+          example: GenericErrorName
         message:
           type: string
-          example: Entity not found.
-    UnauthorizedError:
-      type: string
-      example: Unauthorized
+          example: Something bad happened.
     WalletAnalysisResponse:
       title: WalletAnalysisResponse
       type: object
@@ -496,6 +478,24 @@ components:
       - team_id
       - workflow_status
       additionalProperties: false
+    ForbiddenError:
+      type: object
+      properties:
+        name:
+          type: string
+          example: ForbiddenError
+        message:
+          type: string
+          example: You do not have enough privilege to access this path.
+    NotFoundError:
+      type: object
+      properties:
+        name:
+          type: string
+          example: NotFoundError
+        message:
+          type: string
+          example: Entity not found.
   responses:
     '401':
       description: Not authenticated
@@ -509,6 +509,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/BadRequestError'
+    '403':
+      description: Not authorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ForbiddenError'
     '404':
       description: Resource item not found
       content:
@@ -521,12 +527,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-    '403':
-      description: Not authorized
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ForbiddenError'
   securitySchemes:
     bearer:
       description: Bearer Authentication

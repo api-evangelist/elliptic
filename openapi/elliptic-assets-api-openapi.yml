@@ -54,7 +54,29 @@ paths:
       operationId: getAssets
       x-operation-id-source: derived
 components:
+  responses:
+    '401':
+      description: Not authenticated
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UnauthorizedError'
+    '403':
+      description: Not authorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ForbiddenError'
+    '500':
+      description: Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   schemas:
+    UnauthorizedError:
+      type: string
+      example: Unauthorized
     Error:
       type: object
       properties:
@@ -73,28 +95,6 @@ components:
         message:
           type: string
           example: You do not have enough privilege to access this path.
-    UnauthorizedError:
-      type: string
-      example: Unauthorized
-  responses:
-    '401':
-      description: Not authenticated
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/UnauthorizedError'
-    '500':
-      description: Server Error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    '403':
-      description: Not authorized
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ForbiddenError'
   securitySchemes:
     bearer:
       description: Bearer Authentication

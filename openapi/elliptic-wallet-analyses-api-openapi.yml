@@ -794,24 +794,6 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    ForbiddenError:
-      type: object
-      properties:
-        name:
-          type: string
-          example: ForbiddenError
-        message:
-          type: string
-          example: You do not have enough privilege to access this path.
-    NotFoundError:
-      type: object
-      properties:
-        name:
-          type: string
-          example: NotFoundError
-        message:
-          type: string
-          example: Entity not found.
     WalletAnalysisResponse:
       title: WalletAnalysisResponse
       type: object
@@ -1107,6 +1089,204 @@ components:
       - team_id
       - workflow_status
       additionalProperties: false
+    WalletAssertedLabel:
+      title: WalletAssertedLabel
+      type: object
+      description: An Elliptic-created, wallet asserted label to be attached to a cluster
+      properties:
+        name:
+          description: 'A real-world description of the labelled cluster, derived from the
+
+            assertions associated to this label.
+
+            '
+          type:
+          - string
+          - 'null'
+          example: Mt.Gox
+        category:
+          description: 'A categorical description of the real-world entity controlling the
+
+            labelled cluster
+
+            '
+          type:
+          - string
+          - 'null'
+          example: Exchange
+        category_id:
+          description: UUID identifier of the category
+          type: string
+          format: uuid
+          example: 00000000-0000-4000-8000-500000000001
+        entity_id:
+          description: UUIDv4 identifier of the entity
+          type: string
+          format: uuid
+          example: 00000000-0000-4000-8000-800000000001
+        actor_id:
+          description: Internal numeric ID of the actor
+          type: integer
+          example: -4
+        is_primary_entity:
+          description: 'A flag that shows if the entity is primary or not. Only one
+
+            in the whole array of labels
+
+            '
+          type: boolean
+          example: true
+        is_vasp:
+          description: 'True if this entity is a Virtual Asset Service Provider, false if not, null if unknown
+
+            '
+          type:
+          - boolean
+          - 'null'
+          example: true
+        is_after_sanction_date:
+          description: 'True if the entity’s activity or transaction occurred after the date it was officially sanctioned,
+
+            enabling accurate time-bound sanction screening
+
+            '
+          type:
+          - boolean
+          - 'null'
+          example: true
+      required:
+      - name
+      - category
+      - is_primary_entity
+    Error:
+      type: object
+      properties:
+        name:
+          type: string
+          example: GenericErrorName
+        message:
+          type: string
+          example: Something bad happened.
+    UnauthorizedError:
+      type: string
+      example: Unauthorized
+    NotFoundError:
+      type: object
+      properties:
+        name:
+          type: string
+          example: NotFoundError
+        message:
+          type: string
+          example: Entity not found.
+    BadRequestError:
+      type: object
+      properties:
+        name:
+          type: string
+          example: BadRequestError
+        message:
+          type: string
+          example: Invalid id parameter
+    AnalysisSubject:
+      title: AnalysisSubject
+      type: object
+      properties:
+        asset:
+          type: string
+          description: the asset involved in the event.
+          example: holistic
+        blockchain:
+          type: string
+          description: The blockchain the asset/address belongs to (optional)
+          example: holistic
+        type:
+          type: string
+          description: the type of subject. Currently, only 'transaction' is supported
+          example: transaction
+        hash:
+          type: string
+          description: the transaction hash
+          example: '0x4672bad527107471cb5067a887f4656d585a8a31'
+        output_type:
+          type: string
+          enum:
+          - address
+          - indices
+          description: which output type you are using to specify the output(s) you wish to analyse (BTC/LTC/BCH only)
+        output_address:
+          type: string
+          description: the address hash when using output_type address
+          example: 1MdYC22Gmjp2ejVPCxyYjFyWbQCYTGhGq8
+        output_indices:
+          type: array
+          items:
+            type: number
+          description: the indices of outputs to be analysed when using output_type indices
+          example:
+          - 1
+        log_index:
+          type: number
+          description: the log index of an ERC20 transacation
+          example: 10
+      required:
+      - asset
+      - type
+      - hash
+    HolisticWalletAnalysisRequest:
+      type: object
+      title: Holistic Wallet Analysis Request
+      properties:
+        subject:
+          title: WalletAnalysisSubject
+          type: object
+          properties:
+            asset:
+              type: string
+              description: For holistic screening this should be set to holistic
+              enum:
+              - holistic
+              example: holistic
+            blockchain:
+              type: string
+              description: For holistic screening this should be set to holistic
+              enum:
+              - holistic
+              example: holistic
+            type:
+              type: string
+              description: the type of subject
+              enum:
+              - address
+              example: address
+            hash:
+              type: string
+              description: the address hash
+              example: '0x8589427373d6d84e98730d7795d8f6f8731fda16'
+          required:
+          - asset
+          - blockchain
+          - type
+          - hash
+        type:
+          $ref: '#/components/schemas/WalletAnalysisType'
+        customer_reference:
+          type: string
+          description: a reference for the customer. Will create a new customer if one with a matching reference does not exist
+      required:
+      - subject
+      - type
+    WalletAnalysisType:
+      title: WalletAnalysisType
+      description: The type of analysis. Currently it is wallet_exposure
+      type: string
+      enum:
+      - wallet_exposure
+      example: wallet_exposure
+    WalletRequestSingle:
+      oneOf:
+      - $ref: '#/components/schemas/HolisticWalletAnalysisRequest'
+      - $ref: '#/components/schemas/UTXOBasedWalletAnalysisRequest'
     Contribution:
       title: Contribution
       type: object
@@ -1204,6 +1384,15 @@ components:
       - entities
       - contribution_percentage
       - contribution_value
+    ForbiddenError:
+      type: object
+      properties:
+        name:
+          type: string
+          example: ForbiddenError
+        message:
+          type: string
+          example: You do not have enough privilege to access this path.
     WalletRequestBatch:
       description: the analyses to request
       type: array
@@ -1213,80 +1402,135 @@ components:
         anyOf:
         - $ref: '#/components/schemas/HolisticWalletAnalysisRequest'
         - $ref: '#/components/schemas/UTXOBasedWalletAnalysisRequest'
-    WalletRequestSingle:
-      oneOf:
-      - $ref: '#/components/schemas/HolisticWalletAnalysisRequest'
-      - $ref: '#/components/schemas/UTXOBasedWalletAnalysisRequest'
-    AnalysisSubject:
-      title: AnalysisSubject
+    UTXOBasedWalletAnalysisRequest:
       type: object
+      title: BCH/BTC(Lightning)/ZEC/ZEN Analysis Request
       properties:
-        asset:
-          type: string
-          description: the asset involved in the event.
-          example: holistic
-        blockchain:
-          type: string
-          description: The blockchain the asset/address belongs to (optional)
-          example: holistic
+        subject:
+          title: WalletAnalysisSubject
+          type: object
+          properties:
+            asset:
+              type: string
+              description: the asset (either BCH, BTC (Lightning), ZEN or ZEC) involved in the event
+              enum:
+              - BCH
+              - BTC
+              - ZEN
+              - ZEC
+              example: BCH
+            blockchain:
+              type: string
+              description: the blockchain (either bitcoin_cash, lightning, horizen or zcash) of the asset submitted
+              enum:
+              - bitcoin_cash
+              - lightning
+              - horizen
+              - zcash
+              example: bitcoin_cash
+            type:
+              type: string
+              description: the type of subject
+              enum:
+              - address
+              example: address
+            hash:
+              type: string
+              description: the address hash
+              example: 18u9Ncc5UBNKGGmThxTjfuFHN69w8Yh8Lg
+          required:
+          - asset
+          - blockchain
+          - type
+          - hash
         type:
+          $ref: '#/components/schemas/WalletAnalysisType'
+        customer_reference:
           type: string
-          description: the type of subject. Currently, only 'transaction' is supported
-          example: transaction
-        hash:
+          description: a reference for the customer. Will create a new customer if one with a matching reference does not exist
+      required:
+      - subject
+      - type
+    EvaluationDetail:
+      title: EvaluationDetail
+      type: object
+      description: 'Details of a single risk rule evaluation. Note: if matched_behaviors is present, matched_elements will be empty, and vice versa— rules cannot match both entities and behaviors simultaneously.
+
+        '
+      properties:
+        rule_id:
           type: string
-          description: the transaction hash
-          example: '0x4672bad527107471cb5067a887f4656d585a8a31'
-        output_type:
+          format: uuid
+          description: The Id of the rule that triggered
+          example: b7535048-76f8-4f60-bdd3-9d659298f9e7
+        rule_name:
           type: string
-          enum:
-          - address
-          - indices
-          description: which output type you are using to specify the output(s) you wish to analyse (BTC/LTC/BCH only)
-        output_address:
-          type: string
-          description: the address hash when using output_type address
-          example: 1MdYC22Gmjp2ejVPCxyYjFyWbQCYTGhGq8
-        output_indices:
-          type: array
-          items:
-            type: number
-          description: the indices of outputs to be analysed when using output_type indices
-          example:
-          - 1
-        log_index:
+          description: The name of the triggered rule
+          example: Illict
+        risk_score:
           type: number
-          description: the log index of an ERC20 transacation
-          example: 10
+          format: float
+          description: The risk score calculated for this rule evaluation
+          example: 9.038007
+        matched_elements:
+          type: array
+          description: Array of entities matched by this rule
+          items:
+            $ref: '#/components/schemas/MatchedElement'
+        matched_behaviors:
+          type: array
+          description: Array of behaviors matched by this rule (mutually exclusive with matched_elements)
+          items:
+            title: MatchedBehavior
+            type: object
+            properties:
+              behavior_type:
+                type: string
+                description: Type of the Behavioral pattern detected of potential suspicious activity
+                example: Peeling Chain
+              length:
+                type: number
+                description: Length associated with the Behavior detected
+                example: 7
+              usd_value:
+                type: number
+                format: float
+                description: aggregated value (sum) associated with the behavior detected
+                example: 10500
+            required:
+            - behavior_type
+            - length
+            - usd_value
+        rule_history_id:
+          type: string
+          format: uuid
+          description: The unique identifier that links all versions of a risk rule
+          example: b7535048-76f8-4f60-bdd3-9d659298f9e7
+        mc_analysis_id:
+          type: string
+          format: uuid
+          description: Id of the analysis performed
+          example: b7535048-76f8-4f60-bdd3-9d659298f9e7
+        rule_type:
+          type: string
+          description: Type of the rule evaluated
+          enum:
+          - exposure
+          - behavior
+          example: exposure
       required:
-      - asset
-      - type
-      - hash
-    WalletAnalysisSubject:
-      title: WalletAnalysisSubject
+      - rule_id
+      - risk_score
+      additionalProperties: false
+    NotInBlockchain:
       type: object
-      description: Information describing the subject of the analysis
       properties:
-        asset:
+        name:
           type: string
-          description: The asset involved in the event
-          example: holistic
-        type:
+          example: NotInBlockchain
+        message:
           type: string
-          description: The type of subject. Currently, only 'address' is supported
-          example: address
-        hash:
-          type: string
-          description: The address hash when using type 'address'
-          example: 1MdYC22Gmjp2ejVPCxyYjFyWbQCYTGhGq8
-        blockchain:
-          type: string
-          description: The blockchain the asset/address belongs to (optional)
-          example: holistic
-      required:
-      - asset
-      - type
-      - hash
+          example: The submitted ${type} with hash ${hash} has not yet been processed into the Elliptic tool or does not exist on the blockchain.
     MatchedElement:
       title: MatchedElement
       type: object
@@ -1429,308 +1673,32 @@ components:
       - contribution_percentage
       - contribution_value
       - contributions
-    EvaluationDetail:
-      title: EvaluationDetail
+    WalletAnalysisSubject:
+      title: WalletAnalysisSubject
       type: object
-      description: 'Details of a single risk rule evaluation. Note: if matched_behaviors is present, matched_elements will be empty, and vice versa— rules cannot match both entities and behaviors simultaneously.
-
-        '
+      description: Information describing the subject of the analysis
       properties:
-        rule_id:
+        asset:
           type: string
-          format: uuid
-          description: The Id of the rule that triggered
-          example: b7535048-76f8-4f60-bdd3-9d659298f9e7
-        rule_name:
-          type: string
-          description: The name of the triggered rule
-          example: Illict
-        risk_score:
-          type: number
-          format: float
-          description: The risk score calculated for this rule evaluation
-          example: 9.038007
-        matched_elements:
-          type: array
-          description: Array of entities matched by this rule
-          items:
-            $ref: '#/components/schemas/MatchedElement'
-        matched_behaviors:
-          type: array
-          description: Array of behaviors matched by this rule (mutually exclusive with matched_elements)
-          items:
-            title: MatchedBehavior
-            type: object
-            properties:
-              behavior_type:
-                type: string
-                description: Type of the Behavioral pattern detected of potential suspicious activity
-                example: Peeling Chain
-              length:
-                type: number
-                description: Length associated with the Behavior detected
-                example: 7
-              usd_value:
-                type: number
-                format: float
-                description: aggregated value (sum) associated with the behavior detected
-                example: 10500
-            required:
-            - behavior_type
-            - length
-            - usd_value
-        rule_history_id:
-          type: string
-          format: uuid
-          description: The unique identifier that links all versions of a risk rule
-          example: b7535048-76f8-4f60-bdd3-9d659298f9e7
-        mc_analysis_id:
-          type: string
-          format: uuid
-          description: Id of the analysis performed
-          example: b7535048-76f8-4f60-bdd3-9d659298f9e7
-        rule_type:
-          type: string
-          description: Type of the rule evaluated
-          enum:
-          - exposure
-          - behavior
-          example: exposure
-      required:
-      - rule_id
-      - risk_score
-      additionalProperties: false
-    Error:
-      type: object
-      properties:
-        name:
-          type: string
-          example: GenericErrorName
-        message:
-          type: string
-          example: Something bad happened.
-    UnauthorizedError:
-      type: string
-      example: Unauthorized
-    WalletAssertedLabel:
-      title: WalletAssertedLabel
-      type: object
-      description: An Elliptic-created, wallet asserted label to be attached to a cluster
-      properties:
-        name:
-          description: 'A real-world description of the labelled cluster, derived from the
-
-            assertions associated to this label.
-
-            '
-          type:
-          - string
-          - 'null'
-          example: Mt.Gox
-        category:
-          description: 'A categorical description of the real-world entity controlling the
-
-            labelled cluster
-
-            '
-          type:
-          - string
-          - 'null'
-          example: Exchange
-        category_id:
-          description: UUID identifier of the category
-          type: string
-          format: uuid
-          example: 00000000-0000-4000-8000-500000000001
-        entity_id:
-          description: UUIDv4 identifier of the entity
-          type: string
-          format: uuid
-          example: 00000000-0000-4000-8000-800000000001
-        actor_id:
-          description: Internal numeric ID of the actor
-          type: integer
-          example: -4
-        is_primary_entity:
-          description: 'A flag that shows if the entity is primary or not. Only one
-
-            in the whole array of labels
-
-            '
-          type: boolean
-          example: true
-        is_vasp:
-          description: 'True if this entity is a Virtual Asset Service Provider, false if not, null if unknown
-
-            '
-          type:
-          - boolean
-          - 'null'
-          example: true
-        is_after_sanction_date:
-          description: 'True if the entity’s activity or transaction occurred after the date it was officially sanctioned,
-
-            enabling accurate time-bound sanction screening
-
-            '
-          type:
-          - boolean
-          - 'null'
-          example: true
-      required:
-      - name
-      - category
-      - is_primary_entity
-    NotInBlockchain:
-      type: object
-      properties:
-        name:
-          type: string
-          example: NotInBlockchain
-        message:
-          type: string
-          example: The submitted ${type} with hash ${hash} has not yet been processed into the Elliptic tool or does not exist on the blockchain.
-    UTXOBasedWalletAnalysisRequest:
-      type: object
-      title: BCH/BTC(Lightning)/ZEC/ZEN Analysis Request
-      properties:
-        subject:
-          title: WalletAnalysisSubject
-          type: object
-          properties:
-            asset:
-              type: string
-              description: the asset (either BCH, BTC (Lightning), ZEN or ZEC) involved in the event
-              enum:
-              - BCH
-              - BTC
-              - ZEN
-              - ZEC
-              example: BCH
-            blockchain:
-              type: string
-              description: the blockchain (either bitcoin_cash, lightning, horizen or zcash) of the asset submitted
-              enum:
-              - bitcoin_cash
-              - lightning
-              - horizen
-              - zcash
-              example: bitcoin_cash
-            type:
-              type: string
-              description: the type of subject
-              enum:
-              - address
-              example: address
-            hash:
-              type: string
-              description: the address hash
-              example: 18u9Ncc5UBNKGGmThxTjfuFHN69w8Yh8Lg
-          required:
-          - asset
-          - blockchain
-          - type
-          - hash
+          description: The asset involved in the event
+          example: holistic
         type:
-          $ref: '#/components/schemas/WalletAnalysisType'
-        customer_reference:
           type: string
-          description: a reference for the customer. Will create a new customer if one with a matching reference does not exist
+          description: The type of subject. Currently, only 'address' is supported
+          example: address
+        hash:
+          type: string
+          description: The address hash when using type 'address'
+          example: 1MdYC22Gmjp2ejVPCxyYjFyWbQCYTGhGq8
+        blockchain:
+          type: string
+          description: The blockchain the asset/address belongs to (optional)
+          example: holistic
       required:
-      - subject
+      - asset
       - type
-    BadRequestError:
-      type: object
-      properties:
-        name:
-          type: string
-          example: BadRequestError
-        message:
-          type: string
-          example: Invalid id parameter
-    WalletAnalysisType:
-      title: WalletAnalysisType
-      description: The type of analysis. Currently it is wallet_exposure
-      type: string
-      enum:
-      - wallet_exposure
-      example: wallet_exposure
-    HolisticWalletAnalysisRequest:
-      type: object
-      title: Holistic Wallet Analysis Request
-      properties:
-        subject:
-          title: WalletAnalysisSubject
-          type: object
-          properties:
-            asset:
-              type: string
-              description: For holistic screening this should be set to holistic
-              enum:
-              - holistic
-              example: holistic
-            blockchain:
-              type: string
-              description: For holistic screening this should be set to holistic
-              enum:
-              - holistic
-              example: holistic
-            type:
-              type: string
-              description: the type of subject
-              enum:
-              - address
-              example: address
-            hash:
-              type: string
-              description: the address hash
-              example: '0x8589427373d6d84e98730d7795d8f6f8731fda16'
-          required:
-          - asset
-          - blockchain
-          - type
-          - hash
-        type:
-          $ref: '#/components/schemas/WalletAnalysisType'
-        customer_reference:
-          type: string
-          description: a reference for the customer. Will create a new customer if one with a matching reference does not exist
-      required:
-      - subject
-      - type
+      - hash
   responses:
-    '404':
-      description: Resource item not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/NotFoundError'
-    '500':
-      description: Server Error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    TooManyRequestsError:
-      description: Too Many Requests — Rate limit exceeded
-      content:
-        application/json:
-          schema:
-            type: object
-            description: Returned when a client exceeds the allowed rate limit (HTTP 429)
-            properties:
-              name:
-                type: string
-                example: TooManyRequestsError
-              message:
-                type: string
-                example: Too many requests – please try again later
-    '403':
-      description: Not authorized
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ForbiddenError'
     '401':
       description: Not authenticated
       content:
@@ -1750,18 +1718,50 @@ components:
               message:
                 type: string
                 example: subject.asset and subject.blockchain combination not recognised
-    NotInBlockchain:
-      description: Requested subject not found on the blockchain
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/NotInBlockchain'
     '400':
       description: Bad Request
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/BadRequestError'
+    TooManyRequestsError:
+      description: Too Many Requests — Rate limit exceeded
+      content:
+        application/json:
+          schema:
+            type: object
+            description: Returned when a client exceeds the allowed rate limit (HTTP 429)
+            properties:
+              name:
+                type: string
+                example: TooManyRequestsError
+              message:
+                type: string
+                example: Too many requests – please try again later
+    '404':
+      description: Resource item not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/NotFoundError'
+    '500':
+      description: Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    '403':
+      description: Not authorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ForbiddenError'
+    NotInBlockchain:
+      description: Requested subject not found on the blockchain
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/NotInBlockchain'
   securitySchemes:
     bearer:
       description: Bearer Authentication

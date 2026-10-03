@@ -47,6 +47,45 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
+    BadRequestError:
+      type: object
+      properties:
+        name:
+          type: string
+          example: BadRequestError
+        message:
+          type: string
+          example: Invalid id parameter
+    UnauthorizedError:
+      type: string
+      example: Unauthorized
+    Error:
+      type: object
+      properties:
+        name:
+          type: string
+          example: GenericErrorName
+        message:
+          type: string
+          example: Something bad happened.
+    ForbiddenError:
+      type: object
+      properties:
+        name:
+          type: string
+          example: ForbiddenError
+        message:
+          type: string
+          example: You do not have enough privilege to access this path.
+    NotFoundError:
+      type: object
+      properties:
+        name:
+          type: string
+          example: NotFoundError
+        message:
+          type: string
+          example: Entity not found.
     UsersResponse:
       title: UsersResponse
       type: array
@@ -100,46 +139,13 @@ components:
         - first_name
         - last_name
         additionalProperties: false
-    Error:
-      type: object
-      properties:
-        name:
-          type: string
-          example: GenericErrorName
-        message:
-          type: string
-          example: Something bad happened.
-    ForbiddenError:
-      type: object
-      properties:
-        name:
-          type: string
-          example: ForbiddenError
-        message:
-          type: string
-          example: You do not have enough privilege to access this path.
-    BadRequestError:
-      type: object
-      properties:
-        name:
-          type: string
-          example: BadRequestError
-        message:
-          type: string
-          example: Invalid id parameter
-    NotFoundError:
-      type: object
-      properties:
-        name:
-          type: string
-          example: NotFoundError
-        message:
-          type: string
-          example: Entity not found.
-    UnauthorizedError:
-      type: string
-      example: Unauthorized
   responses:
+    '404':
+      description: Resource item not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/NotFoundError'
     '401':
       description: Not authenticated
       content:
@@ -152,24 +158,18 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/BadRequestError'
-    '404':
-      description: Resource item not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/NotFoundError'
-    '500':
-      description: Server Error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
     '403':
       description: Not authorized
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ForbiddenError'
+    '500':
+      description: Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   securitySchemes:
     bearer:
       description: Bearer Authentication

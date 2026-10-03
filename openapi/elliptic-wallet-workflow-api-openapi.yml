@@ -111,24 +111,6 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    Error:
-      type: object
-      properties:
-        name:
-          type: string
-          example: GenericErrorName
-        message:
-          type: string
-          example: Something bad happened.
-    ForbiddenError:
-      type: object
-      properties:
-        name:
-          type: string
-          example: ForbiddenError
-        message:
-          type: string
-          example: You do not have enough privilege to access this path.
     BadRequestError:
       type: object
       properties:
@@ -141,6 +123,15 @@ components:
     UnauthorizedError:
       type: string
       example: Unauthorized
+    Error:
+      type: object
+      properties:
+        name:
+          type: string
+          example: GenericErrorName
+        message:
+          type: string
+          example: Something bad happened.
     WalletAnalysisResponse:
       title: WalletAnalysisResponse
       type: object
@@ -436,6 +427,15 @@ components:
       - team_id
       - workflow_status
       additionalProperties: false
+    ForbiddenError:
+      type: object
+      properties:
+        name:
+          type: string
+          example: ForbiddenError
+        message:
+          type: string
+          example: You do not have enough privilege to access this path.
   responses:
     '401':
       description: Not authenticated
@@ -443,18 +443,18 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/UnauthorizedError'
-    '500':
-      description: Server Error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
     '403':
       description: Not authorized
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ForbiddenError'
+    '500':
+      description: Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   securitySchemes:
     bearer:
       description: Bearer Authentication

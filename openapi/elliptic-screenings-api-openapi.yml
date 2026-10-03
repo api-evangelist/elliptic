@@ -254,6 +254,60 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 components:
+  responses:
+    Forbidden:
+      description: Forbidden - Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            message: Forbidden - Insufficient permissions
+            statusCode: 403
+            timestamp: '2024-01-01T00:00:00.000Z'
+    Unauthorized:
+      description: Unauthorized - Missing or invalid authentication token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            message: Unauthorized
+            statusCode: 401
+            timestamp: '2024-01-01T00:00:00.000Z'
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            message: Internal server error
+            statusCode: 500
+            timestamp: '2024-01-01T00:00:00.000Z'
+    BadRequest:
+      description: Bad request - Invalid input parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            message: Validation failed
+            statusCode: 400
+            timestamp: '2024-01-01T00:00:00.000Z'
+            context:
+              errors:
+              - Customer ID must be a valid UUID
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            message: Resource not found
+            statusCode: 404
+            timestamp: '2024-01-01T00:00:00.000Z'
   schemas:
     RiskGraphEntity:
       type: object
@@ -317,60 +371,6 @@ components:
       required:
       - score
       - entities
-  responses:
-    InternalServerError:
-      description: Internal server error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            message: Internal server error
-            statusCode: 500
-            timestamp: '2024-01-01T00:00:00.000Z'
-    Unauthorized:
-      description: Unauthorized - Missing or invalid authentication token
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            message: Unauthorized
-            statusCode: 401
-            timestamp: '2024-01-01T00:00:00.000Z'
-    Forbidden:
-      description: Forbidden - Insufficient permissions
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            message: Forbidden - Insufficient permissions
-            statusCode: 403
-            timestamp: '2024-01-01T00:00:00.000Z'
-    NotFound:
-      description: Resource not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            message: Resource not found
-            statusCode: 404
-            timestamp: '2024-01-01T00:00:00.000Z'
-    BadRequest:
-      description: Bad request - Invalid input parameters
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            message: Validation failed
-            statusCode: 400
-            timestamp: '2024-01-01T00:00:00.000Z'
-            context:
-              errors:
-              - Customer ID must be a valid UUID
   securitySchemes:
     Bearer:
       description: Bearer Authentication
