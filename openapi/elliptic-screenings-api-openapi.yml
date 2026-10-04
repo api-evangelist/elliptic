@@ -254,7 +254,80 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 components:
+  schemas:
+    RiskGraphEntities:
+      type: object
+      properties:
+        score:
+          type: number
+          description: Overall risk score
+        entities:
+          type: array
+          items:
+            $ref: '#/components/schemas/RiskGraphEntity'
+      required:
+      - score
+      - entities
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Error message
+        statusCode:
+          type: integer
+          description: HTTP status code
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp of the error
+        context:
+          type: object
+          additionalProperties: true
+          description: Additional error context
+      required:
+      - message
+      - statusCode
+      - timestamp
+    RiskGraphEntity:
+      type: object
+      description: A single entity in a risk graph, used when requesting graph analysis scoped to a specific entity
+      properties:
+        name:
+          type: string
+          description: Entity name
+        perc:
+          type: number
+          description: Direct exposure percentage
+        usd:
+          type: number
+          description: Direct exposure in USD
+        indirect_perc:
+          type: number
+          description: Indirect exposure percentage
+        indirect_usd:
+          type: number
+          description: Indirect exposure in USD
+        min_hops:
+          type: number
+          description: Minimum number of hops to the entity in the graph
+        category:
+          type: string
+          description: Entity category
+      required:
+      - perc
+      - usd
   responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            message: Resource not found
+            statusCode: 404
+            timestamp: '2024-01-01T00:00:00.000Z'
     Forbidden:
       description: Forbidden - Insufficient permissions
       content:
@@ -298,79 +371,6 @@ components:
             context:
               errors:
               - Customer ID must be a valid UUID
-    NotFound:
-      description: Resource not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            message: Resource not found
-            statusCode: 404
-            timestamp: '2024-01-01T00:00:00.000Z'
-  schemas:
-    RiskGraphEntity:
-      type: object
-      description: A single entity in a risk graph, used when requesting graph analysis scoped to a specific entity
-      properties:
-        name:
-          type: string
-          description: Entity name
-        perc:
-          type: number
-          description: Direct exposure percentage
-        usd:
-          type: number
-          description: Direct exposure in USD
-        indirect_perc:
-          type: number
-          description: Indirect exposure percentage
-        indirect_usd:
-          type: number
-          description: Indirect exposure in USD
-        min_hops:
-          type: number
-          description: Minimum number of hops to the entity in the graph
-        category:
-          type: string
-          description: Entity category
-      required:
-      - perc
-      - usd
-    ErrorResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          description: Error message
-        statusCode:
-          type: integer
-          description: HTTP status code
-        timestamp:
-          type: string
-          format: date-time
-          description: Timestamp of the error
-        context:
-          type: object
-          additionalProperties: true
-          description: Additional error context
-      required:
-      - message
-      - statusCode
-      - timestamp
-    RiskGraphEntities:
-      type: object
-      properties:
-        score:
-          type: number
-          description: Overall risk score
-        entities:
-          type: array
-          items:
-            $ref: '#/components/schemas/RiskGraphEntity'
-      required:
-      - score
-      - entities
   securitySchemes:
     Bearer:
       description: Bearer Authentication

@@ -64,12 +64,6 @@ paths:
       x-operation-id-source: derived
 components:
   responses:
-    '401':
-      description: Not authenticated
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/UnauthorizedError'
     '403':
       description: Not authorized
       content:
@@ -82,19 +76,13 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
+    '401':
+      description: Not authenticated
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UnauthorizedError'
   schemas:
-    UnauthorizedError:
-      type: string
-      example: Unauthorized
-    Error:
-      type: object
-      properties:
-        name:
-          type: string
-          example: GenericErrorName
-        message:
-          type: string
-          example: Something bad happened.
     RiskRule:
       title: RiskRule
       type: object
@@ -158,6 +146,9 @@ components:
           description: UUIDv4 identifier of the draft rule
           format: UUIDv4
           example: b7535048-76f8-4f60-bdd3-9d659298f9e7
+    UnauthorizedError:
+      type: string
+      example: Unauthorized
     ForbiddenError:
       type: object
       properties:
@@ -167,6 +158,15 @@ components:
         message:
           type: string
           example: You do not have enough privilege to access this path.
+    Error:
+      type: object
+      properties:
+        name:
+          type: string
+          example: GenericErrorName
+        message:
+          type: string
+          example: Something bad happened.
   securitySchemes:
     bearer:
       description: Bearer Authentication

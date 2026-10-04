@@ -46,37 +46,38 @@ paths:
       operationId: getUsers
       x-operation-id-source: derived
 components:
+  responses:
+    '403':
+      description: Not authorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ForbiddenError'
+    '500':
+      description: Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    '404':
+      description: Resource item not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/NotFoundError'
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BadRequestError'
+    '401':
+      description: Not authenticated
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UnauthorizedError'
   schemas:
-    BadRequestError:
-      type: object
-      properties:
-        name:
-          type: string
-          example: BadRequestError
-        message:
-          type: string
-          example: Invalid id parameter
-    UnauthorizedError:
-      type: string
-      example: Unauthorized
-    Error:
-      type: object
-      properties:
-        name:
-          type: string
-          example: GenericErrorName
-        message:
-          type: string
-          example: Something bad happened.
-    ForbiddenError:
-      type: object
-      properties:
-        name:
-          type: string
-          example: ForbiddenError
-        message:
-          type: string
-          example: You do not have enough privilege to access this path.
     NotFoundError:
       type: object
       properties:
@@ -139,37 +140,36 @@ components:
         - first_name
         - last_name
         additionalProperties: false
-  responses:
-    '404':
-      description: Resource item not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/NotFoundError'
-    '401':
-      description: Not authenticated
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/UnauthorizedError'
-    '400':
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/BadRequestError'
-    '403':
-      description: Not authorized
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ForbiddenError'
-    '500':
-      description: Server Error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
+    UnauthorizedError:
+      type: string
+      example: Unauthorized
+    ForbiddenError:
+      type: object
+      properties:
+        name:
+          type: string
+          example: ForbiddenError
+        message:
+          type: string
+          example: You do not have enough privilege to access this path.
+    BadRequestError:
+      type: object
+      properties:
+        name:
+          type: string
+          example: BadRequestError
+        message:
+          type: string
+          example: Invalid id parameter
+    Error:
+      type: object
+      properties:
+        name:
+          type: string
+          example: GenericErrorName
+        message:
+          type: string
+          example: Something bad happened.
   securitySchemes:
     bearer:
       description: Bearer Authentication

@@ -768,6 +768,15 @@ paths:
           $ref: '#/components/responses/500'
 components:
   schemas:
+    NotFoundError:
+      type: object
+      properties:
+        name:
+          type: string
+          example: NotFoundError
+        message:
+          type: string
+          example: Entity not found.
     TransactionAnalysisBatchResponse:
       title: TransactionAnalysisBatchResponse
       type: array
@@ -870,18 +879,281 @@ components:
         - analysed_at
         - customer
         additionalProperties: false
+    InputOutput:
+      title: InputOutput
+      type: object
+      description: An input or output (IO) of a transaction
+      properties:
+        hash:
+          type: string
+          example: '0x056fd409e1d7a124bd7017459dfea2f387b6d5cd'
+          description: blockchain identifier of the IO
+        amount:
+          type: object
+          properties:
+            native:
+              type: number
+              description: Transaction amount expresses in the native currency of the blockchain it has occurred in the most precise unit possible, e.g. satoshis for bitcoin
+              example: 38383838
+            native_major:
+              type: number
+              description: Transaction amount expressed in the native currency of the blockchain it has occurred rounded to its major decimal format
+              example: 38383838
+            usd:
+              type: number
+              description: Transaction amount expressed in US dollars of the blockchain it has occurred in the most precise unit possible, e.g. satoshis for bitcoin
+              example: 38383838
+        index:
+          type: number
+          example: 0
+          description: The index of this IO on the transaction
+        labels:
+          type: array
+          description: Label's given to the IO as per Elliptic Assertions
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                example: A Dark Market
+              category:
+                type: string
+                example: Dark Market
+              is_primary_entity:
+                type: boolean
+                description: Is this the primary label of the entity
+    UTXOBasedAnalysisRequest:
+      type: object
+      title: BCH/ZEC/ZEN Analysis Request
+      properties:
+        subject:
+          title: AnalysisSubject
+          type: object
+          properties:
+            asset:
+              type: string
+              description: the asset (either BCH, ZEN or ZEC) involved in the event
+              enum:
+              - BCH
+              - ZEN
+              - ZEC
+              example: BCH
+            blockchain:
+              type: string
+              description: the blockchain (either bitcoin_cash, horizen or zcash) of the asset submitted
+              enum:
+              - bitcoin_cash
+              - horizen
+              - zcash
+              example: bitcoin_cash
+            type:
+              type: string
+              description: the type of subject
+              enum:
+              - transaction
+              example: transaction
+            hash:
+              type: string
+              description: the transaction hash
+              example: 16e37268c8dba6eded4dce68060fe5783d6397455410fb9959fecc4644d98340
+            output_type:
+              type: string
+              enum:
+              - address
+              example: address
+              description: which output type you are using to specify the output(s) you wish to analyze
+            output_address:
+              type: string
+              description: the address hash when using output_type address. In order to analyze a UTXO transaction, you must specify the output(s) of that transaction which are relevant to your analysis. For example, if you are analysing a deposit into your service then you might want to specify the output address that belongs to your service. Or for a withdrawal, it might be the output address that your customer wants to send funds to. You can either specify the address or the zero-indexed output indices. When specifying the output(s) by indices, if the indices given reference multiple distinct addresses, the API will respond with an error.
+              example: 1cftamBhjtCmCazbqjo6st1mgux1EbTVc
+          required:
+          - asset
+          - blockchain
+          - type
+          - hash
+          - output_type
+          - output_address
+        type:
+          $ref: '#/components/schemas/TransactionAnalysisType'
+        customer_reference:
+          type: string
+          description: a reference for the customer. Will create a new customer if one with a matching reference does not exist
+      required:
+      - subject
+      - type
+      - customer_reference
     UnauthorizedError:
       type: string
       example: Unauthorized
-    Error:
+    ForbiddenError:
       type: object
       properties:
         name:
           type: string
-          example: GenericErrorName
+          example: ForbiddenError
         message:
           type: string
-          example: Something bad happened.
+          example: You do not have enough privilege to access this path.
+    AnalysisSubject:
+      title: AnalysisSubject
+      type: object
+      properties:
+        asset:
+          type: string
+          description: the asset involved in the event.
+          example: holistic
+        blockchain:
+          type: string
+          description: The blockchain the asset/address belongs to (optional)
+          example: holistic
+        type:
+          type: string
+          description: the type of subject. Currently, only 'transaction' is supported
+          example: transaction
+        hash:
+          type: string
+          description: the transaction hash
+          example: '0x4672bad527107471cb5067a887f4656d585a8a31'
+        output_type:
+          type: string
+          enum:
+          - address
+          - indices
+          description: which output type you are using to specify the output(s) you wish to analyse (BTC/LTC/BCH only)
+        output_address:
+          type: string
+          description: the address hash when using output_type address
+          example: 1MdYC22Gmjp2ejVPCxyYjFyWbQCYTGhGq8
+        output_indices:
+          type: array
+          items:
+            type: number
+          description: the indices of outputs to be analysed when using output_type indices
+          example:
+          - 1
+        log_index:
+          type: number
+          description: the log index of an ERC20 transacation
+          example: 10
+      required:
+      - asset
+      - type
+      - hash
+    Contribution:
+      title: Contribution
+      type: object
+      description: A single contribution entry associated with an entity (holistic — only USD values included)
+      properties:
+        entities:
+          type: array
+          description: Entities (labels) associated with this contribution
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Name of the entity
+                example: BTC-e
+              category:
+                type: string
+                description: Category of the entity
+                example: Exchange
+              category_id:
+                type: string
+                format: uuid
+                description: UUID of category
+                example: 0a52f7a2-5da8-4256-b230-df0da6f8449b
+              entity_id:
+                type: string
+                format: uuid
+                description: UUID of entity
+                example: 09d2c6ba-a32e-4207-bf72-233b38d644c4
+              actor_id:
+                type: integer
+                description: Internal actor ID or numeric identifier that related to the identified entity
+                example: 54
+              is_primary_entity:
+                type: boolean
+                description: Whether this is the primary entity in the group (one per list)
+                example: true
+              is_vasp:
+                type:
+                - boolean
+                - 'null'
+                description: True if VASP (Virtual Asset Service Provider), false if not, null if unknown
+                example: true
+        contribution_percentage:
+          type: number
+          format: float
+          description: Percentage of value contributed by this entity
+          example: 62.98592267836703
+        contribution_value:
+          type: object
+          description: Value contributed by this entry
+          properties:
+            usd:
+              type: number
+              format: float
+              example: 395.47601131293095
+        counterparty_percentage:
+          type: number
+          format: float
+          description: The percentage of the total contribution that is attributed to labelled entities that are one hop away from the screened_address.
+          example: 0
+        counterparty_value:
+          type: object
+          description: Value from counterparties (1-hop entities)
+          properties:
+            usd:
+              type: number
+              description: The contribution between the screened_address and labelled entities that are one hop away, expressed in US dollars.
+              format: float
+              example: 0
+        indirect_percentage:
+          type: number
+          format: float
+          description: The percentage of the total contribution that is attributed to labelled entities that are more than one hop away from the screened_address.
+          example: 62.98592267836703
+        indirect_value:
+          type: object
+          description: USD value from indirect flow
+          properties:
+            usd:
+              type: number
+              description: The contribution between the screened_address and labelled entities that are more than one hop away, expressed in US dollars.
+              format: float
+              example: 395.47601131293095
+        is_screened_address:
+          type: boolean
+          description: A boolean displaying whether the input address of a deposit or the output address of a withdrawal that is screened belongs to a labelled entity for transaction monitoring or the address that is screened belongs to a labelled entity for wallet screening
+          example: false
+        min_number_of_hops:
+          type: integer
+          format: int64
+          description: Minimum number of hops between the subject and the labelled entity
+          example: 2
+      required:
+      - entities
+      - contribution_percentage
+      - contribution_value
+    NotInBlockchain:
+      type: object
+      properties:
+        name:
+          type: string
+          example: NotInBlockchain
+        message:
+          type: string
+          example: The submitted ${type} with hash ${hash} has not yet been processed into the Elliptic tool or does not exist on the blockchain.
+    TransactionAnalysisRequestBatch:
+      description: the analyses to request
+      type: array
+      minItems: 1
+      maxItems: 100
+      items:
+        anyOf:
+        - $ref: '#/components/schemas/HolisticAnalysisRequest'
+        - $ref: '#/components/schemas/UTXOBasedAnalysisRequest'
     WalletAnalysisResponse:
       title: WalletAnalysisResponse
       type: object
@@ -1177,6 +1449,262 @@ components:
       - team_id
       - workflow_status
       additionalProperties: false
+    TransactionAnalysisRequestSingle:
+      oneOf:
+      - $ref: '#/components/schemas/HolisticAnalysisRequest'
+      - $ref: '#/components/schemas/UTXOBasedAnalysisRequest'
+    BadRequestError:
+      type: object
+      properties:
+        name:
+          type: string
+          example: BadRequestError
+        message:
+          type: string
+          example: Invalid id parameter
+    Error:
+      type: object
+      properties:
+        name:
+          type: string
+          example: GenericErrorName
+        message:
+          type: string
+          example: Something bad happened.
+    EvaluationDetailForGetAll:
+      title: EvaluationDetailForGetAll
+      type: object
+      description: details of a single risk rule evaluation for paginated transactions analysis
+      properties:
+        rule_id:
+          description: the UUIDv4 of this risk rule
+          type: string
+          format: UUIDv4
+          example: b7535048-76f8-4f60-bdd3-9d659298f9e7
+        rule_name:
+          description: the name of the rule
+          type: string
+          example: Illict
+        risk_score:
+          description: The risk score calculated for this rule evaluation as part of the analysis
+          type: number
+          format: float
+          example: 9.038007
+        mc_analysis_id:
+          description: id of the analysis
+          type: string
+          format: UUIDv4
+          example: b7535048-76f8-4f60-bdd3-9d659298f9e7
+      required:
+      - rule_id
+      - risk_score
+      additionalProperties: false
+    TransactionAnalysisType:
+      title: TransactionAnalysisType
+      description: The type of analysis. The source_of_funds type is used to get details of the entities that have contributed funds to the transaction's source address, and calculate a risk score based on this exposure. This is referred to as "Deposit" in Navigator. The destination_of_funds type is used to get details of the entities that have received funds from the transaction's destination address, and calculate a risk score based on this exposure. This is referred to as "Withdrawal" in Navigator.
+      type: string
+      enum:
+      - source_of_funds
+      - destination_of_funds
+      example: source_of_funds
+    HolisticAnalysisRequest:
+      type: object
+      title: Holistic Analysis Request
+      properties:
+        subject:
+          title: AnalysisSubject
+          type: object
+          properties:
+            asset:
+              type: string
+              description: For holistic screening this should be set to holistic
+              enum:
+              - holistic
+              example: holistic
+            blockchain:
+              type: string
+              description: For holistic screening this should be set to holistic
+              enum:
+              - holistic
+              example: holistic
+            type:
+              type: string
+              description: the type of subject
+              enum:
+              - transaction
+              example: transaction
+            hash:
+              type: string
+              description: the transaction hash
+              example: 24220e9cb717276300e17863c28f44787773c1ce156214594f36dc2a7a59f42d
+            output_type:
+              type: string
+              enum:
+              - address
+              example: address
+              description: which output type you are using to specify the output(s) you wish to analyse
+            output_address:
+              type: string
+              description: the address hash when using output_type address
+              example: 35dRfg3bWZXdGjW1vKLMu28AmRSWvSid9o
+          required:
+          - asset
+          - blockchain
+          - type
+          - hash
+          - output_type
+          - output_address
+        type:
+          $ref: '#/components/schemas/TransactionAnalysisType'
+        customer_reference:
+          type: string
+          description: a reference for the customer. Will create a new customer if one with a matching reference does not exist
+      required:
+      - subject
+      - type
+      - customer_reference
+    MatchedElement:
+      title: MatchedElement
+      type: object
+      description: 'Entity or group of entities identified as contributing to the risk rule. Note: In holistic responses, values are expressed in USD only.
+
+        '
+      properties:
+        category:
+          type: string
+          description: category of the risk rule's subject that has been triggered by one or more elements.  The name can change so advisable to use identifier for matching purposes
+          example: Dark Market
+        category_id:
+          type: string
+          format: uuid
+          description: UUID identifying the entity's category
+          example: 0a52f7a2-5da8-4256-b230-df0da6f8449b
+        contribution_percentage:
+          type: number
+          format: float
+          description: Aggregated percentage of value attributed to this matched category
+        contribution_value:
+          type: object
+          description: Aggregated USD value attributed to this matched entity category
+          properties:
+            usd:
+              type: number
+              format: float
+              example: 383.83838
+        counterparty_percentage:
+          type: number
+          format: float
+          description: Percentage of contribution from one-hop counterparties
+        counterparty_value:
+          type: object
+          description: Value from one-hop counterparties (USD only)
+          properties:
+            usd:
+              type: number
+              format: float
+              example: 383.83838
+        indirect_percentage:
+          type: number
+          format: float
+          description: Percentage of contribution from indirect (multi-hop) relationships
+        indirect_value:
+          type: object
+          description: Value from indirect (multi-hop) sources (USD only)
+          properties:
+            usd:
+              type: number
+              format: float
+              example: 383.83838
+        contributions:
+          type: array
+          description: Array of contributing entities that led to the match
+          items:
+            type: object
+            required:
+            - entity
+            - entity_id
+            properties:
+              contribution_percentage:
+                type: number
+                format: float
+                description: Percentage of this contribution
+              counterparty_percentage:
+                type: number
+                format: float
+                description: One-hop contribution percentage
+              indirect_percentage:
+                type: number
+                format: float
+                description: Multi-hop contribution percentage
+              entity:
+                type: string
+                description: Name of the contributing entity
+                example: AlphaBay
+              entity_id:
+                type: string
+                format: uuid
+                description: ID of the entity; use with entity_details to look up extended entity data
+                example: 0a52f7a2-5da8-4256-b230-df0da6f8449b
+              risk_triggers:
+                type: object
+                description: Metadata indicating why the entity was considered risky
+                properties:
+                  name:
+                    type: string
+                    description: Trigger entity name
+                    example: Binance
+                  category:
+                    type: string
+                    description: Trigger category
+                    example: Dark Markets
+                  is_sanctioned:
+                    type: boolean
+                    description: Indicates if a sanction-based risk was involved
+                    example: true
+                  country:
+                    type: array
+                    description: List of country codes associated with the risk trigger
+                    items:
+                      type: string
+                      example: MM
+              contribution_value:
+                type: object
+                description: Contribution amount from this entity (USD only)
+                properties:
+                  usd:
+                    type: number
+                    format: float
+                    example: 383.83838
+              counterparty_value:
+                type: object
+                description: Counterparty contribution value (USD only)
+                properties:
+                  usd:
+                    type: number
+                    format: float
+                    example: 383.83838
+              indirect_value:
+                type: object
+                description: Indirect (multi-hop) value (USD only)
+                properties:
+                  usd:
+                    type: number
+                    format: float
+                    example: 383.83838
+              is_screened_address:
+                type: boolean
+                description: Flag indicating whether address was directly screened
+                example: false
+              min_number_of_hops:
+                type: integer
+                format: int64
+                description: Shortest path in hops to the entity
+                example: 1
+      required:
+      - category
+      - contribution_percentage
+      - contribution_value
+      - contributions
     TransactionAnalysisSingleResponse:
       title: TransactionAnalysisSingleResponse
       type: object
@@ -1385,318 +1913,6 @@ components:
       - screening_source
       - team_id
       additionalProperties: false
-    NotFoundError:
-      type: object
-      properties:
-        name:
-          type: string
-          example: NotFoundError
-        message:
-          type: string
-          example: Entity not found.
-    EvaluationDetailForGetAll:
-      title: EvaluationDetailForGetAll
-      type: object
-      description: details of a single risk rule evaluation for paginated transactions analysis
-      properties:
-        rule_id:
-          description: the UUIDv4 of this risk rule
-          type: string
-          format: UUIDv4
-          example: b7535048-76f8-4f60-bdd3-9d659298f9e7
-        rule_name:
-          description: the name of the rule
-          type: string
-          example: Illict
-        risk_score:
-          description: The risk score calculated for this rule evaluation as part of the analysis
-          type: number
-          format: float
-          example: 9.038007
-        mc_analysis_id:
-          description: id of the analysis
-          type: string
-          format: UUIDv4
-          example: b7535048-76f8-4f60-bdd3-9d659298f9e7
-      required:
-      - rule_id
-      - risk_score
-      additionalProperties: false
-    BadRequestError:
-      type: object
-      properties:
-        name:
-          type: string
-          example: BadRequestError
-        message:
-          type: string
-          example: Invalid id parameter
-    TransactionAnalysisType:
-      title: TransactionAnalysisType
-      description: The type of analysis. The source_of_funds type is used to get details of the entities that have contributed funds to the transaction's source address, and calculate a risk score based on this exposure. This is referred to as "Deposit" in Navigator. The destination_of_funds type is used to get details of the entities that have received funds from the transaction's destination address, and calculate a risk score based on this exposure. This is referred to as "Withdrawal" in Navigator.
-      type: string
-      enum:
-      - source_of_funds
-      - destination_of_funds
-      example: source_of_funds
-    AnalysisSubject:
-      title: AnalysisSubject
-      type: object
-      properties:
-        asset:
-          type: string
-          description: the asset involved in the event.
-          example: holistic
-        blockchain:
-          type: string
-          description: The blockchain the asset/address belongs to (optional)
-          example: holistic
-        type:
-          type: string
-          description: the type of subject. Currently, only 'transaction' is supported
-          example: transaction
-        hash:
-          type: string
-          description: the transaction hash
-          example: '0x4672bad527107471cb5067a887f4656d585a8a31'
-        output_type:
-          type: string
-          enum:
-          - address
-          - indices
-          description: which output type you are using to specify the output(s) you wish to analyse (BTC/LTC/BCH only)
-        output_address:
-          type: string
-          description: the address hash when using output_type address
-          example: 1MdYC22Gmjp2ejVPCxyYjFyWbQCYTGhGq8
-        output_indices:
-          type: array
-          items:
-            type: number
-          description: the indices of outputs to be analysed when using output_type indices
-          example:
-          - 1
-        log_index:
-          type: number
-          description: the log index of an ERC20 transacation
-          example: 10
-      required:
-      - asset
-      - type
-      - hash
-    TransactionAnalysisRequestSingle:
-      oneOf:
-      - $ref: '#/components/schemas/HolisticAnalysisRequest'
-      - $ref: '#/components/schemas/UTXOBasedAnalysisRequest'
-    UTXOBasedAnalysisRequest:
-      type: object
-      title: BCH/ZEC/ZEN Analysis Request
-      properties:
-        subject:
-          title: AnalysisSubject
-          type: object
-          properties:
-            asset:
-              type: string
-              description: the asset (either BCH, ZEN or ZEC) involved in the event
-              enum:
-              - BCH
-              - ZEN
-              - ZEC
-              example: BCH
-            blockchain:
-              type: string
-              description: the blockchain (either bitcoin_cash, horizen or zcash) of the asset submitted
-              enum:
-              - bitcoin_cash
-              - horizen
-              - zcash
-              example: bitcoin_cash
-            type:
-              type: string
-              description: the type of subject
-              enum:
-              - transaction
-              example: transaction
-            hash:
-              type: string
-              description: the transaction hash
-              example: 16e37268c8dba6eded4dce68060fe5783d6397455410fb9959fecc4644d98340
-            output_type:
-              type: string
-              enum:
-              - address
-              example: address
-              description: which output type you are using to specify the output(s) you wish to analyze
-            output_address:
-              type: string
-              description: the address hash when using output_type address. In order to analyze a UTXO transaction, you must specify the output(s) of that transaction which are relevant to your analysis. For example, if you are analysing a deposit into your service then you might want to specify the output address that belongs to your service. Or for a withdrawal, it might be the output address that your customer wants to send funds to. You can either specify the address or the zero-indexed output indices. When specifying the output(s) by indices, if the indices given reference multiple distinct addresses, the API will respond with an error.
-              example: 1cftamBhjtCmCazbqjo6st1mgux1EbTVc
-          required:
-          - asset
-          - blockchain
-          - type
-          - hash
-          - output_type
-          - output_address
-        type:
-          $ref: '#/components/schemas/TransactionAnalysisType'
-        customer_reference:
-          type: string
-          description: a reference for the customer. Will create a new customer if one with a matching reference does not exist
-      required:
-      - subject
-      - type
-      - customer_reference
-    Contribution:
-      title: Contribution
-      type: object
-      description: A single contribution entry associated with an entity (holistic — only USD values included)
-      properties:
-        entities:
-          type: array
-          description: Entities (labels) associated with this contribution
-          items:
-            type: object
-            properties:
-              name:
-                type: string
-                description: Name of the entity
-                example: BTC-e
-              category:
-                type: string
-                description: Category of the entity
-                example: Exchange
-              category_id:
-                type: string
-                format: uuid
-                description: UUID of category
-                example: 0a52f7a2-5da8-4256-b230-df0da6f8449b
-              entity_id:
-                type: string
-                format: uuid
-                description: UUID of entity
-                example: 09d2c6ba-a32e-4207-bf72-233b38d644c4
-              actor_id:
-                type: integer
-                description: Internal actor ID or numeric identifier that related to the identified entity
-                example: 54
-              is_primary_entity:
-                type: boolean
-                description: Whether this is the primary entity in the group (one per list)
-                example: true
-              is_vasp:
-                type:
-                - boolean
-                - 'null'
-                description: True if VASP (Virtual Asset Service Provider), false if not, null if unknown
-                example: true
-        contribution_percentage:
-          type: number
-          format: float
-          description: Percentage of value contributed by this entity
-          example: 62.98592267836703
-        contribution_value:
-          type: object
-          description: Value contributed by this entry
-          properties:
-            usd:
-              type: number
-              format: float
-              example: 395.47601131293095
-        counterparty_percentage:
-          type: number
-          format: float
-          description: The percentage of the total contribution that is attributed to labelled entities that are one hop away from the screened_address.
-          example: 0
-        counterparty_value:
-          type: object
-          description: Value from counterparties (1-hop entities)
-          properties:
-            usd:
-              type: number
-              description: The contribution between the screened_address and labelled entities that are one hop away, expressed in US dollars.
-              format: float
-              example: 0
-        indirect_percentage:
-          type: number
-          format: float
-          description: The percentage of the total contribution that is attributed to labelled entities that are more than one hop away from the screened_address.
-          example: 62.98592267836703
-        indirect_value:
-          type: object
-          description: USD value from indirect flow
-          properties:
-            usd:
-              type: number
-              description: The contribution between the screened_address and labelled entities that are more than one hop away, expressed in US dollars.
-              format: float
-              example: 395.47601131293095
-        is_screened_address:
-          type: boolean
-          description: A boolean displaying whether the input address of a deposit or the output address of a withdrawal that is screened belongs to a labelled entity for transaction monitoring or the address that is screened belongs to a labelled entity for wallet screening
-          example: false
-        min_number_of_hops:
-          type: integer
-          format: int64
-          description: Minimum number of hops between the subject and the labelled entity
-          example: 2
-      required:
-      - entities
-      - contribution_percentage
-      - contribution_value
-    InputOutput:
-      title: InputOutput
-      type: object
-      description: An input or output (IO) of a transaction
-      properties:
-        hash:
-          type: string
-          example: '0x056fd409e1d7a124bd7017459dfea2f387b6d5cd'
-          description: blockchain identifier of the IO
-        amount:
-          type: object
-          properties:
-            native:
-              type: number
-              description: Transaction amount expresses in the native currency of the blockchain it has occurred in the most precise unit possible, e.g. satoshis for bitcoin
-              example: 38383838
-            native_major:
-              type: number
-              description: Transaction amount expressed in the native currency of the blockchain it has occurred rounded to its major decimal format
-              example: 38383838
-            usd:
-              type: number
-              description: Transaction amount expressed in US dollars of the blockchain it has occurred in the most precise unit possible, e.g. satoshis for bitcoin
-              example: 38383838
-        index:
-          type: number
-          example: 0
-          description: The index of this IO on the transaction
-        labels:
-          type: array
-          description: Label's given to the IO as per Elliptic Assertions
-          items:
-            type: object
-            properties:
-              name:
-                type: string
-                example: A Dark Market
-              category:
-                type: string
-                example: Dark Market
-              is_primary_entity:
-                type: boolean
-                description: Is this the primary label of the entity
-    ForbiddenError:
-      type: object
-      properties:
-        name:
-          type: string
-          example: ForbiddenError
-        message:
-          type: string
-          example: You do not have enough privilege to access this path.
     EvaluationDetail:
       title: EvaluationDetail
       type: object
@@ -1768,254 +1984,43 @@ components:
       - rule_id
       - risk_score
       additionalProperties: false
-    NotInBlockchain:
-      type: object
-      properties:
-        name:
-          type: string
-          example: NotInBlockchain
-        message:
-          type: string
-          example: The submitted ${type} with hash ${hash} has not yet been processed into the Elliptic tool or does not exist on the blockchain.
-    MatchedElement:
-      title: MatchedElement
-      type: object
-      description: 'Entity or group of entities identified as contributing to the risk rule. Note: In holistic responses, values are expressed in USD only.
-
-        '
-      properties:
-        category:
-          type: string
-          description: category of the risk rule's subject that has been triggered by one or more elements.  The name can change so advisable to use identifier for matching purposes
-          example: Dark Market
-        category_id:
-          type: string
-          format: uuid
-          description: UUID identifying the entity's category
-          example: 0a52f7a2-5da8-4256-b230-df0da6f8449b
-        contribution_percentage:
-          type: number
-          format: float
-          description: Aggregated percentage of value attributed to this matched category
-        contribution_value:
-          type: object
-          description: Aggregated USD value attributed to this matched entity category
-          properties:
-            usd:
-              type: number
-              format: float
-              example: 383.83838
-        counterparty_percentage:
-          type: number
-          format: float
-          description: Percentage of contribution from one-hop counterparties
-        counterparty_value:
-          type: object
-          description: Value from one-hop counterparties (USD only)
-          properties:
-            usd:
-              type: number
-              format: float
-              example: 383.83838
-        indirect_percentage:
-          type: number
-          format: float
-          description: Percentage of contribution from indirect (multi-hop) relationships
-        indirect_value:
-          type: object
-          description: Value from indirect (multi-hop) sources (USD only)
-          properties:
-            usd:
-              type: number
-              format: float
-              example: 383.83838
-        contributions:
-          type: array
-          description: Array of contributing entities that led to the match
-          items:
-            type: object
-            required:
-            - entity
-            - entity_id
-            properties:
-              contribution_percentage:
-                type: number
-                format: float
-                description: Percentage of this contribution
-              counterparty_percentage:
-                type: number
-                format: float
-                description: One-hop contribution percentage
-              indirect_percentage:
-                type: number
-                format: float
-                description: Multi-hop contribution percentage
-              entity:
-                type: string
-                description: Name of the contributing entity
-                example: AlphaBay
-              entity_id:
-                type: string
-                format: uuid
-                description: ID of the entity; use with entity_details to look up extended entity data
-                example: 0a52f7a2-5da8-4256-b230-df0da6f8449b
-              risk_triggers:
-                type: object
-                description: Metadata indicating why the entity was considered risky
-                properties:
-                  name:
-                    type: string
-                    description: Trigger entity name
-                    example: Binance
-                  category:
-                    type: string
-                    description: Trigger category
-                    example: Dark Markets
-                  is_sanctioned:
-                    type: boolean
-                    description: Indicates if a sanction-based risk was involved
-                    example: true
-                  country:
-                    type: array
-                    description: List of country codes associated with the risk trigger
-                    items:
-                      type: string
-                      example: MM
-              contribution_value:
-                type: object
-                description: Contribution amount from this entity (USD only)
-                properties:
-                  usd:
-                    type: number
-                    format: float
-                    example: 383.83838
-              counterparty_value:
-                type: object
-                description: Counterparty contribution value (USD only)
-                properties:
-                  usd:
-                    type: number
-                    format: float
-                    example: 383.83838
-              indirect_value:
-                type: object
-                description: Indirect (multi-hop) value (USD only)
-                properties:
-                  usd:
-                    type: number
-                    format: float
-                    example: 383.83838
-              is_screened_address:
-                type: boolean
-                description: Flag indicating whether address was directly screened
-                example: false
-              min_number_of_hops:
-                type: integer
-                format: int64
-                description: Shortest path in hops to the entity
-                example: 1
-      required:
-      - category
-      - contribution_percentage
-      - contribution_value
-      - contributions
-    TransactionAnalysisRequestBatch:
-      description: the analyses to request
-      type: array
-      minItems: 1
-      maxItems: 100
-      items:
-        anyOf:
-        - $ref: '#/components/schemas/HolisticAnalysisRequest'
-        - $ref: '#/components/schemas/UTXOBasedAnalysisRequest'
-    HolisticAnalysisRequest:
-      type: object
-      title: Holistic Analysis Request
-      properties:
-        subject:
-          title: AnalysisSubject
-          type: object
-          properties:
-            asset:
-              type: string
-              description: For holistic screening this should be set to holistic
-              enum:
-              - holistic
-              example: holistic
-            blockchain:
-              type: string
-              description: For holistic screening this should be set to holistic
-              enum:
-              - holistic
-              example: holistic
-            type:
-              type: string
-              description: the type of subject
-              enum:
-              - transaction
-              example: transaction
-            hash:
-              type: string
-              description: the transaction hash
-              example: 24220e9cb717276300e17863c28f44787773c1ce156214594f36dc2a7a59f42d
-            output_type:
-              type: string
-              enum:
-              - address
-              example: address
-              description: which output type you are using to specify the output(s) you wish to analyse
-            output_address:
-              type: string
-              description: the address hash when using output_type address
-              example: 35dRfg3bWZXdGjW1vKLMu28AmRSWvSid9o
-          required:
-          - asset
-          - blockchain
-          - type
-          - hash
-          - output_type
-          - output_address
-        type:
-          $ref: '#/components/schemas/TransactionAnalysisType'
-        customer_reference:
-          type: string
-          description: a reference for the customer. Will create a new customer if one with a matching reference does not exist
-      required:
-      - subject
-      - type
-      - customer_reference
   responses:
+    NotInBlockchain:
+      description: Requested subject not found on the blockchain
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/NotInBlockchain'
     AnalysisResponse:
       description: Successful analysis response
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/TransactionAnalysisSingleResponse'
+    '500':
+      description: Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    '404':
+      description: Resource item not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/NotFoundError'
     '401':
       description: Not authenticated
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/UnauthorizedError'
-    400Post:
-      description: Bad Request
+    '403':
+      description: Not authorized
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              name:
-                type: string
-                example: BadRequestError
-              message:
-                type: string
-                example: subject.asset and subject.blockchain combination not recognised
-    '400':
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/BadRequestError'
+            $ref: '#/components/schemas/ForbiddenError'
     TooManyRequestsError:
       description: Too Many Requests — Rate limit exceeded
       content:
@@ -2030,30 +2035,25 @@ components:
               message:
                 type: string
                 example: Too many requests – please try again later
-    '404':
-      description: Resource item not found
+    '400':
+      description: Bad Request
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/NotFoundError'
-    '500':
-      description: Server Error
+            $ref: '#/components/schemas/BadRequestError'
+    400Post:
+      description: Bad Request
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
-    '403':
-      description: Not authorized
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ForbiddenError'
-    NotInBlockchain:
-      description: Requested subject not found on the blockchain
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/NotInBlockchain'
+            type: object
+            properties:
+              name:
+                type: string
+                example: BadRequestError
+              message:
+                type: string
+                example: subject.asset and subject.blockchain combination not recognised
   securitySchemes:
     bearer:
       description: Bearer Authentication

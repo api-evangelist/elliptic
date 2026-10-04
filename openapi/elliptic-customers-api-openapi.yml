@@ -597,16 +597,117 @@ paths:
     - url: https://ai-api.elliptic.co
       description: Production server
 components:
+  responses:
+    '403':
+      description: Not authorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ForbiddenError'
+    '500':
+      description: Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    '401':
+      description: Not authenticated
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UnauthorizedError'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            message: Resource not found
+            statusCode: 404
+            timestamp: '2024-01-01T00:00:00.000Z'
+    Forbidden:
+      description: Forbidden - Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            message: Forbidden - Insufficient permissions
+            statusCode: 403
+            timestamp: '2024-01-01T00:00:00.000Z'
+    BadRequest:
+      description: Bad request - Invalid input parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            message: Validation failed
+            statusCode: 400
+            timestamp: '2024-01-01T00:00:00.000Z'
+            context:
+              errors:
+              - Customer ID must be a valid UUID
+    Unauthorized:
+      description: Unauthorized - Missing or invalid authentication token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            message: Unauthorized
+            statusCode: 401
+            timestamp: '2024-01-01T00:00:00.000Z'
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            message: Internal server error
+            statusCode: 500
+            timestamp: '2024-01-01T00:00:00.000Z'
   schemas:
-    BadRequestError:
+    CustomerTxInfo:
+      type: object
+      title: customerTxInfo
+      description: an object representing a single analysed Transaction attached to a Customer
+      properties:
+        total_volume:
+          description: Sum of all transactions' volume
+          example: 993842398342
+          type:
+          - number
+          - 'null'
+        customer_tx_count:
+          description: Number of transactions
+          format: int64
+          example: 3341
+          type:
+          - number
+          - 'null'
+        total_fees:
+          description: sum of all customer transactions fees
+          format: int64
+          example: 993842398342
+          type:
+          - number
+          - 'null'
+      required:
+      - total_volume
+      - customer_tx_count
+      additionalProperties: false
+    NotFoundError:
       type: object
       properties:
         name:
           type: string
-          example: BadRequestError
+          example: NotFoundError
         message:
           type: string
-          example: Invalid id parameter
+          example: Entity not found.
     Customer:
       type: object
       title: Customer
@@ -785,15 +886,6 @@ components:
     UnauthorizedError:
       type: string
       example: Unauthorized
-    Error:
-      type: object
-      properties:
-        name:
-          type: string
-          example: GenericErrorName
-        message:
-          type: string
-          example: Something bad happened.
     ForbiddenError:
       type: object
       properties:
@@ -803,58 +895,24 @@ components:
         message:
           type: string
           example: You do not have enough privilege to access this path.
-    NotFoundError:
+    BadRequestError:
       type: object
       properties:
         name:
           type: string
-          example: NotFoundError
+          example: BadRequestError
         message:
           type: string
-          example: Entity not found.
-    CustomerTxInfo:
+          example: Invalid id parameter
+    Error:
       type: object
-      title: customerTxInfo
-      description: an object representing a single analysed Transaction attached to a Customer
       properties:
-        total_volume:
-          description: Sum of all transactions' volume
-          example: 993842398342
-          type:
-          - number
-          - 'null'
-        customer_tx_count:
-          description: Number of transactions
-          format: int64
-          example: 3341
-          type:
-          - number
-          - 'null'
-        total_fees:
-          description: sum of all customer transactions fees
-          format: int64
-          example: 993842398342
-          type:
-          - number
-          - 'null'
-      required:
-      - total_volume
-      - customer_tx_count
-      additionalProperties: false
-    MaxRiskTrigger:
-      type: object
-      description: A wallet or transaction at the maximum risk score, with its hash and analysis ID
-      properties:
-        hash:
+        name:
           type: string
-          description: Wallet address or transaction hash
-        analysisId:
+          example: GenericErrorName
+        message:
           type: string
-          format: uuid
-          description: Analysis ID (UUID)
-      required:
-      - hash
-      - analysisId
+          example: Something bad happened.
     ErrorResponse:
       type: object
       properties:
@@ -904,78 +962,20 @@ components:
       required:
       - summary
       - analysisIds
-  responses:
-    '401':
-      description: Not authenticated
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/UnauthorizedError'
-    '403':
-      description: Not authorized
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ForbiddenError'
-    '500':
-      description: Server Error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    Forbidden:
-      description: Forbidden - Insufficient permissions
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            message: Forbidden - Insufficient permissions
-            statusCode: 403
-            timestamp: '2024-01-01T00:00:00.000Z'
-    Unauthorized:
-      description: Unauthorized - Missing or invalid authentication token
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            message: Unauthorized
-            statusCode: 401
-            timestamp: '2024-01-01T00:00:00.000Z'
-    InternalServerError:
-      description: Internal server error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            message: Internal server error
-            statusCode: 500
-            timestamp: '2024-01-01T00:00:00.000Z'
-    BadRequest:
-      description: Bad request - Invalid input parameters
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            message: Validation failed
-            statusCode: 400
-            timestamp: '2024-01-01T00:00:00.000Z'
-            context:
-              errors:
-              - Customer ID must be a valid UUID
-    NotFound:
-      description: Resource not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            message: Resource not found
-            statusCode: 404
-            timestamp: '2024-01-01T00:00:00.000Z'
+    MaxRiskTrigger:
+      type: object
+      description: A wallet or transaction at the maximum risk score, with its hash and analysis ID
+      properties:
+        hash:
+          type: string
+          description: Wallet address or transaction hash
+        analysisId:
+          type: string
+          format: uuid
+          description: Analysis ID (UUID)
+      required:
+      - hash
+      - analysisId
   securitySchemes:
     bearer:
       description: Bearer Authentication
