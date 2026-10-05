@@ -1,0 +1,55 @@
+slug: elliptic
+provider: Elliptic
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Software & Technology
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 4
+edges:
+- tag: Sanctions
+  spec_file: elliptic-sanctions-api-openapi.yml
+  capability_id: BC-130.10
+  capability_id_l1: BC-130
+  capability_name: Regulatory Compliance Management
+  confidence: 0.75
+  evidence: GET /v1/sanctions  SanctionsController_getSanctionedAddresses  Get sanctioned addresses; schemas
+    Sanction, SanctionListItem
+  reason: Returns sanctioned crypto addresses for sanctions screening — a sector-specific (AML/sanctions)
+    regulatory compliance function, not generic data retrieval.
+- tag: Transaction Analyses
+  spec_file: elliptic-transaction-analyses-api-openapi.yml
+  capability_id: BC-130.10
+  capability_id_l1: BC-130
+  capability_name: Regulatory Compliance Management
+  confidence: 0.75
+  evidence: POST /analyses/synchronous  analysisSync  Run a single analysis; schemas TransactionAnalysisRequestBatch,
+    EvaluationDetail, MatchedElement
+  reason: Submits transactions for AML risk analysis/screening and retrieves screening results — core
+    regulatory (AML) compliance screening rather than payment processing.
+- tag: Wallet Analyses
+  spec_file: elliptic-wallet-analyses-api-openapi.yml
+  capability_id: BC-130.10
+  capability_id_l1: BC-130
+  capability_name: Regulatory Compliance Management
+  confidence: 0.75
+  evidence: POST /wallet/synchronous  Run a single analysis; schemas WalletAnalysisResponse, WalletAssertedLabel,
+    EvaluationDetail
+  reason: Runs and retrieves wallet risk-screening analyses, the AML wallet screening function described
+    in the vendor context — sector-specific regulatory compliance.
+- tag: Screenings
+  spec_file: elliptic-screenings-api-openapi.yml
+  capability_id: BC-130.10
+  capability_id_l1: BC-130
+  capability_name: Regulatory Compliance Management
+  confidence: 0.7
+  evidence: API for AI-powered customer analysis, wallet and transaction screening analysis; getWalletSummary
+    / postTransactionRiskGraph 'Get transaction risk graph summary'
+  reason: Operations produce risk-graph and screening summaries for wallets and transactions, the analytical
+    output of AML screening — regulatory compliance. Some ambiguity vs. risk assessment, hence 0.7.
