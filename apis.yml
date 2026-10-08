@@ -491,6 +491,12 @@ apis:
   - type: Documentation
     url: https://developers.elliptic.co/
 common:
+  - type: Plans
+    url: plans/elliptic-plans.yml
+  - type: RateLimits
+    url: rate-limits/aml-api.yml
+  - type: FinOps
+    url: finops/elliptic-finops.yml
   - type: CapabilityMap
     url: capabilities/elliptic-capability-edges.yml
     name: Elliptic Business Capability Map
