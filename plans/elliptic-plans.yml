@@ -34,3 +34,16 @@ notes:
   - Elliptic targets financial institutions, centralized exchanges, DeFi platforms, stablecoin issuers, network operators, law enforcement, and regulators
   - A Crypto Compliance Calculator is available at elliptic.co for cost projections
   - Partner program available at elliptic.co/partner-program for resellers and technology integrators
+x-canonical:
+  generated: '2026-10-08'
+  vocabulary: all/0-working/economics/plans-canonical.yml
+  models:
+  - negotiated
+  units: []
+  plans:
+  - name: Enterprise
+    access: other
+    model: negotiated
+    model_how: derived
+    units: []
+    periods: []
