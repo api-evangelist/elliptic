@@ -54,6 +54,28 @@ paths:
       operationId: getAssets
       x-operation-id-source: derived
 components:
+  schemas:
+    ForbiddenError:
+      type: object
+      properties:
+        name:
+          type: string
+          example: ForbiddenError
+        message:
+          type: string
+          example: You do not have enough privilege to access this path.
+    Error:
+      type: object
+      properties:
+        name:
+          type: string
+          example: GenericErrorName
+        message:
+          type: string
+          example: Something bad happened.
+    UnauthorizedError:
+      type: string
+      example: Unauthorized
   responses:
     '403':
       description: Not authorized
@@ -73,28 +95,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/UnauthorizedError'
-  schemas:
-    UnauthorizedError:
-      type: string
-      example: Unauthorized
-    ForbiddenError:
-      type: object
-      properties:
-        name:
-          type: string
-          example: ForbiddenError
-        message:
-          type: string
-          example: You do not have enough privilege to access this path.
-    Error:
-      type: object
-      properties:
-        name:
-          type: string
-          example: GenericErrorName
-        message:
-          type: string
-          example: Something bad happened.
   securitySchemes:
     bearer:
       description: Bearer Authentication

@@ -597,117 +597,7 @@ paths:
     - url: https://ai-api.elliptic.co
       description: Production server
 components:
-  responses:
-    '403':
-      description: Not authorized
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ForbiddenError'
-    '500':
-      description: Server Error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    '401':
-      description: Not authenticated
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/UnauthorizedError'
-    NotFound:
-      description: Resource not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            message: Resource not found
-            statusCode: 404
-            timestamp: '2024-01-01T00:00:00.000Z'
-    Forbidden:
-      description: Forbidden - Insufficient permissions
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            message: Forbidden - Insufficient permissions
-            statusCode: 403
-            timestamp: '2024-01-01T00:00:00.000Z'
-    BadRequest:
-      description: Bad request - Invalid input parameters
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            message: Validation failed
-            statusCode: 400
-            timestamp: '2024-01-01T00:00:00.000Z'
-            context:
-              errors:
-              - Customer ID must be a valid UUID
-    Unauthorized:
-      description: Unauthorized - Missing or invalid authentication token
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            message: Unauthorized
-            statusCode: 401
-            timestamp: '2024-01-01T00:00:00.000Z'
-    InternalServerError:
-      description: Internal server error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            message: Internal server error
-            statusCode: 500
-            timestamp: '2024-01-01T00:00:00.000Z'
   schemas:
-    CustomerTxInfo:
-      type: object
-      title: customerTxInfo
-      description: an object representing a single analysed Transaction attached to a Customer
-      properties:
-        total_volume:
-          description: Sum of all transactions' volume
-          example: 993842398342
-          type:
-          - number
-          - 'null'
-        customer_tx_count:
-          description: Number of transactions
-          format: int64
-          example: 3341
-          type:
-          - number
-          - 'null'
-        total_fees:
-          description: sum of all customer transactions fees
-          format: int64
-          example: 993842398342
-          type:
-          - number
-          - 'null'
-      required:
-      - total_volume
-      - customer_tx_count
-      additionalProperties: false
-    NotFoundError:
-      type: object
-      properties:
-        name:
-          type: string
-          example: NotFoundError
-        message:
-          type: string
-          example: Entity not found.
     Customer:
       type: object
       title: Customer
@@ -883,9 +773,15 @@ components:
       - last_queried
       - workflow_status
       additionalProperties: false
-    UnauthorizedError:
-      type: string
-      example: Unauthorized
+    NotFoundError:
+      type: object
+      properties:
+        name:
+          type: string
+          example: NotFoundError
+        message:
+          type: string
+          example: Entity not found.
     ForbiddenError:
       type: object
       properties:
@@ -895,15 +791,6 @@ components:
         message:
           type: string
           example: You do not have enough privilege to access this path.
-    BadRequestError:
-      type: object
-      properties:
-        name:
-          type: string
-          example: BadRequestError
-        message:
-          type: string
-          example: Invalid id parameter
     Error:
       type: object
       properties:
@@ -913,6 +800,47 @@ components:
         message:
           type: string
           example: Something bad happened.
+    CustomerTxInfo:
+      type: object
+      title: customerTxInfo
+      description: an object representing a single analysed Transaction attached to a Customer
+      properties:
+        total_volume:
+          description: Sum of all transactions' volume
+          example: 993842398342
+          type:
+          - number
+          - 'null'
+        customer_tx_count:
+          description: Number of transactions
+          format: int64
+          example: 3341
+          type:
+          - number
+          - 'null'
+        total_fees:
+          description: sum of all customer transactions fees
+          format: int64
+          example: 993842398342
+          type:
+          - number
+          - 'null'
+      required:
+      - total_volume
+      - customer_tx_count
+      additionalProperties: false
+    BadRequestError:
+      type: object
+      properties:
+        name:
+          type: string
+          example: BadRequestError
+        message:
+          type: string
+          example: Invalid id parameter
+    UnauthorizedError:
+      type: string
+      example: Unauthorized
     ErrorResponse:
       type: object
       properties:
@@ -934,6 +862,20 @@ components:
       - message
       - statusCode
       - timestamp
+    MaxRiskTrigger:
+      type: object
+      description: A wallet or transaction at the maximum risk score, with its hash and analysis ID
+      properties:
+        hash:
+          type: string
+          description: Wallet address or transaction hash
+        analysisId:
+          type: string
+          format: uuid
+          description: Analysis ID (UUID)
+      required:
+      - hash
+      - analysisId
     SummaryResult:
       type: object
       description: Full customer summary including an LLM narrative and the analysis IDs used to generate it
@@ -962,20 +904,78 @@ components:
       required:
       - summary
       - analysisIds
-    MaxRiskTrigger:
-      type: object
-      description: A wallet or transaction at the maximum risk score, with its hash and analysis ID
-      properties:
-        hash:
-          type: string
-          description: Wallet address or transaction hash
-        analysisId:
-          type: string
-          format: uuid
-          description: Analysis ID (UUID)
-      required:
-      - hash
-      - analysisId
+  responses:
+    '403':
+      description: Not authorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ForbiddenError'
+    '500':
+      description: Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    '401':
+      description: Not authenticated
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UnauthorizedError'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            message: Resource not found
+            statusCode: 404
+            timestamp: '2024-01-01T00:00:00.000Z'
+    Forbidden:
+      description: Forbidden - Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            message: Forbidden - Insufficient permissions
+            statusCode: 403
+            timestamp: '2024-01-01T00:00:00.000Z'
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            message: Internal server error
+            statusCode: 500
+            timestamp: '2024-01-01T00:00:00.000Z'
+    Unauthorized:
+      description: Unauthorized - Missing or invalid authentication token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            message: Unauthorized
+            statusCode: 401
+            timestamp: '2024-01-01T00:00:00.000Z'
+    BadRequest:
+      description: Bad request - Invalid input parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            message: Validation failed
+            statusCode: 400
+            timestamp: '2024-01-01T00:00:00.000Z'
+            context:
+              errors:
+              - Customer ID must be a valid UUID
   securitySchemes:
     bearer:
       description: Bearer Authentication

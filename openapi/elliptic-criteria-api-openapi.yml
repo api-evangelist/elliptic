@@ -49,25 +49,6 @@ paths:
       operationId: getCriteriaCategories
       x-operation-id-source: derived
 components:
-  responses:
-    '403':
-      description: Not authorized
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ForbiddenError'
-    '500':
-      description: Server Error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    '401':
-      description: Not authenticated
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/UnauthorizedError'
   schemas:
     NotFoundError:
       type: object
@@ -78,9 +59,6 @@ components:
         message:
           type: string
           example: Entity not found.
-    UnauthorizedError:
-      type: string
-      example: Unauthorized
     ForbiddenError:
       type: object
       properties:
@@ -119,6 +97,28 @@ components:
           minLength: 1
           maxLength: 100
           example: illicit activities
+    UnauthorizedError:
+      type: string
+      example: Unauthorized
+  responses:
+    '403':
+      description: Not authorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ForbiddenError'
+    '500':
+      description: Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    '401':
+      description: Not authenticated
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UnauthorizedError'
   securitySchemes:
     bearer:
       description: Bearer Authentication

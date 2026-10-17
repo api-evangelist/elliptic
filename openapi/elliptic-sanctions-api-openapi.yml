@@ -91,47 +91,6 @@ paths:
       - Sanctions
 components:
   schemas:
-    Sanction:
-      type: object
-      properties:
-        address:
-          type: string
-          description: Sanctioned address hash
-          example: TWBAPzpPiZarfVsY2BLXeaLhNHurn4wkWG
-        created_at:
-          type: string
-          description: The date the sanctioned address was included in Elliptic database
-          example: '2024-03-26T00:00:00Z'
-        removed_at:
-          type: object
-          description: The date the sanctioned address was reverted/removed from Elliptic database
-          example: '2024-03-28T00:00:00Z'
-        evm_compatible:
-          type: boolean
-          description: Optional property specified if the address is EVM compatible
-          example: true
-        sanction_status:
-          type: string
-          description: Specifies if the address is currently sanctioned, or if the sanction has since been removed
-          example: sanctioned
-          enum:
-          - sanctioned
-          - removed
-        sanctions:
-          description: Specifies the list of sanctions for the address
-          example:
-          - list: OFAC SDN
-            created_at: '2024-02-20T00:00:00Z'
-            removed_at: '2024-02-21T00:00:00Z'
-          type: array
-          items:
-            $ref: '#/components/schemas/SanctionListItem'
-      required:
-      - address
-      - created_at
-      - removed_at
-      - sanction_status
-      - sanctions
     SanctionListItem:
       type: object
       properties:
@@ -191,6 +150,47 @@ components:
       - size
       - total_pages
       - total_items
+    Sanction:
+      type: object
+      properties:
+        address:
+          type: string
+          description: Sanctioned address hash
+          example: TWBAPzpPiZarfVsY2BLXeaLhNHurn4wkWG
+        created_at:
+          type: string
+          description: The date the sanctioned address was included in Elliptic database
+          example: '2024-03-26T00:00:00Z'
+        removed_at:
+          type: object
+          description: The date the sanctioned address was reverted/removed from Elliptic database
+          example: '2024-03-28T00:00:00Z'
+        evm_compatible:
+          type: boolean
+          description: Optional property specified if the address is EVM compatible
+          example: true
+        sanction_status:
+          type: string
+          description: Specifies if the address is currently sanctioned, or if the sanction has since been removed
+          example: sanctioned
+          enum:
+          - sanctioned
+          - removed
+        sanctions:
+          description: Specifies the list of sanctions for the address
+          example:
+          - list: OFAC SDN
+            created_at: '2024-02-20T00:00:00Z'
+            removed_at: '2024-02-21T00:00:00Z'
+          type: array
+          items:
+            $ref: '#/components/schemas/SanctionListItem'
+      required:
+      - address
+      - created_at
+      - removed_at
+      - sanction_status
+      - sanctions
 x-readme:
   explorer-enabled: true
   proxy-enabled: true
