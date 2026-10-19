@@ -1,0 +1,12 @@
+{
+ "url": "https://developers.elliptic.co/openapi/data-fabric.yaml",
+ "requested_url": "https://developers.elliptic.co/openapi/data-fabric.yaml",
+ "status": 200,
+ "content_type": "application/json; charset=utf-8",
+ "bytes": 14147,
+ "sha256": "93bc92b5fe42bfae64ba8fb2bbf0bae95ada30967cb7320fb9717506846c29a2",
+ "fetched_at": "2026-10-19",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "byte-identical",
+ "note": "Re-fetched from the provider by verify-openapi-sources.py; the archived file is byte-identical to what the provider serves."
+}

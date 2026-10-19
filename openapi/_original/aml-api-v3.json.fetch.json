@@ -1,0 +1,12 @@
+{
+ "url": "https://developers.elliptic.co/openapi/aml-api-v3.json",
+ "requested_url": "https://developers.elliptic.co/openapi/aml-api-v3.json",
+ "status": 200,
+ "content_type": "application/json; charset=utf-8",
+ "bytes": 16890,
+ "sha256": "59665cbc85ce17b48652ce12694e14c4e12679ea90d65eeed26361b9f4786def",
+ "fetched_at": "2026-10-19",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "byte-identical",
+ "note": "Re-fetched from the provider by verify-openapi-sources.py; the archived file is byte-identical to what the provider serves."
+}
