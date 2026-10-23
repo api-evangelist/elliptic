@@ -473,3 +473,9 @@ components:
       type: http
       scheme: bearer
       description: "Elliptic HMAC-SHA256 authentication requires three headers for all requests:\n\n**Required Headers:**\n1. **x-access-key**: Your API key\n2. **x-access-sign**: HMAC-SHA256 signature of the request  \n3. **x-access-timestamp**: Current timestamp in milliseconds\n\n**Signature Calculation:**\n```\nREQUEST_TEXT = TIME_OF_REQUEST + HTTP_METHOD + HTTP_PATH_LOWERCASE + REQUEST_BODY\nSIGNATURE = Base64(HMAC-SHA256(REQUEST_TEXT, Base64.decode(SECRET)))\n```\n\nWhere:\n- **TIME_OF_REQUEST**: Unix timestamp in milliseconds (same as x-access-timestamp header)\n- **HTTP_METHOD**: GET, POST, etc. (uppercase)\n- **HTTP_PATH_LOWERCASE**: API path including query string (lowercase)\n- **REQUEST_BODY**: JSON string for POST requests, or \"{}\" for GET requests or when no body\n\n**Example REQUEST_TEXT for POST /v1/node-intelligence/example/path/transactions:**\n```\n1634567890123POST/v1/node-intelligence/example/path/transactions{\"hashes\":[\"abc123\"]}\n```\n\n**Example REQUEST_TEXT for GET /v1/node-intelligence/example/path/12345:**\n```\n1634567890123GET/v1/node-intelligence/example/path/12345{}\n```\n\n**Example Headers:**\n```\nx-access-key: your_api_key_here\nx-access-sign: generated_signature_here  \nx-access-timestamp: 1634567890123\n```\n"
+x-provenance:
+  method: harvested
+  publisher: Elliptic
+  source: https://developers.elliptic.co/openapi/data-fabric.yaml
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)
