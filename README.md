@@ -66,24 +66,157 @@
 
 Elliptic is a blockchain analytics and crypto compliance platform providing REST APIs for transaction screening, wallet risk scoring, entity identification, and AML compliance. Their APIs enable financial institutions, exchanges, and DeFi platforms to automate crypto risk screening across 60+ blockchains, reduce investigation time by up to 90%, and meet AML regulatory requirements with sub-second response times.
 
-## APIs
+**Areas:** Blockchain · Cryptocurrency · Compliance · AML · Transaction Screening · Wallet Screening · Risk Scoring · Analytics
 
-- **AML API** - REST API for automated wallet and transaction screening, customer management, risk rule configuration, and batch/synchronous analysis across 60+ blockchains
-- **AI API** - AI-powered REST API delivering natural language summaries and structured insights from blockchain risk data
+## Elliptic on APIs.io
 
-## Developer Resources
+Everything profiled for Elliptic is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/elliptic/](https://apis.io/providers/elliptic/)** — or go straight to one of the APIs or properties below.
 
-- [Developer Portal](https://developers.elliptic.co/)
-- [AML API Documentation](https://developers.elliptic.co/docs/aml-api-introduction)
-- [AI API Documentation](https://developers.elliptic.co/docs/ai-api-introduction)
-- [Authentication Guide](https://developers.elliptic.co/docs/authentication-1)
-- [SDK Quick Start](https://developers.elliptic.co/docs/quick-start-sdks)
-- [Status Page](https://status.elliptic.co/)
-- [Help Center](https://help.elliptic.co/)
+### APIs (15)
 
-## Links
+- [Elliptic Assets API](https://apis.io/apis/elliptic/elliptic-assets-api/) — The Assets API from Elliptic — 1 operation(s) for assets.
+- [Elliptic Count Analyses API](https://apis.io/apis/elliptic/elliptic-count-analyses-api/) — The Count Analyses API from Elliptic — 1 operation(s) for count analyses.
+- [Elliptic Criteria API](https://apis.io/apis/elliptic/elliptic-criteria-api/) — Retrieve all criteria related to triggering risk rules
+- [Elliptic Customers API](https://apis.io/apis/elliptic/elliptic-customers-api/) — The customers endpoints are used to manage customers which you have associated analysis with, via the `customer_reference` analysis subject attribute.…
+- [Elliptic Health API](https://apis.io/apis/elliptic/elliptic-health-api/) — Health check endpoints
+- [Elliptic Risk Rules API](https://apis.io/apis/elliptic/elliptic-risk-rules-api/) — Manage risk rules. Currently the same risk rules are used for Navigator and Lens
+- [Elliptic Sanctions API](https://apis.io/apis/elliptic/elliptic-sanctions-api/) — The Sanctions API from Elliptic — 1 operation(s) for sanctions.
+- [Elliptic Screenings API](https://apis.io/apis/elliptic/elliptic-screenings-api/) — Wallet and transaction screening endpoints
+- [Elliptic Transaction Analyses API](https://apis.io/apis/elliptic/elliptic-transaction-analyses-api/) — Run blockchain analysis against one or more transactions. Get and update previously run analyses.
+- [Elliptic Transaction Workflow API](https://apis.io/apis/elliptic/elliptic-transaction-workflow-api/) — The Transaction Workflow API from Elliptic — 3 operation(s) for transaction workflow.
+- [Elliptic Tron NodeIntelligence API](https://apis.io/apis/elliptic/elliptic-tron-nodeintelligence-api/) — Tron blockchain data lookup operations
+- [Elliptic Users API](https://apis.io/apis/elliptic/elliptic-users-api/) — Manage users
+- [Elliptic Wallet Analyses API](https://apis.io/apis/elliptic/elliptic-wallet-analyses-api/) — Run blockchain analysis against one or more wallets. Get and update previously run analyses.
+- [Elliptic Wallet Analyses Count API](https://apis.io/apis/elliptic/elliptic-wallet-analyses-count-api/) — The Wallet Analyses Count API from Elliptic — 1 operation(s) for wallet analyses count.
+- [Elliptic Wallet Workflow API](https://apis.io/apis/elliptic/elliptic-wallet-workflow-api/) — The Wallet Workflow API from Elliptic — 2 operation(s) for wallet workflow.
+
+### Published properties
+
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
+
+#### Agentic access (1)
+
+Which operations an agent can call, which act, and which need a human in the loop.
+
+- [Elliptic Agentic Access](https://apis.io/agentic-access/elliptic/elliptic-agentic-access/)
+
+#### JSON-LD (1)
+
+Linked-data contexts for the provider's vocabulary.
+
+- [Elliptic Context](https://apis.io/jsonld/elliptic/elliptic/)
+
+#### Collections (15)
+
+Postman and Open Collection request collections.
+
+- [AML API OAuth Assets API](https://apis.io/collections/elliptic/open-elliptic-assets-api/)
+- [AML API OAuth Assets Count Analyses API](https://apis.io/collections/elliptic/open-elliptic-count-analyses-api/)
+- [AML API OAuth Assets Criteria API](https://apis.io/collections/elliptic/open-elliptic-criteria-api/)
+- [AML API OAuth Assets Customers API](https://apis.io/collections/elliptic/open-elliptic-customers-api/)
+- [AML API OAuth Assets Health API](https://apis.io/collections/elliptic/open-elliptic-health-api/)
+- [AML API OAuth Assets Risk Rules API](https://apis.io/collections/elliptic/open-elliptic-risk-rules-api/)
+- [AML API OAuth Assets Sanctions API](https://apis.io/collections/elliptic/open-elliptic-sanctions-api/)
+- [AML API OAuth Assets Screenings API](https://apis.io/collections/elliptic/open-elliptic-screenings-api/)
+- [AML API OAuth Assets Transaction Analyses API](https://apis.io/collections/elliptic/open-elliptic-transaction-analyses-api/)
+- [AML API OAuth Assets Transaction Workflow API](https://apis.io/collections/elliptic/open-elliptic-transaction-workflow-api/)
+- [AML API OAuth Assets Tron NodeIntelligence API](https://apis.io/collections/elliptic/open-elliptic-tron-nodeintelligence-api/)
+- [AML API OAuth Assets Users API](https://apis.io/collections/elliptic/open-elliptic-users-api/)
+- [AML API OAuth Assets Wallet Analyses API](https://apis.io/collections/elliptic/open-elliptic-wallet-analyses-api/)
+- [AML API OAuth Assets Wallet Analyses Count API](https://apis.io/collections/elliptic/open-elliptic-wallet-analyses-count-api/)
+- [AML API OAuth Assets Wallet Workflow API](https://apis.io/collections/elliptic/open-elliptic-wallet-workflow-api/)
+
+#### Security (2)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Elliptic Authentication](https://apis.io/security/elliptic/elliptic-authentication/)
+- [Elliptic Domain Security](https://apis.io/security/elliptic/elliptic-domain-security/)
+
+#### OAuth scopes (1)
+
+The permissions the API asks for.
+
+- [Elliptic Scopes](https://apis.io/scopes/elliptic/elliptic-scopes/)
+
+#### Plans and pricing (1)
+
+Published plans, tiers and prices.
+
+- [Elliptic Plans](https://apis.io/plans/elliptic/elliptic-plans/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [Aml Api](https://apis.io/rate-limits/elliptic/aml-api/)
+
+#### FinOps (1)
+
+What the API costs to run, by operation.
+
+- [Elliptic Finops](https://apis.io/finops/elliptic/elliptic-finops/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
 
 - [Website](https://www.elliptic.co/)
-- [Platform](https://www.elliptic.co/digital-asset-platform)
-- [Get Started](https://www.elliptic.co/get-started)
-- [Partner Program](https://www.elliptic.co/partner-program)
+- [Documentation](https://developers.elliptic.co/docs)
+- [Support](https://help.elliptic.co/)
+- [Blog](https://www.elliptic.co/blog)
+- [Terms of service](https://www.elliptic.co/terms-of-service)
+- [Privacy policy](https://www.elliptic.co/privacy-policy)
+
+## API Evangelist rating
+
+**Kin Score 31.6** — thin · rubric 0.24.0 · scored 2026-10-17
+
+| Facet | Score |
+|---|---|
+| Discoverability | 71.4 |
+| Contract quality | 55.6 |
+| Contract governance | 0.0 |
+| Operational transparency | 0.0 |
+| Developer ergonomics | 34.5 |
+| Access clarity | 15.8 |
+
+**Agent readiness 30.6** — agent-ready
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | — |
+| MCP Server | — |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | — |
+| Error Semantics | verified |
+| OpenAPI Examples | verified |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | — |
+| Agent Skills | — |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+
+**Regulatory alignment 27.7** — Payments
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/elliptic/](https://apis.io/providers/elliptic/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Elliptic: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/elliptic/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
